@@ -1,7 +1,0 @@
-[package]
-name = "ready_set_boole_main"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-ex00 = { path = "../ex00" }

@@ -99,3 +99,90 @@ ex00 = { path = "../ex00" }
 
 This is in the cargo.toml in the ready_set_boole_main module which is just to play with the code and test all those modules together.
 
+## ex02 - Gray code
+Gray code is used to prevent errors in hardware because only one bit changes at a time (e.g., going from 1 to 2 in binary is 01 to 10—two bits changed! In Gray code, it’s 01 to 11).
+
+The formula is incredibly simple using bitwise operators:
+```
+G=n⊕(n≫1)
+```
+
+## Ex03
+
+I had to understand the => implication truth table:
+
+This is one of those concepts that feels counterintuitive until you look at the **Truth Table**. In logic, this is known as **Material Implication**.
+
+The best way to understand why  is to think about what it means for a promise (an implication) to be **broken**.
+
+---
+
+### 1. The "Contract" Analogy
+
+Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
+
+There are four possible scenarios:
+
+1. **It rains (), and I bring an umbrella ():** I kept my promise. (**True**)
+2. **It rains (), but I don't bring an umbrella ():** I broke my promise. (**False**)
+3. **It doesn't rain (), but I bring an umbrella anyway ():** I didn't break my promise. (I’m just prepared). (**True**)
+4. **It doesn't rain (), and I don't bring an umbrella ():** I didn't break my promise. (**True**)
+
+Notice that the **only** time the statement is **False** is when the "If" () happens, but the "Then" () does not.
+
+---
+
+### 2. Comparing the Truth Tables
+
+Let's look at the output of  versus :
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| 0 | 0 | **1** | 1 | **1** () |
+| 0 | 1 | **1** | 1 | **1** () |
+| 1 | 0 | **0** | 0 | **0** () |
+| 1 | 1 | **1** | 0 | **1** () |
+
+The columns match perfectly.
+
+---
+
+### 3. The Logical Intuition
+
+The expression  basically says:
+
+> "Either the condition () didn't happen, OR the result () did."
+
+If  is false, the whole thing is true (we don't care about ). This is called **vacuous truth**. If  is true, then for the whole expression to be true,  **must** be true. This is exactly what "If , then " means.
+
+### implementation - stack
+At first I did a stack based approach. 
+```rust
+pub fn eval_formula(formula: &str) -> bool {
+    let mut stack: Vec<bool> = Vec::new();
+
+    for c in formula.chars() {
+        match c {
+            '0' => stack.push(false),
+            '1' => stack.push(true),
+            '&' | '|' | '^' | '>' | '=' => {
+                let b = stack.pop().expect("Empty stack");
+                let a = stack.pop().expect("Empty stack");
+                stack.push(match c {
+                    '&' => a & b,
+                    '|' => a | b,
+                    '^' => a ^ b,
+                    '>' => !a | b, // Logical implication: A => B is same as !A | B
+                    '=' => a == b, // Logical equivalence
+                    _ => unreachable!(),
+                    });
+            }
+            _ => continue, // Ignore whitespace or invalid chars if necessary
+        }
+    }
+    // if the formula is correct then I just have one value in the stack left
+    stack.pop().expect("Final stack is empty")
+}
+```
+
+and then as the subjext suggested I refactored to a ast.
