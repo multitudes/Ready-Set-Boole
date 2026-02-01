@@ -24,6 +24,9 @@ version = "0.1.0"
 [[package]]
 name = "ex04"
 version = "0.1.0"
+dependencies = [
+ "ex03",
+]
 
 [[package]]
 name = "ex05"

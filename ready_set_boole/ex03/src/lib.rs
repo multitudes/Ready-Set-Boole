@@ -35,8 +35,10 @@
 /// assert_eq!(eval_formula("11>"), true); // 1 implies 1 is true
 /// ```
 pub fn eval_formula(formula: &str) -> bool {
+    // Ex03 doesn't have variables
+    let empty_context = [false; 26];
     match parse_rpn(formula) {
-        Ok(tree) => eval_node(&tree),
+        Ok(tree) => eval_node(&tree, &empty_context),
         Err(e) => {
             eprintln!("{}", e);
             std::process::exit(1);
@@ -51,9 +53,11 @@ pub fn eval_formula(formula: &str) -> bool {
 /// - `Value` is a constant (true or false)
 /// - Other variants represent operations with their operands
 #[derive(Debug)]
-enum Node {
+pub enum Node {
     /// A boolean constant: true (1) or false (0)
     Value(bool),
+    ///Will be used in later exercises: holds variable 'A', 'B', etc.
+    Variable(char),
     /// Logical NOT: ¬a
     Not(Box<Node>),  
     /// Logical AND: a ∧ b
@@ -69,11 +73,10 @@ enum Node {
 }
 
 
-
 /// Parses an RPN formula string into an AST.
 ///
 /// Returns a root_node
-fn parse_rpn(formula: &str) -> Result<Node, String> {
+pub fn parse_rpn(formula: &str) -> Result<Node, String> {
     let mut stack: Vec<Node> = Vec::new();
 
     for c in formula.chars() {
@@ -99,6 +102,7 @@ fn parse_rpn(formula: &str) -> Result<Node, String> {
                 };
                 stack.push(node);
             }
+            'A'..='Z' => stack.push(Node::Variable(c)),
             c if c.is_whitespace() => continue,
             _ => return Err(format!("Error: Invalid character '{}' in formula.", c)),
         }
@@ -111,15 +115,17 @@ fn parse_rpn(formula: &str) -> Result<Node, String> {
 }
 
 /// Recursively evaluates an AST node.
-fn eval_node(node: &Node) -> bool {
+pub fn eval_node(node: &Node, values: &[bool; 26]) -> bool {
     match node {
         Node::Value(b) => *b,
-        Node::Not(a) => !eval_node(a),
-        Node::And(a, b) => eval_node(a) & eval_node(b),
-        Node::Or(a, b) => eval_node(a) | eval_node(b),
-        Node::Xor(a, b) => eval_node(a) ^ eval_node(b),
-        Node::Imply(a, b) => !eval_node(a) | eval_node(b), // A => B is !A | B
-        Node::Equiv(a, b) => eval_node(a) == eval_node(b),
+        Node::Variable(c) => values[(*c as usize) - ('A' as usize)],
+        // Notice how we just "forward" the values reference
+        Node::Not(a) => !eval_node(a, values), 
+        Node::And(a, b) => eval_node(a, values) & eval_node(b, values),
+        Node::Or(a, b) => eval_node(a, values) | eval_node(b, values),
+        Node::Xor(a, b) => eval_node(a, values) ^ eval_node(b, values),
+        Node::Imply(a, b) => !eval_node(a, values) | eval_node(b, values),
+        Node::Equiv(a, b) => eval_node(a, values) == eval_node(b, values),
     }
 }
 

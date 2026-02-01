@@ -185,4 +185,9 @@ pub fn eval_formula(formula: &str) -> bool {
 }
 ```
 
-and then as the subjext suggested I refactored to a ast.
+and then as the subjext suggested I refactored to a ast, a binary tree where each node has two children like a & b. but the 'and' property is associative, so this could be a regular tree as well (not implemented yet). We can add a debug description for the tree which can print the tree also not yet implemented but possible.
+However, it is a bit nonsense to use a regular tree in this case, since I use the polish notation and this means I expect two operands like 110|& would be (1 | 0) & 1. using a regular tree I would not know if the or takes two or tree operands... like (1 | 0 | 1) & ??
+
+
+
+
