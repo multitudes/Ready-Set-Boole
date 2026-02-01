@@ -17,7 +17,7 @@
 ///
 /// # Panics
 ///
-/// If the formula is malformed (e.g., not enough operands for an operator) the function will give an error message and panic.
+/// If the formula is malformed (e.g., not enough operands for an operator) the function will give an error message and return false.
 ///
 /// # RPN
 /// Evaluates a Boolean expression in Reverse Polish Notation (RPN).
@@ -39,7 +39,7 @@ pub fn eval_formula(formula: &str) -> bool {
         Ok(tree) => eval_node(&tree),
         Err(e) => {
             eprintln!("{}", e);
-            false
+            std::process::exit(1);
         }
     }
 }
