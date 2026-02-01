@@ -1,5 +1,5 @@
 use std::collections::BTreeSet;
-use ex03::parse_rpn;
+use ex03::{parse_rpn, eval_node};
 
 /// Prints the truth table for a given Boolean formula in Reverse Polish Notation (RPN).
 ///
@@ -45,18 +45,35 @@ pub fn print_truth_table(formula: &str) {
     };
         
     let vars = get_variables(formula);
-    let n = vars.len();
+    let var_count = vars.len();
 
     // header
+    println!("");
     for v in &vars {
         print!("| {v} ");
     }
     println!("| = |");
-    for v in &vars {
+    for _ in &vars {
         print!("|---");
     }
-    println!("|---|")
+    println!("|---|");
 
+    // Generate all 2^n combinations - there are the rows
+    for row in 0..(1 << var_count) {
+        let mut values = [false; 26];
+
+        // loop through the vars for each row
+        for (idx, &v) in vars.iter().enumerate() {
+            // == 1 is to convert the result to a rust bool
+            let var_value = (row >> (var_count - 1 - idx)) & 1 == 1;
+            // calculate the index in the variables array which will be set
+            values[(v as usize) - ('A' as usize)] = var_value;
+            print!("| {} ", if var_value { 1 } else { 0 });
+        }
+        // Evaluate 
+        let result = eval_node(&tree, &values);
+        println!("| {} |", if result { 1 } else { 0 });
+    }
 }
 
 
@@ -78,8 +95,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_get_variables() {
+        assert_eq!(get_variables("AB&"), vec!['A', 'B']);
+        assert_eq!(get_variables("ABA|&"), vec!['A', 'B']); // Deduplication
+        assert_eq!(get_variables("ABC!&|"), vec!['A', 'B', 'C']); // Sorting
+        assert_eq!(get_variables("10&"), vec![]); // No variables
+    }
+    
+    #[test]
+    fn test_variable_evaluation() {
+        let tree = parse_rpn("AB&").unwrap();
+        let mut values = [false; 26];
+
+        // Case: A=1, B=0 -> 1 & 0 = false
+        values[0] = true;  // 'A'
+        values[1] = false; // 'B'
+        assert_eq!(eval_node(&tree, &values), false);
+
+        // Case: A=1, B=1 -> 1 & 1 = true
+        values[1] = true;  // 'B'
+        assert_eq!(eval_node(&tree, &values), true);
+    }
+    
+    #[test]
+    fn test_invalid_rpn_handling() {
+        // We use a helper that doesn't exit(1) for testing, 
+        // or just ensure parse_rpn returns Err.
+        let result = parse_rpn("A&"); // Missing operand
+        assert!(result.is_err());
     }
 }
