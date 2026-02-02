@@ -189,5 +189,88 @@ and then as the subjext suggested I refactored to a ast, a binary tree where eac
 However, it is a bit nonsense to use a regular tree in this case, since I use the polish notation and this means I expect two operands like 110|& would be (1 | 0) & 1. using a regular tree I would not know if the or takes two or tree operands... like (1 | 0 | 1) & ??
 
 
+## Ex05 
+Since you have already built the **AST (Tree)**, you are in a perfect position. Converting to **Negation Normal Form (NNF)** is essentially a "Tree-to-Tree" transformation.
 
+In NNF, negations (`!`) are only allowed to touch variables. To get there, you apply **De Morgan's Laws** and the **Double Negation Law** to "push" the NOT operators down from the top of the tree to the leaves.
+
+---
+
+### 1. The Transformation Rules
+
+You need to handle three main scenarios for a `NOT` node:
+
+| Case | Logical Rule | Transformation |
+| --- | --- | --- |
+| **Double Negation** |  | `Not(Not(A))`  `A` |
+| **De Morgan (AND)** |  | `Not(And(A, B))`  `Or(Not(A), Not(B))` |
+| **De Morgan (OR)** |  | `Not(Or(A, B))`  `And(Not(A), Not(B))` |
+
+**Wait! What about `>` and `=`?**
+Before applying NNF, you must eliminate Implication and Equivalence:
+
+*  becomes 
+*  becomes  (or similar).
+
+---
+
+### 2. How to implement it in Rust
+
+You should write a recursive function `to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.
+
+```rust
+fn negate(node: Node) -> Node {
+    match node {
+        Node::Value(b) => Node::Value(!b),
+        Node::Variable(c) => Node::Not(Box::new(Node::Variable(c))),
+        Node::Not(child) => *child, // Double Negation: !!A -> A
+        Node::And(l, r) => Node::Or(Box::new(negate(*l)), Box::new(negate(*r))), // !(A & B) -> !A | !B
+        Node::Or(l, r) => Node::And(Box::new(negate(*l)), Box::new(negate(*r))), // !(A | B) -> !A & !B
+        // For Ex05, you'll need to handle Imply/Equiv here too or convert them first!
+        _ => todo!("Handle other operators"),
+    }
+}
+
+pub fn to_nnf(node: Node) -> Node {
+    match node {
+        Node::Not(child) => negate(to_nnf(*child)),
+        Node::And(l, r) => Node::And(Box::new(to_nnf(*l)), Box::new(to_nnf(*r))),
+        Node::Or(l, r) => Node::Or(Box::new(to_nnf(*l)), Box::new(to_nnf(*r))),
+        // Leaf nodes stay as they are
+        other => other,
+    }
+}
+
+```
+
+---
+
+### 3. The 42 Requirement: RPN Output
+
+The subject asks for a **string** in RPN as the return value. You'll need a helper function to turn your tree back into a string:
+
+```rust
+fn tree_to_rpn(node: &Node) -> String {
+    match node {
+        Node::Value(b) => if *b { "1".to_string() } else { "0".to_string() },
+        Node::Variable(c) => c.to_string(),
+        Node::Not(child) => format!("{}!", tree_to_rpn(child)),
+        Node::And(l, r) => format!("{}{}&", tree_to_rpn(l), tree_to_rpn(r)),
+        // ... etc
+    }
+}
+
+```
+
+### Why your "Tree" approach is the winner:
+
+Doing this with strings (regex or find/replace) is almost impossible because of nested parentheses logic. With the Tree, you are just moving "Boxes" around.
+
+**Watch out for the "Order of Operations":**
+
+1. **Convert** `>` and `=` into `&`, `|`, and `!`.
+2. **Push** `!` down using the `negate` logic above.
+3. **Simplify** double negations.
+
+**Would you like me to help you with the specific logic for converting `Imply` () and `Equiv` () into NNF-ready structures?**
 
