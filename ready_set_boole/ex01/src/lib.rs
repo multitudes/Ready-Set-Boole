@@ -52,11 +52,46 @@ mod tests {
     fn it_works() {
         let result = multiplier(3, 4);
         assert_eq!(result, 12);
-        let result = multiplier(3, 1);
-        assert_eq!(result, 3);
-        let result = multiplier(0, 4);
-        assert_eq!(result, 0);
-        let result = multiplier(3, 0);
-        assert_eq!(result, 0);
+    }
+
+    #[test]
+    fn test_basic_multiplication() {
+        assert_eq!(multiplier(1, 2), 2);
+        assert_eq!(multiplier(3, 4), 12);
+        assert_eq!(multiplier(5, 7), 35);
+    }
+
+    #[test]
+    fn test_zero_cases() {
+        assert_eq!(multiplier(0, 37), 0);
+        assert_eq!(multiplier(0, 0), 0);
+        assert_eq!(multiplier(15, 0), 0);
+    }
+
+    #[test]
+    fn test_one_cases() {
+        assert_eq!(multiplier(1, 1), 1);
+        assert_eq!(multiplier(1, 100), 100);
+        assert_eq!(multiplier(50, 1), 50);
+    }
+
+    #[test]
+    fn test_powers_of_two() {
+        assert_eq!(multiplier(2, 2), 4);
+        assert_eq!(multiplier(8, 4), 32);
+        assert_eq!(multiplier(16, 16), 256);
+    }
+
+    #[test]
+    fn test_larger_numbers() {
+        assert_eq!(multiplier(100, 100), 10000);
+        assert_eq!(multiplier(1000, 2), 2000);
+        assert_eq!(multiplier(123, 456), 56088);
+    }
+
+    #[test]
+    fn test_commutative_property() {
+        assert_eq!(multiplier(7, 6), multiplier(6, 7));
+        assert_eq!(multiplier(7, 6), 42);
     }
 }
