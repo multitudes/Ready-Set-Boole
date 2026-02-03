@@ -75,7 +75,7 @@ pub fn eval_formula(formula: &str) -> bool {
 ///     Box::new(Node::Value(false))
 /// );
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Node {
     /// A boolean constant: true (1) or false (0)
     Value(bool),
