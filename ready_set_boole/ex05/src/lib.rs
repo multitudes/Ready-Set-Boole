@@ -97,10 +97,17 @@ fn to_nnf(node: &Node) -> Node {
             Box::new(to_nnf(a)),
             Box::new(to_nnf(b))
         ),
-        Node::Xor(a, b) => Node::Xor(
-            Box::new(to_nnf(a)),
-            Box::new(to_nnf(b))
-        ),
+        Node::Xor(a, b) => {
+            let a_nnf = to_nnf(a);
+            let b_nnf = to_nnf(b);
+            // Construct: (A | B) & !(A & B)
+            let or_node = Node::Or(Box::new(a_nnf.clone()), Box::new(b_nnf.clone()));
+            let and_node = Node::And(Box::new(a_nnf), Box::new(b_nnf));
+            let not_and = Node::Not(Box::new(and_node));
+            
+            // Now run the negation push on that ! (A & B)
+            Node::And(Box::new(or_node), Box::new(to_nnf(&not_and)))
+        }
     }
 }
 
@@ -218,7 +225,9 @@ mod tests {
 
     #[test]
     fn test_xor_passthrough() {
-        assert_eq!(negation_normal_form("AB^"), "AB^");
+        let result = negation_normal_form("AB^");
+        // println!("Result: {}", result);
+        assert_eq!(result, "AB|A!B!|&");
     }
 
     #[test]
