@@ -1,7 +1,8 @@
+
+
 pub fn negation_normal_form(formula: &str) -> String {
     todo!()
 }
-
 
 #[cfg(test)]
 mod tests {

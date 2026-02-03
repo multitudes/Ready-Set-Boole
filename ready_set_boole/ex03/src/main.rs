@@ -7,6 +7,7 @@ fn main() {
     println!("{:?}", eval_formula("11>"));
     println!("{:?}", eval_formula("10="));
     println!("{:?}", eval_formula("1011||="));
+    println!("{:?}", eval_formula("1!!"));
 
     // now returns Err instead of panicking
     println!("{:?}", eval_formula("011||="));

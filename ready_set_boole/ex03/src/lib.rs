@@ -72,6 +72,59 @@ pub enum Node {
     Equiv(Box<Node>, Box<Node>),    
 }
 
+impl Node {
+    pub fn print_tree(&self) {
+        self.print_recursive("", true, true);
+    }
+
+    fn print_recursive(&self, prefix: &str, is_last: bool, is_root: bool) {
+        // 1. Determine the symbols for this level
+        let connector = if is_root {
+            ""
+        } else if is_last {
+            "└── "
+        } else {
+            "├── "
+        };
+
+        // 2. Print the current node's label
+        print!("{}", prefix);
+        print!("{}", connector);
+        match self {
+            Node::Value(b) => println!("{}", if *b { '1' } else { '0' }),
+            Node::Variable(c) => println!("{}", c),
+            Node::Not(_) => println!("!"),
+            Node::And(_, _) => println!("&"),
+            Node::Or(_, _) => println!("|"),
+            Node::Xor(_, _) => println!("^"),
+            Node::Imply(_, _) => println!(">"),
+            Node::Equiv(_, _) => println!("="),
+        }
+
+        // 3. Calculate the prefix for children
+        let new_prefix = if is_root {
+            String::new()
+        } else if is_last {
+            format!("{}    ", prefix)
+        } else {
+            format!("{}│   ", prefix)
+        };
+
+        // 4. Recurse through children
+        match self {
+            Node::Not(child) => {
+                child.print_recursive(&new_prefix, true, false);
+            }
+            Node::And(l, r) | Node::Or(l, r) | Node::Xor(l, r) | 
+            Node::Imply(l, r) | Node::Equiv(l, r) => {
+                l.print_recursive(&new_prefix, false, false);
+                r.print_recursive(&new_prefix, true, false);
+            }
+            _ => {} // Leaves (Value/Variable) have no children
+        }
+    }
+}
+
 
 /// Parses an RPN formula string into an AST.
 ///

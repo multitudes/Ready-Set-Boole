@@ -12,4 +12,10 @@ fn main() {
     // AB&A!B!&|
     println!("{}", negation_normal_form("AB|C&!"));
     // A!B!&C!|
+
+    // let formula = "AB&C|!"; // !( (A & B) | C )
+    // if let Ok(tree) = parse_rpn(formula) {
+    //     println!("Original Tree:");
+    //     tree.print_tree();
+    // }
 }
