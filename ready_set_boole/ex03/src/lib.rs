@@ -35,8 +35,9 @@
 /// assert_eq!(eval_formula("11>"), true); // 1 implies 1 is true
 /// ```
 pub fn eval_formula(formula: &str) -> bool {
-    // Ex03 doesn't have variables
+    // Ex03 doesn't have variables but will be used in ex04
     let empty_context = [false; 26];
+
     match parse_rpn(formula) {
         Ok(tree) => eval_node(&tree, &empty_context),
         Err(e) => {
@@ -49,9 +50,31 @@ pub fn eval_formula(formula: &str) -> bool {
 
 /// Abstract Syntax Tree (AST) node for Boolean formulas.
 ///
-/// Represents the structure of a parsed Boolean expression, where:
-/// - `Value` is a constant (true or false)
-/// - Other variants represent operations with their operands
+/// Represents the structure of a parsed Boolean expression in tree form.
+/// Each node is either a leaf (value/variable) or an operator with children.
+///
+/// # Variants
+///
+/// * `Value(bool)` - A boolean constant: `true` (1) or `false` (0)
+/// * `Variable(char)` - A variable identifier ('A'-'Z'), used in ex04+
+/// * `Not(Box<Node>)` - Logical NOT (¬): unary negation operator
+/// * `And(Box<Node>, Box<Node>)` - Logical AND (∧): conjunction
+/// * `Or(Box<Node>, Box<Node>)` - Logical OR (∨): disjunction
+/// * `Xor(Box<Node>, Box<Node>)` - Logical XOR (⊕): exclusive disjunction
+/// * `Imply(Box<Node>, Box<Node>)` - Material implication (⇒): if-then
+/// * `Equiv(Box<Node>, Box<Node>)` - Logical equivalence (⇔): if-and-only-if
+///
+/// # Examples
+///
+/// ```
+/// use ex03::Node;
+///
+/// // Represents "1 AND 0" as a tree
+/// let tree = Node::And(
+///     Box::new(Node::Value(true)),
+///     Box::new(Node::Value(false))
+/// );
+/// ```
 #[derive(Debug)]
 pub enum Node {
     /// A boolean constant: true (1) or false (0)
@@ -72,7 +95,149 @@ pub enum Node {
     Equiv(Box<Node>, Box<Node>),    
 }
 
+
+/// Parses an RPN formula string into an Abstract Syntax Tree (AST).
+///
+/// Converts a Reverse Polish Notation formula into a tree structure
+/// where each operator becomes a node with its operands as children.
+///
+/// # Arguments
+///
+/// * `formula` - A string slice containing the RPN expression
+///
+/// # Returns
+///
+/// * `Ok(Node)` - The root node of the parsed AST
+/// * `Err(String)` - An error message if the formula is malformed
+///
+/// # Algorithm
+///
+/// Uses a stack-based approach:
+/// 1. Push operands (0, 1) or variables (A-Z) onto the stack
+/// 2. For unary operators (!), pop one operand and create a node
+/// 3. For binary operators (&, |, ^, >, =), pop two operands and create a node
+/// 4. Push the resulting node back onto the stack
+/// 5. Final stack should contain exactly one node (the root)
+///
+/// # Errors
+///
+/// Returns an error if:
+/// - An operator has insufficient operands
+/// - The formula contains invalid characters
+/// - The final stack size is not exactly 1
+///
+/// # Examples
+/// ```
+/// use ex03::parse_rpn;
+///
+/// let result = parse_rpn("10&");
+/// assert!(result.is_ok());
+///
+/// let error = parse_rpn("1&");
+/// assert!(error.is_err());
+/// ```
+pub fn parse_rpn(formula: &str) -> Result<Node, String> {
+    let mut stack: Vec<Node> = Vec::new();
+
+    for c in formula.chars() {
+        match c {
+            '0' | '1' => stack.push(Node::Value(c == '1')),
+            '!' => {
+                let operand = stack.pop()
+                    .ok_or("Error: '!' operator requires 1 operand.")?;
+                stack.push(Node::Not(Box::new(operand)));
+            }
+            '&' | '|' | '^' | '>' | '=' => {
+                let b = stack.pop()
+                    .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
+                let a = stack.pop()
+                    .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
+                let node = match c {
+                    '&' => Node::And(Box::new(a), Box::new(b)),
+                    '|' => Node::Or(Box::new(a), Box::new(b)),
+                    '^' => Node::Xor(Box::new(a), Box::new(b)),
+                    '>' => Node::Imply(Box::new(a), Box::new(b)),
+                    '=' => Node::Equiv(Box::new(a), Box::new(b)),
+                    _ => unreachable!(),
+                };
+                stack.push(node);
+            }
+            'A'..='Z' => stack.push(Node::Variable(c)),
+            c if c.is_whitespace() => continue,
+            _ => return Err(format!("Error: Invalid character '{}' in formula.", c)),
+        }
+    }
+
+    if stack.len() != 1 {
+        return Err(format!("Error: Invalid RPN sequence (stack size is {} at end).", stack.len()));
+    }
+    Ok(stack.pop().unwrap())
+}
+
+/// Recursively evaluates an AST node to a boolean value.
+///
+/// Traverses the Abstract Syntax Tree depth-first, evaluating each node
+/// according to its operator type and returning the computed result.
+///
+/// # Arguments
+///
+/// * `node` - The AST node to evaluate
+/// * `values` - An array of 26 boolean values for variables A-Z (index 0 = 'A', etc.)
+///
+/// # Returns
+///
+/// The boolean result of evaluating the node and its children
+///
+/// # Algorithm
+///
+/// - For `Value` nodes: returns the stored boolean
+/// - For `Variable` nodes: looks up the value in the `values` array
+/// - For operator nodes: recursively evaluates children and applies the operation
+///
+/// # Examples
+/// ```
+/// use ex03::{Node, eval_node};
+///
+/// let tree = Node::And(
+///     Box::new(Node::Value(true)),
+///     Box::new(Node::Value(false))
+/// );
+/// let values = [false; 26];
+/// assert_eq!(eval_node(&tree, &values), false);
+/// ```
+pub fn eval_node(node: &Node, values: &[bool; 26]) -> bool {
+    match node {
+        Node::Value(b) => *b,
+        Node::Variable(c) => values[(*c as usize) - ('A' as usize)],
+        Node::Not(a) => !eval_node(a, values), 
+        Node::And(a, b) => eval_node(a, values) & eval_node(b, values),
+        Node::Or(a, b) => eval_node(a, values) | eval_node(b, values),
+        Node::Xor(a, b) => eval_node(a, values) ^ eval_node(b, values),
+        Node::Imply(a, b) => !eval_node(a, values) | eval_node(b, values),
+        Node::Equiv(a, b) => eval_node(a, values) == eval_node(b, values),
+    }
+}
+
+
+/// pretty printing
 impl Node {
+    /// Prints a visual tree representation of the AST to stdout.
+    ///
+    /// Displays the tree structure using box-drawing characters,
+    /// making it easy to visualize the formula's hierarchy.
+    ///
+    /// # Examples
+    /// ```
+    /// use ex03::{Node, parse_rpn};
+    ///
+    /// if let Ok(tree) = parse_rpn("10&") {
+    ///     tree.print_tree();
+    /// }
+    /// // Output:
+    /// // &
+    /// // ├──1
+    /// // └──0
+    /// ```
     pub fn print_tree(&self) {
         self.print_recursive("", true, true);
     }
@@ -82,9 +247,9 @@ impl Node {
         let connector = if is_root {
             ""
         } else if is_last {
-            "└── "
+            "└──"
         } else {
-            "├── "
+            "├──"
         };
 
         // 2. Print the current node's label
@@ -124,64 +289,6 @@ impl Node {
         }
     }
 }
-
-
-/// Parses an RPN formula string into an AST.
-///
-/// Returns a root_node
-pub fn parse_rpn(formula: &str) -> Result<Node, String> {
-    let mut stack: Vec<Node> = Vec::new();
-
-    for c in formula.chars() {
-        match c {
-            '0' | '1' => stack.push(Node::Value(c == '1')),
-            '!' => {
-                let operand = stack.pop()
-                    .ok_or("Error: '!' operator requires 1 operand.")?;
-                stack.push(Node::Not(Box::new(operand)));
-            }
-            '&' | '|' | '^' | '>' | '=' => {
-                let b = stack.pop()
-                    .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
-                let a = stack.pop()
-                    .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
-                let node = match c {
-                    '&' => Node::And(Box::new(a), Box::new(b)),
-                    '|' => Node::Or(Box::new(a), Box::new(b)),
-                    '^' => Node::Xor(Box::new(a), Box::new(b)),
-                    '>' => Node::Imply(Box::new(a), Box::new(b)),
-                    '=' => Node::Equiv(Box::new(a), Box::new(b)),
-                    _ => unreachable!(),
-                };
-                stack.push(node);
-            }
-            'A'..='Z' => stack.push(Node::Variable(c)),
-            c if c.is_whitespace() => continue,
-            _ => return Err(format!("Error: Invalid character '{}' in formula.", c)),
-        }
-    }
-
-    if stack.len() != 1 {
-        return Err(format!("Error: Invalid RPN sequence (stack size is {} at end).", stack.len()));
-    }
-    Ok(stack.pop().unwrap())
-}
-
-/// Recursively evaluates an AST node.
-pub fn eval_node(node: &Node, values: &[bool; 26]) -> bool {
-    match node {
-        Node::Value(b) => *b,
-        Node::Variable(c) => values[(*c as usize) - ('A' as usize)],
-        // Notice how we just "forward" the values reference
-        Node::Not(a) => !eval_node(a, values), 
-        Node::And(a, b) => eval_node(a, values) & eval_node(b, values),
-        Node::Or(a, b) => eval_node(a, values) | eval_node(b, values),
-        Node::Xor(a, b) => eval_node(a, values) ^ eval_node(b, values),
-        Node::Imply(a, b) => !eval_node(a, values) | eval_node(b, values),
-        Node::Equiv(a, b) => eval_node(a, values) == eval_node(b, values),
-    }
-}
-
 
 #[cfg(test)]
 mod tests {
