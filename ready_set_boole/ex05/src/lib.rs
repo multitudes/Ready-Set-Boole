@@ -181,6 +181,7 @@ mod tests {
     #[test]
     fn test_double_negation() {
         assert_eq!(negation_normal_form("A!!"), "A");
+        assert_eq!(negation_normal_form("A!!!"), "A!");
     }
 
     #[test]
@@ -244,4 +245,32 @@ mod tests {
     fn test_single_negation() {
         assert_eq!(negation_normal_form("A!"), "A!");
     }
+
+    #[test]
+    fn test_de_morgan_and() {
+        assert_eq!(negation_normal_form("AB&!"), "A!B!|");
+    }
+
+    #[test]
+    fn test_de_morgan_or() { 
+        assert_eq!(negation_normal_form("AB|!"), "A!B!&");
+    }
+
+
+    #[test]
+    fn test_implication_to_nnf() {
+        // A => B  ->  !A | B
+        assert_eq!(negation_normal_form("AB>"), "A!B|");
+        // !(A => B) -> A & !B
+        assert_eq!(negation_normal_form("AB>!"), "AB!&");
+    }
+
+    #[test]
+    fn test_complex_nesting() {
+        // !( (A & B) | (C & D) ) -> (!A | !B) & (!C | !D)
+        let input = "AB&CD&|!";
+        let result = negation_normal_form(input);
+        assert_eq!(result, "A!B!|C!D!|&");
+    }
+
 }
