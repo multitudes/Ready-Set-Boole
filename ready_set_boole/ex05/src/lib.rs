@@ -39,13 +39,13 @@ fn to_nnf(node: &Node) -> Node {
             Node::And(a, b) => {
                 let not_a = Node::Not(Box::new(to_nnf(a)));
                 let not_b = Node::Not(Box::new(to_nnf(b)));
-                Node::Or(Box::new(not_a), Box::new(not_b))
+                to_nnf(&Node::Or(Box::new(not_a), Box::new(not_b))) 
             }
             // De Morgan's law: ¬(A ∨ B) = ¬A ∧ ¬B
             Node::Or(a, b) => {
                 let not_a = Node::Not(Box::new(to_nnf(a)));
                 let not_b = Node::Not(Box::new(to_nnf(b)));
-                Node::And(Box::new(not_a), Box::new(not_b))
+                to_nnf(&Node::And(Box::new(not_a), Box::new(not_b))) 
             }
             // ¬(A ⇒ B) = A ∧ ¬B
             Node::Imply(a, b) => {
@@ -72,7 +72,8 @@ fn to_nnf(node: &Node) -> Node {
         // Material condition: A ⇒ B = ¬A ∨ B
         Node::Imply(a, b) => {
             let not_a = Node::Not(Box::new(to_nnf(a)));
-            Node::Or(Box::new(not_a), Box::new(to_nnf(b)))
+            let result = Node::Or(Box::new(not_a), Box::new(to_nnf(b)));
+            to_nnf(&result) 
         }
         
         // Equivalence: A ⇔ B = (A ∧ B) ∨ (¬A ∧ ¬B)
@@ -143,5 +144,95 @@ mod tests {
     fn it_works() {
         let result = negation_normal_form("AB&!");
         assert_eq!(result, "A!B!|");
+    }
+
+    #[test]
+    fn test_de_morgans_law_and() {
+        assert_eq!(negation_normal_form("AB&!"), "A!B!|");
+    }
+
+    #[test]
+    fn test_de_morgans_law_or() {
+        assert_eq!(negation_normal_form("AB|!"), "A!B!&");
+    }
+
+    #[test]
+    fn test_material_condition() {
+        assert_eq!(negation_normal_form("AB>"), "A!B|");
+    }
+
+    #[test]
+    fn test_equivalence() {
+        assert_eq!(negation_normal_form("AB="), "AB&A!B!&|");
+    }
+
+    #[test]
+    fn test_complex_negation_of_or_and() {
+        assert_eq!(negation_normal_form("AB|C&!"), "A!B!&C!|");
+    }
+
+    #[test]
+    fn test_double_negation() {
+        assert_eq!(negation_normal_form("A!!"), "A");
+    }
+
+    #[test]
+    fn test_triple_negation() {
+        assert_eq!(negation_normal_form("A!!!"), "A!");
+    }
+
+    #[test]
+    fn test_complex_implication() {
+        assert_eq!(negation_normal_form("AB&C>"), "A!B!|C|");
+    }
+
+    #[test]
+    fn test_negation_of_implication() {
+        assert_eq!(negation_normal_form("AB>!"), "AB!&");
+    }
+
+    #[test]
+    fn test_negation_of_equivalence() {
+        assert_eq!(negation_normal_form("AB=!"), "AB!&A!B&|");
+    }
+
+    #[test]
+    fn test_three_variables_no_change() {
+        assert_eq!(negation_normal_form("ABC&|"), "ABC&|");
+    }
+
+    #[test]
+    fn test_three_variables_de_morgans() {
+        assert_eq!(negation_normal_form("ABC&|!"), "A!B!C!|&");
+    }
+
+    #[test]
+    fn test_complex_nested_1() {
+        assert_eq!(negation_normal_form("AB&C|!"), "A!B!|C!&");
+    }
+
+    #[test]
+    fn test_complex_nested_2() {
+        assert_eq!(negation_normal_form("AB|C&!"), "A!B!&C!|");
+    }
+
+    #[test]
+    fn test_xor_passthrough() {
+        assert_eq!(negation_normal_form("AB^"), "AB^");
+    }
+
+    #[test]
+    fn test_constants_only() {
+        assert_eq!(negation_normal_form("10&"), "10&");
+    }
+
+    #[test]
+    fn test_single_variable() {
+        assert_eq!(negation_normal_form("A"), "A");
+    }
+
+    #[test]
+    fn test_single_negation() {
+        assert_eq!(negation_normal_form("A!"), "A!");
     }
 }

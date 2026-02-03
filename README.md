@@ -272,5 +272,32 @@ Doing this with strings (regex or find/replace) is almost impossible because of 
 2. **Push** `!` down using the `negate` logic above.
 3. **Simplify** double negations.
 
-**Would you like me to help you with the specific logic for converting `Imply` () and `Equiv` () into NNF-ready structures?**
+## ex05
 
+Skeleton:  
+
+* Parse RPN to AST (like ex03/ex04)
+* Transform the AST by traversing and applying rules:
+* Double negation: ¬¬A → A
+* De Morgan's: ¬(A ∧ B) → (¬A ∨ ¬B) and ¬(A ∨ B) → (¬A ∧ ¬B)
+* Material condition: A ⇒ B → ¬A ∨ B
+* Equivalence: A ⇔ B → (A ∧ B) ∨ (¬A ∧ ¬B) or (A ⇒ B) ∧ (B ⇒ A)
+* Convert AST back to RPN
+
+## Ex06 - CNF and DNF
+
+Here's a comprehensive explanation of CNF and DNF:
+
+CNF (Conjunctive Normal Form):
+
+A conjunction (AND) of disjunctions (OR)
+Format: (A | B | C) & (D | E) & (F)
+Example: AB|C& means (A | B) & C
+DNF (Disjunctive Normal Form):
+
+A disjunction (OR) of conjunctions (AND)
+Format: (A & B & C) | (D & E) | (F)
+Example: AB&CD&| means (A & B) | (C & D)
+To convert NNF to CNF, use distributivity: Push OR down over AND
+
+To convert NNF to DNF, use distributivity: Push AND down over OR
