@@ -1,5 +1,3 @@
-
-
 /// Evaluates a Boolean formula in Reverse Polish Notation (RPN).
 ///
 /// The formula consists of:
@@ -47,7 +45,6 @@ pub fn eval_formula(formula: &str) -> bool {
     }
 }
 
-
 /// Abstract Syntax Tree (AST) node for Boolean formulas.
 ///
 /// Represents the structure of a parsed Boolean expression in tree form.
@@ -82,19 +79,18 @@ pub enum Node {
     ///Will be used in later exercises: holds variable 'A', 'B', etc.
     Variable(char),
     /// Logical NOT: ¬a
-    Not(Box<Node>),  
+    Not(Box<Node>),
     /// Logical AND: a ∧ b
-    And(Box<Node>, Box<Node>), 
+    And(Box<Node>, Box<Node>),
     /// Logical OR: a ∨ b
-    Or(Box<Node>, Box<Node>),  
+    Or(Box<Node>, Box<Node>),
     /// Logical XOR: a ⊕ b
     Xor(Box<Node>, Box<Node>),
     /// Material implication: a ⇒ b
     Imply(Box<Node>, Box<Node>),
     /// Logical equivalence: a ⇔ b
-    Equiv(Box<Node>, Box<Node>),    
+    Equiv(Box<Node>, Box<Node>),
 }
-
 
 /// Parses an RPN formula string into an Abstract Syntax Tree (AST).
 ///
@@ -143,14 +139,17 @@ pub fn parse_rpn(formula: &str) -> Result<Node, String> {
         match c {
             '0' | '1' => stack.push(Node::Value(c == '1')),
             '!' => {
-                let operand = stack.pop()
+                let operand = stack
+                    .pop()
                     .ok_or("Error: '!' operator requires 1 operand.")?;
                 stack.push(Node::Not(Box::new(operand)));
             }
             '&' | '|' | '^' | '>' | '=' => {
-                let b = stack.pop()
+                let b = stack
+                    .pop()
                     .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
-                let a = stack.pop()
+                let a = stack
+                    .pop()
                     .ok_or(format!("Error: '{}' operator requires 2 operands.", c))?;
                 let node = match c {
                     '&' => Node::And(Box::new(a), Box::new(b)),
@@ -169,7 +168,10 @@ pub fn parse_rpn(formula: &str) -> Result<Node, String> {
     }
 
     if stack.len() != 1 {
-        return Err(format!("Error: Invalid RPN sequence (stack size is {} at end).", stack.len()));
+        return Err(format!(
+            "Error: Invalid RPN sequence (stack size is {} at end).",
+            stack.len()
+        ));
     }
     Ok(stack.pop().unwrap())
 }
@@ -209,7 +211,7 @@ pub fn eval_node(node: &Node, values: &[bool; 26]) -> bool {
     match node {
         Node::Value(b) => *b,
         Node::Variable(c) => values[(*c as usize) - ('A' as usize)],
-        Node::Not(a) => !eval_node(a, values), 
+        Node::Not(a) => !eval_node(a, values),
         Node::And(a, b) => eval_node(a, values) & eval_node(b, values),
         Node::Or(a, b) => eval_node(a, values) | eval_node(b, values),
         Node::Xor(a, b) => eval_node(a, values) ^ eval_node(b, values),
@@ -217,7 +219,6 @@ pub fn eval_node(node: &Node, values: &[bool; 26]) -> bool {
         Node::Equiv(a, b) => eval_node(a, values) == eval_node(b, values),
     }
 }
-
 
 /// pretty printing
 impl Node {
@@ -280,8 +281,11 @@ impl Node {
             Node::Not(child) => {
                 child.print_recursive(&new_prefix, true, false);
             }
-            Node::And(l, r) | Node::Or(l, r) | Node::Xor(l, r) | 
-            Node::Imply(l, r) | Node::Equiv(l, r) => {
+            Node::And(l, r)
+            | Node::Or(l, r)
+            | Node::Xor(l, r)
+            | Node::Imply(l, r)
+            | Node::Equiv(l, r) => {
                 l.print_recursive(&new_prefix, false, false);
                 r.print_recursive(&new_prefix, true, false);
             }
@@ -327,7 +331,9 @@ mod tests {
     fn test_invalid_formula_error() {
         let result = parse_rpn("1&");
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "Error: '&' operator requires 2 operands.");
+        assert_eq!(
+            result.unwrap_err(),
+            "Error: '&' operator requires 2 operands."
+        );
     }
 }
-

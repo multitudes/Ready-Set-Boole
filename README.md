@@ -24,6 +24,65 @@ cargo new ex00 --lib
 ```
 and so on for each new exercice. I will add the main.rs file manually as required by the subject so everyone is happy.
 
+
+## linting 
+I will use the rust aalyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter.
+
+Great question! They're **different tools**:
+
+**Formatters** - Fix code style/spacing:
+- `rustfmt` - Reformats code to follow Rust style conventions
+- Example: `fn foo(a:u32)->u32{return a;}` → `fn foo(a: u32) -> u32 { return a; }`
+
+**Linters** - Find bugs/style issues:
+- `clippy` - Suggests improvements and catches common mistakes
+- Example: Warns about inefficient code, unused variables, better idioms, etc.
+
+**In your settings:**
+```json
+"editor.formatOnSave": true,
+"editor.defaultFormatter": "rust-lang.rust-analyzer"
+```
+This uses **rustfmt** (formatter) to auto-format on save.
+
+```json
+"rust-analyzer.checkOnSave.command": "clippy",
+"editor.codeActionsOnSave": {
+  "source.fixAll.clippy": "explicit"
+}
+```
+This uses **clippy** (linter) to check and auto-fix warnings on save.
+
+**Summary:**
+- ✅ **Formatter** (`rustfmt`) = Makes code look pretty
+- ✅ **Linter** (`clippy`) = Finds bugs & suggests improvements
+
+Both run on save in your setup! 🦀
+
+
+## boolean algebra
+
+In Boolean algebra, **AND has higher precedence than OR**.
+
+So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
+
+**Precedence order (highest to lowest):**
+1. `!` (NOT) - highest
+2. `&` (AND)
+3. `|` (OR) - lowest
+4. `^` (XOR)
+5. `>` (IMPLY)
+6. `=` (EQUIV) - lowest
+
+**Examples:**
+- `A & B | C` = `(A & B) | C`
+- `A | B & C` = `A | (B & C)`
+- `!A & B` = `(!A) & B`
+- `A & B & C | D` = `((A & B) & C) | D`
+
+This matches most programming languages and standard Boolean algebra notation! 
+
+
 ## comments
 
 ### Documentation with `///`

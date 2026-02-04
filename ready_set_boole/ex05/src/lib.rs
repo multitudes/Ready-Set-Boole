@@ -1,10 +1,43 @@
-
 use ex03::Node;
 use ex03::parse_rpn;
 
+/// Converts a Boolean formula to Negation Normal Form (NNF).
+///
+/// Transforms a formula in Reverse Polish Notation (RPN) to its equivalent
+/// in Negation Normal Form, where negations are only applied to variables.
+/// The result contains only the operators: `!`, `&`, and `|`.
+///
+/// # Arguments
+///
+/// * `formula` - A string slice containing the RPN expression
+///
+/// # Returns
+///
+/// A string representing the formula in NNF and RPN notation
+///
+/// # Transformations Applied
+///
+/// - Double negation elimination: `¬¬A = A`
+/// - De Morgan's laws: `¬(A ∧ B) = ¬A ∨ ¬B`, `¬(A ∨ B) = ¬A ∧ ¬B`
+/// - Material condition: `A ⇒ B = ¬A ∨ B`
+/// - Equivalence: `A ⇔ B = (A ∧ B) ∨ (¬A ∧ ¬B)`
+/// - XOR: `A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)`
+///
+/// # Panics
+///
+/// Panics if the formula is malformed (invalid RPN syntax)
+///
+/// # Examples
+///
+/// ```
+/// use ex05::negation_normal_form;
+///
+/// assert_eq!(negation_normal_form("AB&!"), "A!B!|");
+/// assert_eq!(negation_normal_form("AB>"), "A!B|");
+/// ```
 pub fn negation_normal_form(formula: &str) -> String {
     // Parse RPN to AST
-    let tree = match parse_rpn(formula) {
+    let tree: Node = match parse_rpn(formula) {
         Ok(t) => t,
         Err(e) => {
             eprintln!("Error parsing formula: {}", e);
@@ -13,105 +46,113 @@ pub fn negation_normal_form(formula: &str) -> String {
     };
     // Transform to NNF
     let nnf_tree = to_nnf(&tree);
-    
+
     // Convert back to RPN
     ast_to_rpn(&nnf_tree)
 }
 
-/// Transforms an AST to Negation Normal Form.
+/// Converts an AST to Negation Normal Form (NNF).
 ///
-/// Applies the following transformations:
-/// - Double negation elimination: ¬¬A = A
-/// - De Morgan's laws: ¬(A ∧ B) = ¬A ∨ ¬B, ¬(A ∨ B) = ¬A ∧ ¬B
-/// - Material condition: A ⇒ B = ¬A ∨ B
-/// - Equivalence: A ⇔ B = (A ∧ B) ∨ (¬A ∧ ¬B)
+/// Recursively applies NNF transformation rules to a parsed formula tree.
+/// Negations are pushed down to variables, and `>`, `=`, and `^` are eliminated,
+/// so the result contains only variables and the operators `!`, `&`, and `|`.
 ///
-/// Result contains only: variables, !, &, and |
-fn to_nnf(node: &Node) -> Node {
+/// # Arguments
+///
+/// * `node` - The AST node to transform
+///
+/// # Returns
+///
+/// A new AST node in Negation Normal Form
+///
+/// # Transformations Applied
+///
+/// - Double negation: `¬¬A = A`
+/// - De Morgan's laws: `¬(A ∧ B) = ¬A ∨ ¬B`, `¬(A ∨ B) = ¬A ∧ ¬B`
+/// - Implication: `A ⇒ B = ¬A ∨ B`
+/// - Negated implication: `¬(A ⇒ B) = A ∧ ¬B`
+/// - Equivalence: `A ⇔ B = (A ∧ B) ∨ (¬A ∧ ¬B)`
+/// - Negated equivalence: `¬(A ⇔ B) = (A ∧ ¬B) ∨ (¬A ∧ B)`
+/// - XOR: `A ⊕ B = (A ∨ B) ∧ ¬(A ∧ B)`
+///
+/// # Examples
+///
+/// ```
+/// use ex05::{to_nnf};
+/// use ex03::parse_rpn;
+///
+/// let tree = parse_rpn("AB&!").unwrap();
+/// let nnf = to_nnf(&tree);
+/// // nnf now represents A!B!|
+/// ```
+pub fn to_nnf(node: &Node) -> Node {
     match node {
-        Node::Value(b) => Node::Value(*b),
-        Node::Variable(c) => Node::Variable(*c),
-        
         // Double negation elimination: ¬¬A = A
         Node::Not(inner) => match &**inner {
+            // handle double negation ¬¬A => A
             Node::Not(double) => to_nnf(double),
             // De Morgan's law: ¬(A ∧ B) = ¬A ∨ ¬B
             Node::And(a, b) => {
-                let not_a = Node::Not(Box::new(to_nnf(a)));
-                let not_b = Node::Not(Box::new(to_nnf(b)));
-                to_nnf(&Node::Or(Box::new(not_a), Box::new(not_b))) 
+                let not_a = Node::Not(a.clone());
+                let not_b = Node::Not(b.clone());
+                to_nnf(&Node::Or(Box::new(not_a), Box::new(not_b)))
             }
             // De Morgan's law: ¬(A ∨ B) = ¬A ∧ ¬B
             Node::Or(a, b) => {
-                let not_a = Node::Not(Box::new(to_nnf(a)));
-                let not_b = Node::Not(Box::new(to_nnf(b)));
-                to_nnf(&Node::And(Box::new(not_a), Box::new(not_b))) 
+                let not_a = Node::Not(a.clone());
+                let not_b = Node::Not(b.clone());
+                to_nnf(&Node::And(Box::new(not_a), Box::new(not_b)))
             }
             // ¬(A ⇒ B) = A ∧ ¬B
             Node::Imply(a, b) => {
-                let not_b = Node::Not(Box::new(to_nnf(b)));
-                Node::And(Box::new(to_nnf(a)), Box::new(not_b))
+                let not_b = Node::Not(b.clone());
+                to_nnf(&Node::And(a.clone(), Box::new(not_b)))
             }
             // ¬(A ⇔ B) = (A ∧ ¬B) ∨ (¬A ∧ B)
             Node::Equiv(a, b) => {
-                let a_nnf = to_nnf(a);
-                let b_nnf = to_nnf(b);
-                let a_and_not_b = Node::And(
-                    Box::new(a_nnf.clone()),
-                    Box::new(Node::Not(Box::new(b_nnf.clone())))
-                );
-                let not_a_and_b = Node::And(
-                    Box::new(Node::Not(Box::new(a_nnf))),
-                    Box::new(b_nnf)
-                );
-                Node::Or(Box::new(a_and_not_b), Box::new(not_a_and_b))
+                let not_a = Node::Not(a.clone());
+                let not_b = Node::Not(b.clone());
+                let a_and_not_b = to_nnf(&Node::And(a.clone(), Box::new(not_b)));
+                let not_a_and_b = Node::And(Box::new(not_a), b.clone());
+                to_nnf(&Node::Or(Box::new(a_and_not_b), Box::new(not_a_and_b)))
             }
-            other => Node::Not(Box::new(to_nnf(other))),
+            // this is supposed to handle the only one left which is XOR
+            // for XOR i dont need to rewrite anything so i just pass the inner value to nnf
+            _ => Node::Not(Box::new(to_nnf(inner))),
         },
-        
+
+        // leaf values
+        Node::Value(b) => Node::Value(*b),
+        Node::Variable(c) => Node::Variable(*c),
+
         // Material condition: A ⇒ B = ¬A ∨ B
         Node::Imply(a, b) => {
-            let not_a = Node::Not(Box::new(to_nnf(a)));
-            let result = Node::Or(Box::new(not_a), Box::new(to_nnf(b)));
-            to_nnf(&result) 
+            let not_a = Node::Not(a.clone());
+            to_nnf(&Node::Or(Box::new(not_a), b.clone()))
         }
-        
+
         // Equivalence: A ⇔ B = (A ∧ B) ∨ (¬A ∧ ¬B)
         Node::Equiv(a, b) => {
-            let a_nnf = to_nnf(a);
-            let b_nnf = to_nnf(b);
-            let and_part = Node::And(Box::new(a_nnf.clone()), Box::new(b_nnf.clone()));
-            let not_and_part = Node::And(
-                Box::new(Node::Not(Box::new(a_nnf))),
-                Box::new(Node::Not(Box::new(b_nnf)))
-            );
-            Node::Or(Box::new(and_part), Box::new(not_and_part))
+            let and_part = Node::And(a.clone(), b.clone());
+            let not_a = Node::Not(a.clone());
+            let not_b = Node::Not(b.clone());
+            let not_and_part = Node::And(Box::new(not_a), Box::new(not_b));
+            to_nnf(&Node::Or(Box::new(and_part), Box::new(not_and_part)))
         }
-        
+
         // Recursively transform children
-        Node::And(a, b) => Node::And(
-            Box::new(to_nnf(a)),
-            Box::new(to_nnf(b))
-        ),
-        Node::Or(a, b) => Node::Or(
-            Box::new(to_nnf(a)),
-            Box::new(to_nnf(b))
-        ),
+        Node::And(a, b) => Node::And(Box::new(to_nnf(a)), Box::new(to_nnf(b))),
+        Node::Or(a, b) => Node::Or(Box::new(to_nnf(a)), Box::new(to_nnf(b))),
+        // XOR: A ⊕ B = (A ∨ B) ∧ (¬A ∨ ¬B)
         Node::Xor(a, b) => {
-            let a_nnf = to_nnf(a);
-            let b_nnf = to_nnf(b);
-            // Construct: (A | B) & !(A & B)
-            let or_node = Node::Or(Box::new(a_nnf.clone()), Box::new(b_nnf.clone()));
-            let and_node = Node::And(Box::new(a_nnf), Box::new(b_nnf));
-            let not_and = Node::Not(Box::new(and_node));
-            
-            // Now run the negation push on that ! (A & B)
-            Node::And(Box::new(or_node), Box::new(to_nnf(&not_and)))
+            let not_a = Node::Not(a.clone());
+            let not_b = Node::Not(b.clone());
+            let or_node: Node = Node::Or(a.clone(), b.clone());
+            let not_or_node = Node::Or(Box::new(not_a), Box::new(not_b));
+            to_nnf(&Node::And(Box::new(or_node), Box::new(not_or_node)))
         }
     }
 }
-
-
 
 /// Converts an AST back to RPN string representation.
 ///
@@ -141,7 +182,6 @@ pub fn ast_to_rpn(node: &Node) -> String {
         Node::Equiv(a, b) => format!("{}{}=", ast_to_rpn(a), ast_to_rpn(b)),
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -252,10 +292,9 @@ mod tests {
     }
 
     #[test]
-    fn test_de_morgan_or() { 
+    fn test_de_morgan_or() {
         assert_eq!(negation_normal_form("AB|!"), "A!B!&");
     }
-
 
     #[test]
     fn test_implication_to_nnf() {
@@ -272,5 +311,4 @@ mod tests {
         let result = negation_normal_form(input);
         assert_eq!(result, "A!B!|C!D!|&");
     }
-
 }

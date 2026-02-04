@@ -1,0 +1,25 @@
+{
+  "files.readonlyInclude": {
+    "**/.cargo/registry/src/**/*.rs": true,
+    "**/.cargo/git/checkouts/**/*.rs": true,
+    "**/lib/rustlib/src/rust/library/**/*.rs": true
+  },
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.clippy": "explicit"
+    }
+  },
+  "rust-analyzer.checkOnSave.enable": false,
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.extraArgs": [
+    "--all-targets",
+    "--all-features"
+  ],
+  "rust-analyzer.inlayHints.enable": "offUnlessPressed",
+  "rust-analyzer.inlayHints.typeHints.enable": true,
+  "rust-analyzer.inlayHints.parameterHints.enable": true,
+  "rust-analyzer.assist.emitMustUse": true,
+  "rust-analyzer.diagnostics.experimental.enable": true
+}
