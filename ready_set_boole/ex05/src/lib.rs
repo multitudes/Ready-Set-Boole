@@ -1,5 +1,4 @@
-use ex03::Node;
-use ex03::parse_rpn;
+use ex03::{Node, parse_rpn};
 
 /// Converts a Boolean formula to Negation Normal Form (NNF).
 ///

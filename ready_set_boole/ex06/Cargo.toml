@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+ex03 = { path = "../ex03" }
+ex05 = { path = "../ex05" }

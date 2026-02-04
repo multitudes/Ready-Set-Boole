@@ -1,5 +1,45 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use ex03::{Node, parse_rpn};
+use ex05::{ast_to_rpn, to_nnf};
+
+pub fn conjunctive_normal_form(formula: &str) -> String {
+    // Parse RPN to AST
+    let tree: Node = match parse_rpn(formula) {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("Error parsing formula: {}", e);
+            std::process::exit(1);
+        }
+    };
+    // Transform to NNF
+    let nnf_tree = to_nnf(&tree);
+    // Transform to CNF
+    let cnf_tree = to_cnf(nnf_tree);
+    // Convert back to RPN
+    ast_to_rpn(&cnf_tree)
+}
+
+fn to_cnf(node: Node) -> Node {
+    match node {
+        Node::And(l, r) => Node::And(Box::new(to_cnf(*l)), Box::new(to_cnf(*r))),
+        Node::Or(l, r) => distribute(to_cnf(*l), to_cnf(*r)),
+        _ => node,
+    }
+}
+
+fn distribute(l: Node, r: Node) -> Node {
+    match (l, r) {
+        // Case: A | (B & C)  ->  (A | B) & (A | C)
+        (a, Node::And(b, c)) => Node::And(
+            Box::new(distribute(a.clone(), *b)),
+            Box::new(distribute(a, *c)),
+        ),
+        // Case: (A & B) | C  ->  (A | C) & (B | C)
+        (Node::And(a, b), c) => Node::And(
+            Box::new(distribute(*a, c.clone())),
+            Box::new(distribute(*b, c)),
+        ),
+        (l, r) => Node::Or(Box::new(l), Box::new(r)),
+    }
 }
 
 #[cfg(test)]
@@ -7,8 +47,101 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_simple_cnf() {
+        // A & B is already CNF
+        let res = conjunctive_normal_form("AB&");
+        println!("CNF(AB&) = {}", res);
+        assert_eq!(res, "AB&");
+    }
+
+    #[test]
+    fn test_distribution_simple() {
+        // (A & B) | C  => (A | C) & (B | C)
+        let res = conjunctive_normal_form("AB&C|");
+        // Note: depending on your logic, it might be AC|BC|& or CA|CB|&
+        assert!(res == "AC|BC|&" || res == "CA|CB|&");
+    }
+
+    #[test]
+    fn test_negated_or_to_cnf() {
+        // !(A | B) => !A & !B (Which is already CNF)
+        assert_eq!(conjunctive_normal_form("AB|!"), "A!B!&");
+    }
+
+    #[test]
+    fn test_full_distributivity() {
+        // (A & B) | (C & D)
+        let res = conjunctive_normal_form("AB&CD&|");
+        // Verify it contains 4 OR clauses connected by 3 ANDs
+        // A valid result would be: AC|AD|&BC|BD|&&
+        assert!(res.contains('&'));
+        assert_eq!(res.matches('|').count(), 4);
+        assert_eq!(res.matches('&').count(), 3);
+    }
+
+    #[test]
+    fn test_cnf_idempotent_or_clause() {
+        // (A | B) is already a clause
+        let res = conjunctive_normal_form("AB|");
+        assert_eq!(res, "AB|");
+    }
+
+    #[test]
+    fn test_cnf_nested_and_or() {
+        // A | (B & C) => (A | B) & (A | C)
+        let res = conjunctive_normal_form("ABC&|");
+        assert!(res == "AB|AC|&" || res == "BA|CA|&");
+    }
+
+    #[test]
+    fn test_cnf_double_distribution() {
+        // (A & B) | (C & D) => (A|C)&(A|D)&(B|C)&(B|D)
+        let res = conjunctive_normal_form("AB&CD&|");
+        assert_eq!(res.matches('|').count(), 4);
+        assert_eq!(res.matches('&').count(), 3);
+    }
+
+    #[test]
+    fn test_cnf_implication() {
+        // A => B = !A | B (already CNF)
+        let res = conjunctive_normal_form("AB>");
+        assert!(res == "A!B|" || res == "B|A!"); // ordering may vary
+    }
+
+    #[test]
+    fn test_cnf_equivalence() {
+        // A <=> B = (A & B) | (!A & !B) -> CNF after distribution
+        let res = conjunctive_normal_form("AB=");
+        assert!(res.contains('&'));
+        assert!(res.contains('|'));
+    }
+
+    #[test]
+    fn test_cnf_xor() {
+        // A XOR B = (A | B) & (!A | !B)
+        let res = conjunctive_normal_form("AB^");
+        assert!(res == "AB|A!B!|&" || res == "BA|A!B!|&");
+    }
+
+    #[test]
+    fn test_cnf_constants() {
+        assert_eq!(conjunctive_normal_form("1"), "1");
+        assert_eq!(conjunctive_normal_form("0"), "0");
+        assert_eq!(conjunctive_normal_form("10&"), "10&");
+        assert_eq!(conjunctive_normal_form("10|"), "10|");
+    }
+
+    #[test]
+    fn test_cnf_three_vars_complex() {
+        // (A | B) & (C | D) already CNF
+        let res = conjunctive_normal_form("AB|CD|&");
+        assert!(res == "AB|CD|&" || res == "BA|DC|&");
+    }
+
+    #[test]
+    fn test_cnf_negated_and() {
+        // !(A & B) => !A | !B
+        let res = conjunctive_normal_form("AB&!");
+        assert_eq!(res, "A!B!|");
     }
 }
