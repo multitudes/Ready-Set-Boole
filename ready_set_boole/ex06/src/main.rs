@@ -38,4 +38,35 @@ fn main() {
         "Implication: ABC&> -> {} (Expected: A!B|A!C|&)",
         conjunctive_normal_form("ABC&>")
     );
+
+    // --- Subject examples ---
+    println!("\nSubject examples:");
+    println!(
+        "AB&! -> {} (Expected: A!B!|)",
+        conjunctive_normal_form("AB&!")
+    );
+    println!(
+        "AB|! -> {} (Expected: A!B!&)",
+        conjunctive_normal_form("AB|!")
+    );
+    println!(
+        "AB|C& -> {} (Expected: AB|C&)",
+        conjunctive_normal_form("AB|C&")
+    );
+    println!(
+        "AB|C|D| -> {} (Expected: ABCD|||)",
+        conjunctive_normal_form("AB|C|D|")
+    );
+    println!(
+        "AB&C&D& -> {} (Expected: ABCD&&&)",
+        conjunctive_normal_form("AB&C&D&")
+    );
+    println!(
+        "AB&!C!| -> {} (Expected: A!B!C!||)",
+        conjunctive_normal_form("AB&!C!|")
+    );
+    println!(
+        "AB|!C!& -> {} (Expected: A!B!C!&&)",
+        conjunctive_normal_form("AB|!C!&")
+    );
 }

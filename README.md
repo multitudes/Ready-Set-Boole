@@ -360,3 +360,87 @@ Example: AB&CD&| means (A & B) | (C & D)
 To convert NNF to CNF, use distributivity: Push OR down over AND
 
 To convert NNF to DNF, use distributivity: Push AND down over OR
+
+### why cnf
+
+However, the "magic" of CNF is how we write the internals of each individual rule so the computer can understand them. While the rules are connected by AND, each rule itself must be expressed as a "Sum" (an OR).
+
+Here is how those specific examples translate from "Human Rules" into "CNF Clauses":
+
+1. "Every flight must have at least one Captain"
+
+Imagine a flight has three possible crew members: Smith, Jones, and Brown.
+
+Logical requirement: (Smith is Captain) OR (Jones is Captain) OR (Brown is Captain).
+
+CNF Clause: (S∨J∨B)
+
+Why it works: If the solver tries to set all three to "False," the clause becomes false, and the solver knows that's an invalid schedule.
+
+2. "If it lands in Berlin, the crew must rest"
+
+This is an Implication: Berlin⟹Rest.
+
+As you learned in Ex05, an implication A⟹B is equivalent to ¬A∨B.
+
+CNF Clause: (¬Berlin∨Rest)
+
+Why it works: This says: "Either we didn't land in Berlin, OR we are resting." The only thing forbidden is landing in Berlin and not resting.
+
+3. "Pilot A cannot fly more than 8 hours"
+
+This is usually a "Mutual Exclusion" rule. If we have two shifts (S1,S2) that would total more than 8 hours, the rule is: "You cannot do both."
+
+Logic: ¬(S1∧S2)
+
+Applying De Morgan (Ex05 again!): ¬S1∨¬S2
+
+CNF Clause: (¬S1∨¬S2)
+
+Why it works: It forces the solver to pick S1, or S2, or neither—but never both.
+
+The Big Picture: The "Product of Sums"
+
+When you combine them, the SAT solver sees one giant formula where every single "OR" clause must be satisfied simultaneously:
+
+(Pilot 
+1
+​	
+ ∨Pilot 
+2
+​	
+ )∧(¬Berlin∨Rest)∧(¬S1∨¬S2)…
+This is why your Ex06 is so important. A scheduler doesn't just need one rule; it needs to find a solution that satisfies all rules at once. By converting your logic into a "Product of Sums" (CNF), you are creating a checklist where the computer can't move on until every single "OR" bracket has at least one "True" inside it.
+
+Summary for your README
+
+CNF is the language of constraints. Each "OR" clause represents a requirement that must be met. By connecting these clauses with "AND," we define a complex system where the only valid solution is one that respects every single individual constraint.
+
+### CNF
+
+of the two I need to implement only the second one for CNF. The first is if I would implement DNF
+(A ∧(B ∨C)) ⇔((A ∧B) ∨(A ∧C))
+(A ∨(B ∧C)) ⇔((A ∨B) ∧(A ∨C))
+CNF (Conjunctive Normal Form) requires the second rule, while DNF (Disjunctive Normal Form) requires the first one.
+
+Think of the name to remember which is which:
+
+Conjunctive Normal Form (CNF): The "Main" connector is the Conjunction (AND). You want the ∧ on the outside.
+
+Disjunctive Normal Form (DNF): The "Main" connector is the Disjunction (OR). You want the ∨ on the outside.
+
+The "CNF Algorithm" in 3 Steps:
+
+NNF First: Run your negation_normal_form from Ex05.
+
+Simplify: Ensure there are no >, =, or ^ left.
+
+Distribute OR over AND:
+
+Walk the tree recursively.
+
+Every time you see Node::Or(left, right):
+
+If right is an And(B, C), return And(Or(left, B), Or(left, C)).
+
+If left is an And(A, B), return And(Or(A, right), Or(B, right)).

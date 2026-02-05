@@ -1,5 +1,5 @@
 use ex03::{Node, parse_rpn};
-use ex05::{ast_to_rpn, to_nnf};
+use ex05::{ast_to_nnf, ast_to_rpn};
 
 pub fn conjunctive_normal_form(formula: &str) -> String {
     // Parse RPN to AST
@@ -11,7 +11,7 @@ pub fn conjunctive_normal_form(formula: &str) -> String {
         }
     };
     // Transform to NNF
-    let nnf_tree = to_nnf(&tree);
+    let nnf_tree = ast_to_nnf(&tree);
     // Transform to CNF
     let cnf_tree = to_cnf(nnf_tree);
     // Convert back to RPN
@@ -45,6 +45,17 @@ fn distribute(l: Node, r: Node) -> Node {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_cnf_examples_from_subject() {
+        assert_eq!(conjunctive_normal_form("AB&!"), "A!B!|");
+        assert_eq!(conjunctive_normal_form("AB|!"), "A!B!&");
+        assert_eq!(conjunctive_normal_form("AB|C&"), "AB|C&");
+        assert_eq!(conjunctive_normal_form("AB|C|D|"), "ABCD|||");
+        assert_eq!(conjunctive_normal_form("AB&C&D&"), "ABCD&&&");
+        assert_eq!(conjunctive_normal_form("AB&!C!|"), "A!B!C!||");
+        assert_eq!(conjunctive_normal_form("AB|!C!&"), "A!B!C!&&");
+    }
 
     #[test]
     fn test_simple_cnf() {
