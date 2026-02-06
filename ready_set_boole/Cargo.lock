@@ -46,6 +46,10 @@ dependencies = [
 [[package]]
 name = "ex07"
 version = "0.1.0"
+dependencies = [
+ "ex03",
+ "ex04",
+]
 
 [[package]]
 name = "ex08"

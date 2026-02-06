@@ -444,3 +444,97 @@ Every time you see Node::Or(left, right):
 If right is an And(B, C), return And(Or(left, B), Or(left, C)).
 
 If left is an And(A, B), return And(Or(A, right), Or(B, right)).
+
+
+**Karnaugh Maps (K-maps)** are a visual method to **simplify Boolean expressions** by grouping terms to eliminate redundant variables.
+
+## What is CNF Simplification?
+
+Your CNF might be **logically correct but redundant**. For example:
+
+```
+(A | B) & (A | !B) = A
+```
+
+A K-map helps you find these redundancies and produce a **minimal CNF**.
+
+## How K-maps Work
+
+1. **Draw a truth table grid** (2D for 2-4 variables)
+2. **Mark cells** where the formula is `true`
+3. **Group adjacent 1s** in powers of 2 (1, 2, 4, 8...)
+4. **Extract simplified terms** from each group
+
+## Example: `AB|A!B|`
+
+```
+    B  !B
+A   1   1   <- Both cells are 1, so group them
+!A  0   0
+```
+
+The group covers both `B` values → **A doesn't depend on B** → Simplified: `A`
+
+## Why It Matters
+
+For digital circuit design:
+- ✅ Fewer gates = cheaper hardware
+- ✅ Faster circuits
+- ✅ Lower power consumption
+
+## Implementation Notes
+
+K-map simplification is **complex** because:
+- You need to handle 4+ variables (3D/4D grids)
+- Finding optimal groupings is NP-hard
+- Tools like Quine-McCluskey algorithm automate this
+
+**For your project:** Implementing K-map simplification is **optional** but impressive. If you do:
+1. Convert CNF to truth table
+2. Apply grouping algorithm
+3. Generate minimal CNF from groups
+
+A **Karnaugh Map (K-Map)** is a visual method used to simplify Boolean algebra expressions without having to struggle through complex algebraic theorems or the recursive "explosions" of the distributive law.
+
+Invented by Maurice Karnaugh in 1953, it is essentially a **truth table rearranged into a 2D grid** where the cells are ordered using **Gray Code** (only one bit changes between adjacent cells).
+
+---
+
+### Why is it noteworthy?
+
+#### 1. Visual Pattern Recognition vs. Algebraic Grunt Work
+
+In your current Rust project, you are using the **Distributive Law**. As you've seen,  explodes into four clauses. A K-Map allows you to look at the "1s" (or "0s") on a grid and circle groups of 2, 4, or 8 cells. Each circle represents a simplified term.
+
+* **The "Magic":** If a variable changes state (e.g., goes from  to ) within a circle, that variable is redundant and can be deleted.
+
+#### 2. Minimization (Optimal CNF/DNF)
+
+Your current recursive "Distributor" function might produce a correct CNF, but it won't necessarily be the **shortest** one. K-Maps are noteworthy because they guarantee the **minimal** form of a Boolean function, which is critical in hardware design to save on physical logic gates and reduce power consumption.
+
+#### 3. Gray Code Adjacency
+
+K-Maps use a specific ordering (00, 01, 11, 10) so that moving from one cell to the next only changes one variable. This "wraps around" like a torus (the top edge is adjacent to the bottom edge).
+
+---
+
+### Analysis of your Examples
+
+Looking at your output, your code is currently handling **De Morgan** and **Associativity** perfectly.
+
+* `AB&!`  `A!B!|`: Correct (De Morgan).
+* `AB|!C!&`  `A!B!C!&&`: Correct (De Morgan + Associativity).
+
+However, none of your current examples actually trigger the "Distributive Law" yet (where an OR sits on top of an AND). The real test for your `cnf` function will be:
+`ABC&|`  **Should become** `AB|AC|&`
+
+---
+
+### K-Map vs. Your 42 Project
+
+In the context of **Ready Set Boole**, the evaluators aren't expecting you to implement a K-Map algorithm (which is quite hard to code). They want to see:
+
+1. **NNF:** NOTs pushed to variables.
+2. **CNF:** Distributing OR over AND.
+
+**K-Maps are the "Human way"** to solve this on paper during an exam. **The Distributive Law is the "Compiler way"** to solve it in code.

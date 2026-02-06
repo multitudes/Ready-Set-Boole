@@ -42,6 +42,29 @@ fn distribute(l: Node, r: Node) -> Node {
     }
 }
 
+/// to do - bonus with the karnaugh maps
+/// https://en.wikipedia.org/wiki/Karnaugh_map
+/// but this is really complicated
+// fn simplified_cnf(formula: &str) -> String {
+//     // Parse RPN to AST
+//     let tree: Node = match parse_rpn(formula) {
+//         Ok(t) => t,
+//         Err(e) => {
+//             eprintln!("Error parsing formula: {}", e);
+//             std::process::exit(1);
+//         }
+//     };
+//     // Transform to NNF
+//     let nnf_tree = ast_to_nnf(&tree);
+//     // Transform to CNF
+//     let cnf_tree = to_cnf(nnf_tree);
+
+//     // [...] to do what are the steps?
+
+//     // Convert back to RPN
+//     ast_to_rpn(&cnf_tree)
+// }
+
 #[cfg(test)]
 mod tests {
     use super::*;
