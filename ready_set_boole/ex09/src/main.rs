@@ -57,4 +57,49 @@ fn main() {
         "AB&C| -> {:?} (Expected: [2, 3, 4])",
         eval_set("AB&C|", sets5)
     );
+
+    // ERROR CASES
+    println!("\n⚠️  Error Handling Tests");
+    println!("───────────────────────────────────────────");
+
+    // Invalid formula
+    println!("\n6. Invalid Formula");
+    println!("   Formula: 'ABC@' (invalid operator @)");
+    println!(
+        "   Sets: A={:?}, B={:?}, C={:?}",
+        vec![1, 2],
+        vec![2, 3],
+        vec![3, 4]
+    );
+    let result = eval_set("ABC@", vec![vec![1, 2], vec![2, 3], vec![3, 4]]);
+    println!("   Result: {:?}", result);
+
+    // Mismatch: More variables than sets
+    println!("\n7. Mismatch: More Variables than Sets");
+    println!("   Formula: 'ABC&|' (3 variables: A, B, C)");
+    println!("   Sets provided: 2 sets (A and B only)");
+    println!("   Expected behavior: Error or undefined");
+    let result = eval_set("ABC&|", vec![vec![1, 2], vec![2, 3]]);
+    println!("   Result: {:?}\n", result);
+
+    // Mismatch: More sets than variables
+    println!("8. Mismatch: More Sets than Variables");
+    println!("   Formula: 'AB&' (2 variables: A, B)");
+    println!("   Sets provided: 3 sets (A, B, and C)");
+    println!("   Expected behavior: C should be ignored or warning issued");
+    let result = eval_set("AB&", vec![vec![1, 2], vec![2, 3], vec![3, 4]]);
+    println!("   Result: {:?}\n", result);
+
+    // Empty formula
+    println!("9. Edge Case: Single Value");
+    println!("   Formula: '1' (just the constant true)");
+    println!("   Sets: A={:?}", vec![1, 2]);
+    let result = eval_set("1", vec![vec![1, 2]]);
+    println!("   Result: {:?} (Expected: universe [1, 2])\n", result);
+
+    println!("10. Edge Case: Empty Sets");
+    println!("    Formula: 'AB|' (A OR B)");
+    println!("    Sets: A=[], B=[]");
+    let result = eval_set("AB|", vec![vec![], vec![]]);
+    println!("    Result: {:?} (Expected: [])\n", result);
 }

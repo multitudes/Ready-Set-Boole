@@ -107,8 +107,171 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn test_complement() {
+        // A = {1, 2}, B = {3, 4}
+        // Universe = {1, 2, 3, 4}
+        // A! = {3, 4}
+        let sets = vec![vec![1, 2], vec![3, 4]];
+        let result = eval_set("A!", sets);
+        assert_eq!(result, vec![3, 4]);
+    }
+
+    #[test]
+    fn test_complement_b() {
+        // A = {1, 2}, B = {3, 4}
+        // Universe = {1, 2, 3, 4}
+        // B! = {1, 2}
+        let sets = vec![vec![1, 2], vec![3, 4]];
+        let result = eval_set("B!", sets);
+        assert_eq!(result, vec![1, 2]);
+    }
+
+    #[test]
+    fn test_xor() {
+        // A = {1, 2, 3}, B = {3, 4, 5}
+        // Universe = {1, 2, 3, 4, 5}
+        // AB^ = {1, 2, 4, 5} (in one or the other, but not both)
+        let sets = vec![vec![1, 2, 3], vec![3, 4, 5]];
+        let result = eval_set("AB^", sets);
+        assert_eq!(result, vec![1, 2, 4, 5]);
+    }
+
+    #[test]
+    fn test_imply() {
+        // A = {1, 2}, B = {2, 3}
+        // Universe = {1, 2, 3}
+        // AB> = !A | B = {2, 3}
+        let sets = vec![vec![1, 2], vec![2, 3]];
+        let result = eval_set("AB>", sets);
+        assert_eq!(result, vec![2, 3]);
+    }
+
+    #[test]
+    fn test_intersection() {
+        // A = {1, 2}, B = {1, 3}, C = {4}
+        // Universe = {1, 2, 3, 4}
+        // AB& = {1}
+        let sets = vec![vec![1, 2], vec![1, 3], vec![4]];
+        let result = eval_set("AB&", sets);
+        assert_eq!(result, vec![1]);
+    }
+
+    #[test]
+    fn test_equivalence() {
+        // A = {1, 2}, B = {1, 3}, C = {4}
+        // Universe = {1, 2, 3, 4}
+        // AB= = (A & B) | (!A & !B) = {1} | {4} = {1, 4}
+        let sets = vec![vec![1, 2], vec![1, 3], vec![4]];
+        let result = eval_set("AB=", sets);
+        assert_eq!(result, vec![1, 4]);
+    }
+
+    #[test]
+    fn test_complex_and_or() {
+        // A = {1, 2}, B = {2, 3}, C = {3, 4}
+        // AB&C| = (A & B) | C = {2} | {3, 4} = {2, 3, 4}
+        let sets = vec![vec![1, 2], vec![2, 3], vec![3, 4]];
+        let result = eval_set("AB&C|", sets);
+        assert_eq!(result, vec![2, 3, 4]);
+    }
+
+    #[test]
+    fn test_union() {
+        // A = {1, 2}, B = {2, 3}
+        // Universe = {1, 2, 3}
+        // AB| = {1, 2, 3}
+        let sets = vec![vec![1, 2], vec![2, 3]];
+        let result = eval_set("AB|", sets);
+        assert_eq!(result, vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_constant_true() {
+        // Formula: '1' (just the constant true)
+        // A = {1, 2}
+        // Result should be the universe {1, 2}
+        let sets = vec![vec![1, 2]];
+        let result = eval_set("1", sets);
+        assert_eq!(result, vec![1, 2]);
+    }
+
+    #[test]
+    fn test_constant_false() {
+        // Formula: '0' (just the constant false)
+        // A = {1, 2}
+        // Result should be empty set {}
+        let sets = vec![vec![1, 2]];
+        let result = eval_set("0", sets);
+        assert_eq!(result, vec![]);
+    }
+
+    #[test]
+    fn test_empty_sets() {
+        // A = {}, B = {}
+        // Universe = {}
+        // AB| = {}
+        let sets = vec![vec![], vec![]];
+        let result = eval_set("AB|", sets);
+        assert_eq!(result, vec![]);
+    }
+
+    #[test]
+    fn test_de_morgans_and() {
+        // A = {1, 2}, B = {2, 3}
+        // Universe = {1, 2, 3}
+        // !(A & B) = !A | !B
+        let sets_neg = vec![vec![1, 2], vec![2, 3]];
+        let sets_demorgan = vec![vec![1, 2], vec![2, 3]];
+
+        let result1 = eval_set("AB&!", sets_neg);
+        let result2 = eval_set("A!B!|", sets_demorgan);
+
+        assert_eq!(result1, result2);
+        assert_eq!(result1, vec![1, 3]);
+    }
+
+    #[test]
+    fn test_de_morgans_or() {
+        // A = {1, 2}, B = {2, 3}
+        // Universe = {1, 2, 3}
+        // !(A | B) = !A & !B
+        let sets_neg = vec![vec![1, 2], vec![2, 3]];
+        let sets_demorgan = vec![vec![1, 2], vec![2, 3]];
+
+        let result1 = eval_set("AB|!", sets_neg);
+        let result2 = eval_set("A!B!&", sets_demorgan);
+
+        assert_eq!(result1, result2);
+        assert_eq!(result1, vec![]);
+    }
+
+    #[test]
+    fn test_single_variable() {
+        // Formula: 'A'
+        // A = {1, 2, 3}
+        // Result should be A itself
+        let sets = vec![vec![1, 2, 3]];
+        let result = eval_set("A", sets);
+        assert_eq!(result, vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_double_negation() {
+        // A = {1, 2}
+        // Universe = {1, 2, 3}
+        // A!! should equal A
+        let sets = vec![vec![1, 2]];
+        let result = eval_set("A!!", sets);
+        assert_eq!(result, vec![1, 2]);
+    }
+
+    #[test]
+    fn test_three_variable_complex() {
+        // A = {1, 2}, B = {2, 3}, C = {1, 3}
+        // Universe = {1, 2, 3}
+        // (A | B) & C = {1, 2, 3} & {1, 3} = {1, 3}
+        let sets = vec![vec![1, 2], vec![2, 3], vec![1, 3]];
+        let result = eval_set("AB|C&", sets);
+        assert_eq!(result, vec![1, 3]);
     }
 }
