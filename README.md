@@ -1,7 +1,6 @@
 # Ready-Set-Boole
 Ready, Set, Boole!
 
-
 ## workspaces
 
 As described in the docs I create a directory for the workspace:
@@ -24,9 +23,8 @@ cargo new ex00 --lib
 ```
 and so on for each new exercice. I will add the main.rs file manually as required by the subject so everyone is happy.
 
-
 ## linting 
-I will use the rust aalyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter.
+I will use the rust analyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter.
 
 Great question! They're **different tools**:
 
@@ -59,7 +57,6 @@ This uses **clippy** (linter) to check and auto-fix warnings on save.
 
 Both run on save in your setup! 🦀
 
-
 ## boolean algebra
 
 In Boolean algebra, **AND has higher precedence than OR**.
@@ -81,7 +78,6 @@ So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
 - `A & B & C | D` = `((A & B) & C) | D`
 
 This matches most programming languages and standard Boolean algebra notation! 
-
 
 ## comments
 
@@ -159,7 +155,7 @@ ex00 = { path = "../ex00" }
 This is in the cargo.toml in the ready_set_boole_main module which is just to play with the code and test all those modules together.
 
 ## ex02 - Gray code
-Gray code is used to prevent errors in hardware because only one bit changes at a time (e.g., going from 1 to 2 in binary is 01 to 10—two bits changed! In Gray code, it’s 01 to 11).
+Gray code is used to prevent errors in hardware because only one bit changes at a time (e.g., going from 1 to 2 in binary is 01 to 10—two bits changed! In Gray code, it's 01 to 11).
 
 The formula is incredibly simple using bitwise operators:
 ```
@@ -172,7 +168,7 @@ I had to understand the => implication truth table:
 
 This is one of those concepts that feels counterintuitive until you look at the **Truth Table**. In logic, this is known as **Material Implication**.
 
-The best way to understand why  is to think about what it means for a promise (an implication) to be **broken**.
+The best way to understand why is to think about what it means for a promise (an implication) to be **broken**.
 
 ---
 
@@ -184,7 +180,7 @@ There are four possible scenarios:
 
 1. **It rains (), and I bring an umbrella ():** I kept my promise. (**True**)
 2. **It rains (), but I don't bring an umbrella ():** I broke my promise. (**False**)
-3. **It doesn't rain (), but I bring an umbrella anyway ():** I didn't break my promise. (I’m just prepared). (**True**)
+3. **It doesn't rain (), but I bring an umbrella anyway ():** I didn't break my promise. (I'm just prepared). (**True**)
 4. **It doesn't rain (), and I don't bring an umbrella ():** I didn't break my promise. (**True**)
 
 Notice that the **only** time the statement is **False** is when the "If" () happens, but the "Then" () does not.
@@ -193,7 +189,7 @@ Notice that the **only** time the statement is **False** is when the "If" () hap
 
 ### 2. Comparing the Truth Tables
 
-Let's look at the output of  versus :
+Let's look at the output of vs :
 
 |  |  |  |  |  |
 | --- | --- | --- | --- | --- |
@@ -208,11 +204,11 @@ The columns match perfectly.
 
 ### 3. The Logical Intuition
 
-The expression  basically says:
+The expression basically says:
 
 > "Either the condition () didn't happen, OR the result () did."
 
-If  is false, the whole thing is true (we don't care about ). This is called **vacuous truth**. If  is true, then for the whole expression to be true,  **must** be true. This is exactly what "If , then " means.
+If is false, the whole thing is true (we don't care about ). This is called **vacuous truth**. If is true, then for the whole expression to be true, **must** be true. This is exactly what "If , then " means.
 
 ### implementation - stack
 At first I did a stack based approach. 
@@ -244,11 +240,11 @@ pub fn eval_formula(formula: &str) -> bool {
 }
 ```
 
-and then as the subjext suggested I refactored to a ast, a binary tree where each node has two children like a & b. but the 'and' property is associative, so this could be a regular tree as well (not implemented yet). We can add a debug description for the tree which can print the tree also not yet implemented but possible.
+and then as the subject suggested I refactored to a ast, a binary tree where each node has two children like a & b. but the 'and' property is associative, so this could be a regular tree as well (not implemented yet). We can add a debug description for the tree which can print the tree also not yet implemented but possible.
 However, it is a bit nonsense to use a regular tree in this case, since I use the polish notation and this means I expect two operands like 110|& would be (1 | 0) & 1. using a regular tree I would not know if the or takes two or tree operands... like (1 | 0 | 1) & ??
 
-
 ## Ex05 
+
 Since you have already built the **AST (Tree)**, you are in a perfect position. Converting to **Negation Normal Form (NNF)** is essentially a "Tree-to-Tree" transformation.
 
 In NNF, negations (`!`) are only allowed to touch variables. To get there, you apply **De Morgan's Laws** and the **Double Negation Law** to "push" the NOT operators down from the top of the tree to the leaves.
@@ -261,15 +257,15 @@ You need to handle three main scenarios for a `NOT` node:
 
 | Case | Logical Rule | Transformation |
 | --- | --- | --- |
-| **Double Negation** |  | `Not(Not(A))`  `A` |
-| **De Morgan (AND)** |  | `Not(And(A, B))`  `Or(Not(A), Not(B))` |
-| **De Morgan (OR)** |  | `Not(Or(A, B))`  `And(Not(A), Not(B))` |
+| **Double Negation** |  | `Not(Not(A))` → `A` |
+| **De Morgan (AND)** |  | `Not(And(A, B))` → `Or(Not(A), Not(B))` |
+| **De Morgan (OR)** |  | `Not(Or(A, B))` → `And(Not(A), Not(B))` |
 
 **Wait! What about `>` and `=`?**
 Before applying NNF, you must eliminate Implication and Equivalence:
 
-*  becomes 
-*  becomes  (or similar).
+* A > B becomes ¬A | B
+* A = B becomes (A & B) | (¬A & ¬B)
 
 ---
 
@@ -299,7 +295,6 @@ pub fn to_nnf(node: Node) -> Node {
         other => other,
     }
 }
-
 ```
 
 ---
@@ -318,7 +313,6 @@ fn tree_to_rpn(node: &Node) -> String {
         // ... etc
     }
 }
-
 ```
 
 ### Why your "Tree" approach is the winner:
@@ -331,37 +325,27 @@ Doing this with strings (regex or find/replace) is almost impossible because of 
 2. **Push** `!` down using the `negate` logic above.
 3. **Simplify** double negations.
 
-## ex05
-
-Skeleton:  
-
-* Parse RPN to AST (like ex03/ex04)
-* Transform the AST by traversing and applying rules:
-* Double negation: ¬¬A → A
-* De Morgan's: ¬(A ∧ B) → (¬A ∨ ¬B) and ¬(A ∨ B) → (¬A ∧ ¬B)
-* Material condition: A ⇒ B → ¬A ∨ B
-* Equivalence: A ⇔ B → (A ∧ B) ∨ (¬A ∧ ¬B) or (A ⇒ B) ∧ (B ⇒ A)
-* Convert AST back to RPN
-
 ## Ex06 - CNF and DNF
 
 Here's a comprehensive explanation of CNF and DNF:
 
-CNF (Conjunctive Normal Form):
+### CNF (Conjunctive Normal Form):
 
-A conjunction (AND) of disjunctions (OR)
-Format: (A | B | C) & (D | E) & (F)
-Example: AB|C& means (A | B) & C
-DNF (Disjunctive Normal Form):
+- A conjunction (AND) of disjunctions (OR)
+- Format: (A | B | C) & (D | E) & (F)
+- Example: AB|C& means (A | B) & C
 
-A disjunction (OR) of conjunctions (AND)
-Format: (A & B & C) | (D & E) | (F)
-Example: AB&CD&| means (A & B) | (C & D)
+### DNF (Disjunctive Normal Form):
+
+- A disjunction (OR) of conjunctions (AND)
+- Format: (A & B & C) | (D & E) | (F)
+- Example: AB&CD&| means (A & B) | (C & D)
+
 To convert NNF to CNF, use distributivity: Push OR down over AND
 
 To convert NNF to DNF, use distributivity: Push AND down over OR
 
-### why cnf
+### Why CNF?
 
 However, the "magic" of CNF is how we write the internals of each individual rule so the computer can understand them. While the rules are connected by AND, each rule itself must be expressed as a "Sum" (an OR).
 
@@ -399,56 +383,45 @@ CNF Clause: (¬S1∨¬S2)
 
 Why it works: It forces the solver to pick S1, or S2, or neither—but never both.
 
-The Big Picture: The "Product of Sums"
+### The Big Picture: The "Product of Sums"
 
 When you combine them, the SAT solver sees one giant formula where every single "OR" clause must be satisfied simultaneously:
 
-(Pilot 
-1
-​	
- ∨Pilot 
-2
-​	
- )∧(¬Berlin∨Rest)∧(¬S1∨¬S2)…
+(Pilot₁ ∨ Pilot₂) ∧ (¬Berlin ∨ Rest) ∧ (¬S1 ∨ ¬S2) …
+
 This is why your Ex06 is so important. A scheduler doesn't just need one rule; it needs to find a solution that satisfies all rules at once. By converting your logic into a "Product of Sums" (CNF), you are creating a checklist where the computer can't move on until every single "OR" bracket has at least one "True" inside it.
 
-Summary for your README
+### CNF Distributivity
 
-CNF is the language of constraints. Each "OR" clause represents a requirement that must be met. By connecting these clauses with "AND," we define a complex system where the only valid solution is one that respects every single individual constraint.
+Of the two distributivity laws, only the second one is needed for CNF:
 
-### CNF
+```
+(A ∨ (B ∧ C)) ⇔ ((A ∨ B) ∧ (A ∨ C))
+(A ∧ (B ∨ C)) ⇔ ((A ∧ B) ∨ (A ∧ C))
+```
 
-of the two I need to implement only the second one for CNF. The first is if I would implement DNF
-(A ∧(B ∨C)) ⇔((A ∧B) ∨(A ∧C))
-(A ∨(B ∧C)) ⇔((A ∨B) ∧(A ∨C))
-CNF (Conjunctive Normal Form) requires the second rule, while DNF (Disjunctive Normal Form) requires the first one.
+CNF requires the second rule, while DNF requires the first one.
 
 Think of the name to remember which is which:
 
-Conjunctive Normal Form (CNF): The "Main" connector is the Conjunction (AND). You want the ∧ on the outside.
+- **Conjunctive Normal Form (CNF)**: The "Main" connector is the Conjunction (AND). You want the ∧ on the outside.
+- **Disjunctive Normal Form (DNF)**: The "Main" connector is the Disjunction (OR). You want the ∨ on the outside.
 
-Disjunctive Normal Form (DNF): The "Main" connector is the Disjunction (OR). You want the ∨ on the outside.
+### The "CNF Algorithm" in 3 Steps:
 
-The "CNF Algorithm" in 3 Steps:
+1. **NNF First**: Run your negation_normal_form from Ex05.
+2. **Simplify**: Ensure there are no >, =, or ^ left.
+3. **Distribute OR over AND**:
+   - Walk the tree recursively.
+   - Every time you see Node::Or(left, right):
+     - If right is an And(B, C), return And(Or(left, B), Or(left, C)).
+     - If left is an And(A, B), return And(Or(A, right), Or(B, right)).
 
-NNF First: Run your negation_normal_form from Ex05.
-
-Simplify: Ensure there are no >, =, or ^ left.
-
-Distribute OR over AND:
-
-Walk the tree recursively.
-
-Every time you see Node::Or(left, right):
-
-If right is an And(B, C), return And(Or(left, B), Or(left, C)).
-
-If left is an And(A, B), return And(Or(A, right), Or(B, right)).
-
+### Karnaugh Maps (K-Maps) - Optional Bonus
 
 **Karnaugh Maps (K-maps)** are a visual method to **simplify Boolean expressions** by grouping terms to eliminate redundant variables.
 
-## What is CNF Simplification?
+#### What is CNF Simplification?
 
 Your CNF might be **logically correct but redundant**. For example:
 
@@ -458,14 +431,14 @@ Your CNF might be **logically correct but redundant**. For example:
 
 A K-map helps you find these redundancies and produce a **minimal CNF**.
 
-## How K-maps Work
+#### How K-maps Work
 
 1. **Draw a truth table grid** (2D for 2-4 variables)
 2. **Mark cells** where the formula is `true`
 3. **Group adjacent 1s** in powers of 2 (1, 2, 4, 8...)
 4. **Extract simplified terms** from each group
 
-## Example: `AB|A!B|`
+#### Example: `AB|A!B|`
 
 ```
     B  !B
@@ -475,14 +448,14 @@ A   1   1   <- Both cells are 1, so group them
 
 The group covers both `B` values → **A doesn't depend on B** → Simplified: `A`
 
-## Why It Matters
+#### Why It Matters
 
 For digital circuit design:
 - ✅ Fewer gates = cheaper hardware
 - ✅ Faster circuits
 - ✅ Lower power consumption
 
-## Implementation Notes
+#### Implementation Notes
 
 K-map simplification is **complex** because:
 - You need to handle 4+ variables (3D/4D grids)
@@ -494,43 +467,29 @@ K-map simplification is **complex** because:
 2. Apply grouping algorithm
 3. Generate minimal CNF from groups
 
+#### A Brief History of K-Maps
+
 A **Karnaugh Map (K-Map)** is a visual method used to simplify Boolean algebra expressions without having to struggle through complex algebraic theorems or the recursive "explosions" of the distributive law.
 
 Invented by Maurice Karnaugh in 1953, it is essentially a **truth table rearranged into a 2D grid** where the cells are ordered using **Gray Code** (only one bit changes between adjacent cells).
 
----
+#### Why is it noteworthy?
 
-### Why is it noteworthy?
+##### 1. Visual Pattern Recognition vs. Algebraic Grunt Work
 
-#### 1. Visual Pattern Recognition vs. Algebraic Grunt Work
+In your current Rust project, you are using the **Distributive Law**. As you've seen, it explodes into multiple clauses. A K-Map allows you to look at the "1s" (or "0s") on a grid and circle groups of 2, 4, or 8 cells. Each circle represents a simplified term.
 
-In your current Rust project, you are using the **Distributive Law**. As you've seen,  explodes into four clauses. A K-Map allows you to look at the "1s" (or "0s") on a grid and circle groups of 2, 4, or 8 cells. Each circle represents a simplified term.
+* **The "Magic":** If a variable changes state (e.g., goes from 0 to 1) within a circle, that variable is redundant and can be deleted.
 
-* **The "Magic":** If a variable changes state (e.g., goes from  to ) within a circle, that variable is redundant and can be deleted.
-
-#### 2. Minimization (Optimal CNF/DNF)
+##### 2. Minimization (Optimal CNF/DNF)
 
 Your current recursive "Distributor" function might produce a correct CNF, but it won't necessarily be the **shortest** one. K-Maps are noteworthy because they guarantee the **minimal** form of a Boolean function, which is critical in hardware design to save on physical logic gates and reduce power consumption.
 
-#### 3. Gray Code Adjacency
+##### 3. Gray Code Adjacency
 
 K-Maps use a specific ordering (00, 01, 11, 10) so that moving from one cell to the next only changes one variable. This "wraps around" like a torus (the top edge is adjacent to the bottom edge).
 
----
-
-### Analysis of your Examples
-
-Looking at your output, your code is currently handling **De Morgan** and **Associativity** perfectly.
-
-* `AB&!`  `A!B!|`: Correct (De Morgan).
-* `AB|!C!&`  `A!B!C!&&`: Correct (De Morgan + Associativity).
-
-However, none of your current examples actually trigger the "Distributive Law" yet (where an OR sits on top of an AND). The real test for your `cnf` function will be:
-`ABC&|`  **Should become** `AB|AC|&`
-
----
-
-### K-Map vs. Your 42 Project
+#### K-Map vs. Your 42 Project
 
 In the context of **Ready Set Boole**, the evaluators aren't expecting you to implement a K-Map algorithm (which is quite hard to code). They want to see:
 
@@ -538,3 +497,109 @@ In the context of **Ready Set Boole**, the evaluators aren't expecting you to im
 2. **CNF:** Distributing OR over AND.
 
 **K-Maps are the "Human way"** to solve this on paper during an exam. **The Distributive Law is the "Compiler way"** to solve it in code.
+
+## Ex07 - SAT (Boolean Satisfiability)
+
+### What is SAT?
+
+A Boolean formula is **satisfiable** if there exists at least one assignment of variable values that makes the entire formula evaluate to `true`.
+
+### SAT Classification
+
+- **Satisfiable**: At least one row in the truth table outputs `true`
+- **Unsatisfiable (Contradiction)**: All rows output `false` (e.g., `A & !A`)
+- **Tautology**: All rows output `true` (always satisfiable)
+
+### Algorithm
+
+1. Parse the RPN formula into an Abstract Syntax Tree (AST)
+2. Extract all variables from the formula
+3. Generate a complete truth table (all 2^n variable combinations)
+4. Check if any row evaluates to `true`
+5. Return `true` if found, `false` otherwise
+
+### Time Complexity
+
+O(2^n) where n is the number of variables (exponential)
+
+## Ex08 - Powerset
+
+### What is a Powerset?
+
+A Powerset of a set S is the set of all possible subsets, including the empty set and S itself. If your set has n elements, the powerset will have 2^n elements.
+
+### Example
+
+For set [1, 2, 3], the powerset contains 8 subsets:
+```
+[]
+[1]
+[2]
+[1, 2]
+[3]
+[1, 3]
+[2, 3]
+[1, 2, 3]
+```
+
+### The Binary Enumeration Algorithm
+
+This is a classic computer science technique that uses **binary counting** to generate powersets efficiently:
+
+```rust
+pub fn powerset(set: Vec<i32>) -> Vec<Vec<i32>> {
+    let n = set.len();
+    let num_subset = 1 << n;  // 2^n
+    let mut results = Vec::with_capacity(num_subset);
+
+    for i in 0..num_subset {
+        let mut subset: Vec<i32> = Vec::new();
+        for j in 0..n {
+            if (i >> j) & 1 == 1 {
+                subset.push(set[j]);
+            }
+        }
+        results.push(subset);
+    }
+    results
+}
+```
+
+### How It Works
+
+The key insight: **each subset corresponds to a binary number**.
+
+For a set of `n` elements, you have `2^n` subsets. Each subset can be represented as an `n`-bit binary number:
+
+```
+For [1, 2, 3]:
+Binary  Decimal  Subset
+000   →   0    → []
+001   →   1    → [1]
+010   →   2    → [2]
+011   →   3    → [1, 2]
+100   →   4    → [3]
+101   →   5    → [1, 3]
+110   →   6    → [2, 3]
+111   →   7    → [1, 2, 3]
+```
+
+The algorithm iterates from 0 to 2^n - 1. For each number i:
+- Check each bit position j
+- If bit j is set, include element j in the subset
+
+### Why It's Amazing
+
+- ✅ **O(n·2^n) time** — optimal for powerset generation
+- ✅ **Very efficient** — just bit operations (`>>`, `&`)
+- ✅ **Natural ordering** — generates in binary order
+- ✅ **No recursion** — iterative, so no stack overhead
+
+### Historical Origin
+
+This comes from **combinatorics** and **discrete mathematics**. The technique is sometimes called:
+- **Binary enumeration**
+- **Bitmask iteration**
+- **Gray code variant** (if ordered differently)
+
+It's taught in algorithms courses and used in competitive programming for subset problems! 🎯
