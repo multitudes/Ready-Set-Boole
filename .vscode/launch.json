@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Current Package Tests",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--package", "${relativeFileDirname}",
+                    "--lib",
+                    "--",
+                    "--nocapture"
+                ]
+            },
+            "sourceLanguages": ["rust"],
+            "cwd": "${workspaceFolder}/ready_set_boole"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Current Package Main",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--package", "${relativeFileDirname}",
+                    "--",
+                    "--nocapture"
+                ]
+            },
+            "sourceLanguages": ["rust"],
+            "cwd": "${workspaceFolder}/ready_set_boole"
+        }
+    ]
+}

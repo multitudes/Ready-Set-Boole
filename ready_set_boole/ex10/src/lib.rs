@@ -1,3 +1,47 @@
+/// Z-order (Morton) space-filling curve mapping from 2D coordinates to 1D interval.
+///
+/// Maps a discrete 2D point $(x, y)$ to a normalized value in $[0, 1]$ using the
+/// Z-order curve pattern. This creates a bijection $f: \{0, 1, \ldots, 65535\}^2 \to [0, 1]$
+/// that preserves spatial locality while linearizing the 2D space.
+///
+/// # Arguments
+///
+/// * `x` - The x-coordinate in range [0, 65535]
+/// * `y` - The y-coordinate in range [0, 65535]
+///
+/// # Returns
+///
+/// A normalized value in [0, 1] representing the position on the space-filling curve
+///
+/// # Algorithm
+///
+/// 1. **Bit Interleaving (Morton Encoding)**:
+///    - Extract each bit from x and place at even positions (0, 2, 4, ..., 30)
+///    - Extract each bit from y and place at odd positions (1, 3, 5, ..., 31)
+///    - This creates a 32-bit Morton index following the Z-pattern
+/// 2. **Normalization**: Divide by `u32::MAX` to map to [0, 1]
+///
+/// # Mathematical Properties
+///
+/// - **Bijective**: Each $(x, y)$ maps to exactly one value in $[0, 1]$
+/// - **Cardinality**: Produces $2^{32}$ distinct values (all representable as f64)
+/// - **Spatial Locality**: Nearby points in 2D tend to be close on the curve
+/// - **Z-Pattern**: Named for the recursive Z-shape traced through quadrants
+///
+/// # Examples
+///
+/// ```
+/// use ex10::map;
+///
+/// // Boundary values
+/// assert_eq!(map(0, 0), 0.0);
+/// assert_eq!(map(65535, 65535), 1.0);
+///
+/// // Spatial locality: adjacent points produce close values
+/// let z1 = map(100, 100);
+/// let z2 = map(100, 101);
+/// assert!((z1 - z2).abs() < 0.001);
+/// ```
 pub fn map(x: u16, y: u16) -> f64 {
     let mut z: u32 = 0;
 

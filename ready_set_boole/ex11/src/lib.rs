@@ -1,3 +1,47 @@
+/// Inverse of the Z-order (Morton) space-filling curve mapping.
+///
+/// Given a normalized value in [0, 1], reconstructs the original 2D coordinates
+/// that produced it via the `map` function in ex10. This implements the bijection
+/// $f^{-1}: [0,1] \to \{0, 1, \ldots, 65535\}^2$.
+///
+/// # Arguments
+///
+/// * `n` - A normalized value in [0, 1] (typically the output of `map(x, y)`)
+///
+/// # Returns
+///
+/// A tuple `(x, y)` where both coordinates are in the range [0, 65535]
+///
+/// # Algorithm
+///
+/// 1. **Denormalize**: Multiply by `u32::MAX` and round to recover the 32-bit Morton index
+/// 2. **De-interleave bits**: Extract alternating bits:
+///    - Even bit positions (0, 2, 4, ..., 30) → x coordinate
+///    - Odd bit positions (1, 3, 5, ..., 31) → y coordinate
+/// 3. **Reconstruct**: Build x and y by shifting extracted bits into place
+///
+/// # Mathematical Properties
+///
+/// - **Left Inverse**: $(f^{-1} \circ f)(x, y) = (x, y)$ for all valid $(x, y)$
+/// - **Right Inverse**: $(f \circ f^{-1})(n) \approx n$ when $n$ is in the range of $f$
+/// - **Bijectivity**: Together with `map`, forms a bijection between discrete grid and continuous interval
+///
+/// # Examples
+///
+/// ```
+/// use ex10::map;
+/// use ex11::reverse_map;
+///
+/// // Perfect round-trip for coordinates
+/// let (x, y) = (12345, 54321);
+/// let z = map(x, y);
+/// let (rx, ry) = reverse_map(z);
+/// assert_eq!((x, y), (rx, ry));
+///
+/// // Inverse at boundaries
+/// assert_eq!(reverse_map(0.0), (0, 0));
+/// assert_eq!(reverse_map(1.0), (65535, 65535));
+/// ```
 pub fn reverse_map(n: f64) -> (u16, u16) {
     let index = (n * u32::MAX as f64) as u32;
 

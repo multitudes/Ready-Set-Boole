@@ -12,10 +12,7 @@
 /// # Returns
 ///
 /// The boolean result of the evaluation
-///
-/// # Panics
-///
-/// If the formula is malformed (e.g., not enough operands for an operator) the function will give an error message and return false.
+/// If the formula is malformed (e.g., not enough operands for an operator) the function will give an error message and exit.
 ///
 /// # RPN
 /// Evaluates a Boolean expression in Reverse Polish Notation (RPN).
@@ -50,7 +47,7 @@ pub fn eval_formula(formula: &str) -> bool {
 /// Represents the structure of a parsed Boolean expression in tree form.
 /// Each node is either a leaf (value/variable) or an operator with children.
 ///
-/// # Variants
+/// # Variants (updated for the next exercises too)
 ///
 /// * `Value(bool)` - A boolean constant: `true` (1) or `false` (0)
 /// * `Variable(char)` - A variable identifier ('A'-'Z'), used in ex04+

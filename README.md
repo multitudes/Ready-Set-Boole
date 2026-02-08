@@ -681,7 +681,7 @@ Take any two elements. Can you find:
 - Their greatest lower bound?
 
 **Example - This IS a lattice:**
-```
+``` bool
     6
    / \
   2   3
@@ -692,7 +692,8 @@ Take any two elements. Can you find:
 - meet(2,3) = 1 ✓
 
 **Example - This is NOT a lattice:**
-```
+
+``` bool
     ?
    / \
   2   3
@@ -701,11 +702,13 @@ Take any two elements. Can you find:
    \ /
     1
 ```
-- What's join(2,3)? Could be 6, 12, 18... no unique least upper bound! ✗
 
-**Test 2: Check the Hasse diagram**
+- What's join(2,3)? Could be 6, 12, 18... no unique least upper bound! 
+
+Test 2: Check the Hasse diagram
 
 Draw the partial order as a directed graph (Hasse diagram):
+
 - Every "fork" must rejoin at exactly one element above
 - Every "merge" must split from exactly one element below
 
@@ -714,7 +717,8 @@ Draw the partial order as a directed graph (Hasse diagram):
 Not all lattices are Boolean:
 
 **Boolean Lattice** (like powersets):
-```
+
+``` bool
 - Has complements
 - Is distributive
 - Has 2^n elements for n atoms
@@ -722,7 +726,8 @@ Not all lattices are Boolean:
 ```
 
 **Non-Boolean Lattice** (like divisibility):
-```
+
+``` bool
 Divisors of 12: {1, 2, 3, 4, 6, 12}
 
     12
@@ -735,6 +740,7 @@ Divisors of 12: {1, 2, 3, 4, 6, 12}
 ```
 
 This is a lattice (join = LCM, meet = GCD) but NOT Boolean:
+
 - No complement for 2 (what ∨ 2 = 12 and ∧ 2 = 1?)
 - Not 2^n elements
 
@@ -751,30 +757,35 @@ Your Boolean algebra exercises are working inside a Boolean lattice:
 ### Why Lattices Matter
 
 **In Computer Science:**
+
 - **Type systems**: Subtyping forms a lattice
 - **Data flow analysis**: Information lattices
 - **Abstract interpretation**: Safety properties
 - **Concurrency**: Happens-before relations
 
 **In Hardware:**
+
 - Boolean lattices = digital circuits
 - Each gate operation preserves lattice structure
 - Simplification (K-maps) finds minimal lattice paths
 
 **In Math:**
+
 - Foundation of order theory
 - Connection between algebra and topology
 - Model for logical reasoning
 
 ### Quick Reference: Is It a Lattice?
 
-✅ **YES - These are lattices:**
+✅ **These are lattices:**
+
 - Powerset with ⊆
 - Divisors with "divides"
 - Natural numbers with min/max
 - Boolean formulas with ⊢ (entailment)
 
-❌ **NO - These are NOT lattices:**
+❌ **These are NOT lattices:**
+
 - Real numbers with < (no max/min for unbounded sets)
 - Siblings in a family tree (no unique common ancestor)
 - Partial orders with "diamonds" (multiple LUBs/GLBs)
