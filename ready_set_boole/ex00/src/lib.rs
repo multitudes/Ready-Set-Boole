@@ -1,4 +1,3 @@
-
 /// Adds two numbers using only bit wise operators.
 ///
 /// This implementation uses bitwise XOR for addition without carry,
@@ -20,7 +19,7 @@
 /// - Update a: `a ^ b` (sum without carry)
 /// - Shift carry left: `carry << 1`
 /// - Repeat until no carry remains
-/// 
+///
 /// # Examples
 /// ```
 /// use ex00::adder;
@@ -29,25 +28,18 @@
 /// assert_eq!(4, answer);
 /// ```
 pub fn adder(mut a: u32, mut b: u32) -> u32 {
-    
     while b > 0 {
         let carry = a & b;
         a = a ^ b;
         b = carry << 1;
     }
-    
+
     a
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = adder(2, 2);
-        assert_eq!(result, 4);
-    }
 
     #[test]
     fn test_basic_addition() {

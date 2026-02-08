@@ -274,7 +274,7 @@ Before applying NNF, you must eliminate Implication and Equivalence:
 
 ### 2. How to implement it in Rust
 
-You should write a recursive function `to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.
+You should write a recursive function `ast_to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.
 
 ```rust
 fn negate(node: Node) -> Node {
@@ -289,11 +289,11 @@ fn negate(node: Node) -> Node {
     }
 }
 
-pub fn to_nnf(node: Node) -> Node {
+pub fn ast_to_nnf(node: Node) -> Node {
     match node {
-        Node::Not(child) => negate(to_nnf(*child)),
-        Node::And(l, r) => Node::And(Box::new(to_nnf(*l)), Box::new(to_nnf(*r))),
-        Node::Or(l, r) => Node::Or(Box::new(to_nnf(*l)), Box::new(to_nnf(*r))),
+        Node::Not(child) => negate(ast_to_nnf(*child)),
+        Node::And(l, r) => Node::And(Box::new(ast_to_nnf(*l)), Box::new(ast_to_nnf(*r))),
+        Node::Or(l, r) => Node::Or(Box::new(ast_to_nnf(*l)), Box::new(ast_to_nnf(*r))),
         // Leaf nodes stay as they are
         other => other,
     }
@@ -2019,3 +2019,462 @@ Mathematical Significance
 This exercise demonstrates the transition from Discrete Mathematics (counting bits and sets) to Continuous Mathematics (mapping to the Real number line R). By dividing the final integer by 2 
 32
  −1, we "saturate" the unit interval [0,1], proving that we can represent multi-dimensional data in a single dimension without losing information.
+
+ ## Ex11: Inverse Function and Function Composition
+
+### What is an Inverse Function?
+
+An **inverse function** f⁻¹ "undoes" what f does. If f maps from A to B, then f⁻¹ maps from B back to A.
+
+**Notation:**
+```
+f : A → B     (forward function)
+f⁻¹ : B → A   (inverse function)
+```
+
+---
+
+### The Two Composition Laws
+
+Your exercise requires two properties to hold:
+
+```
+(f⁻¹ ∘ f)(x, y) = (x, y)
+(f ∘ f⁻¹)(x) = x
+```
+
+**These express the same idea in two directions!** Let me explain each.
+
+---
+
+### Law 1: (f⁻¹ ∘ f)(x, y) = (x, y)
+
+**Read as:** "f inverse composed with f equals the identity"
+
+**Breaking it down:**
+
+```
+(f⁻¹ ∘ f)(x, y) means: f⁻¹(f(x, y))
+                       └──┬──┘  └─┬─┘
+                         Apply f first
+                              Then apply f⁻¹
+```
+
+**Step by step:**
+
+```
+Input: (x, y) ∈ [[0; 2¹⁶ - 1]]²
+
+Step 1: Apply f
+        f(x, y) = some_value ∈ [0, 1]
+        Result: a single float
+
+Step 2: Apply f⁻¹
+        f⁻¹(some_value) = ?
+        Result: back to (x, y)
+
+Expected: (x, y)  ← We got back what we started with!
+```
+
+**Why this works:**
+
+Since f is a **bijection** (one-to-one, onto), every point in [0, 1] came from exactly one (x, y) pair. So when you apply f⁻¹ to that point, it must return to the original (x, y).
+
+**Example:**
+```
+f(100, 200) = 0.001234567  (some value in [0, 1])
+f⁻¹(0.001234567) = (100, 200)  ← Back to the original!
+
+So: (f⁻¹ ∘ f)(100, 200) = f⁻¹(f(100, 200)) = f⁻¹(0.001234567) = (100, 200) ✓
+```
+
+---
+
+### Law 2: (f ∘ f⁻¹)(x) = x
+
+**Read as:** "f composed with f inverse equals the identity"
+
+**Breaking it down:**
+
+```
+(f ∘ f⁻¹)(x) means: f(f⁻¹(x))
+                    └───┬───┘  └┬┘
+                    Apply f⁻¹ first
+                          Then apply f
+```
+
+**Step by step:**
+
+```
+Input: x ∈ [0, 1]
+
+Step 1: Apply f⁻¹
+        f⁻¹(x) = some (a, b) ∈ [[0; 2¹⁶ - 1]]²
+        Result: a 2D coordinate pair
+
+Step 2: Apply f
+        f(a, b) = ?
+        Result: back to a float
+
+Expected: x  ← We got back what we started with!
+```
+
+**Why this works:**
+
+Since f⁻¹ is the inverse, it maps [0, 1] back to [[0; 2¹⁶ - 1]]². When you then apply f to that coordinate pair, it must return the original float value.
+
+**Example:**
+```
+f⁻¹(0.001234567) = (100, 200)
+f(100, 200) = 0.001234567  ← Back to the original!
+
+So: (f ∘ f⁻¹)(0.001234567) = f(f⁻¹(0.001234567)) = f(100, 200) = 0.001234567 ✓
+```
+
+---
+
+### Why Both Laws Express the Same Thing
+
+**They are complementary:**
+
+| Law | Direction | Meaning |
+|-----|-----------|---------|
+| **(f⁻¹ ∘ f)** | 2D → 1D → 2D | "Going forward then backward gets you home" |
+| **(f ∘ f⁻¹)** | 1D → 2D → 1D | "Going backward then forward gets you home" |
+
+**Both express the same mathematical truth:** f and f⁻¹ are **perfect inverses** of each other.
+
+Think of it like a door:
+
+```
+Room A                      Room B
+(2D space)                  (1D space)
+[[0; 2¹⁶-1]]²            [0, 1]
+
+  (x, y) ───f──→ value
+                    ↓
+                  f⁻¹
+                    ↓
+              (x, y) again ✓
+
+  value ───f⁻¹──→ (x, y)
+               ↓
+              f
+               ↓
+          value again ✓
+```
+
+---
+
+### Formal Definition: Function Composition
+
+**Composition symbol ∘** means "apply the right function first, then the left"
+
+```
+(g ∘ f)(x) = g(f(x))
+             └──┬──┘  Apply f first
+              Then g
+```
+
+**Important:** The order matters!
+```
+(g ∘ f)(x) ≠ (f ∘ g)(x)  in general
+```
+
+---
+
+### The Identity Function
+
+Both laws mention "the identity":
+
+```
+Identity on [[0; 2¹⁶-1]]²:
+id₂D(x, y) = (x, y)        ← Returns the same pair
+
+Identity on [0, 1]:
+id₁D(x) = x               ← Returns the same value
+```
+
+**The laws say:**
+```
+f⁻¹ ∘ f = id₂D   (2D identity)
+f ∘ f⁻¹ = id₁D   (1D identity)
+```
+
+This is the **definition of an inverse function**!
+
+---
+
+### Implementing the Inverse (Ex11)
+
+For your Z-order curve, you need to implement the inverse:
+
+```rust
+pub fn unmap(z: f64) -> (u16, u16) {
+    // Step 1: Convert from [0, 1] back to u32
+    let index = (z * u32::MAX as f64) as u32;
+    
+    // Step 2: De-interleave bits
+    // Extract x from even positions: 0, 2, 4, ...
+    let mut x: u16 = 0;
+    for i in 0..16 {
+        x |= ((index >> (2 * i)) & 1) as u16;
+        x <<= 1;
+    }
+    
+    // Extract y from odd positions: 1, 3, 5, ...
+    let mut y: u16 = 0;
+    for i in 0..16 {
+        y |= ((index >> (2 * i + 1)) & 1) as u16;
+        y <<= 1;
+    }
+    
+    (x, y)
+}
+```
+
+**OR more cleanly:**
+
+```rust
+pub fn unmap(z: f64) -> (u16, u16) {
+    let index = (z * u32::MAX as f64) as u32;
+    
+    let mut x: u16 = 0;
+    let mut y: u16 = 0;
+    
+    for i in 0..16 {
+        x |= ((index >> (2 * i)) & 1) as u16 << i;      // Even positions → x bits
+        y |= ((index >> (2 * i + 1)) & 1) as u16 << i;  // Odd positions → y bits
+    }
+    
+    (x, y)
+}
+```
+
+---
+
+### Testing the Inverse
+
+**Test both composition laws:**
+
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_f_inverse_f() {
+        // (f⁻¹ ∘ f)(x, y) = (x, y)
+        let test_points = vec![
+            (0, 0),
+            (100, 200),
+            (u16::MAX, u16::MAX),
+            (12345, 54321),
+        ];
+        
+        for (x, y) in test_points {
+            let z = map(x, y);              // Apply f
+            let (x_recovered, y_recovered) = unmap(z);  // Apply f⁻¹
+            
+            assert_eq!((x_recovered, y_recovered), (x, y),
+                      "Failed for ({}, {})", x, y);
+        }
+    }
+
+    #[test]
+    fn test_f_of_f_inverse() {
+        // (f ∘ f⁻¹)(x) = x
+        let test_values = vec![
+            0.0,
+            0.5,
+            1.0,
+            0.001234567,
+            0.999999999,
+        ];
+        
+        for z in test_values {
+            let (x, y) = unmap(z);           // Apply f⁻¹
+            let z_recovered = map(x, y);     // Apply f
+            
+            // Use approximate equality for floats
+            assert!((z_recovered - z).abs() < 1e-10,
+                   "Failed for {}", z);
+        }
+    }
+
+    #[test]
+    fn test_bijectivity() {
+        // If they're true inverses, they should be bijective
+        use std::collections::HashSet;
+        let mut forward_values = HashSet::new();
+        let mut reverse_coords = HashSet::new();
+        
+        for x in 0..256 {
+            for y in 0..256 {
+                let z = map(x as u16, y as u16);
+                forward_values.insert(z.to_bits());
+                
+                let (x_back, y_back) = unmap(z);
+                reverse_coords.insert((x_back, y_back));
+            }
+        }
+        
+        // All forward mappings should be unique
+        assert_eq!(forward_values.len(), 256 * 256);
+        // All reverse mappings should be unique
+        assert_eq!(reverse_coords.len(), 256 * 256);
+    }
+}
+```
+
+---
+
+### Why "x alone" Works Too
+
+You asked: **"does it work for x alone too?"**
+
+**YES! Absolutely!** Here's why:
+
+```
+For Law 2: (f ∘ f⁻¹)(x) = x
+
+This takes a SINGLE value x and shows that:
+f⁻¹(x) produces a coordinate pair (a, b)
+Then f(a, b) produces back the original x
+
+So yes, this law works entirely with a single 1D value!
+```
+
+**The key insight:**
+
+- **Law 1** shows: 2D → 1D → 2D returns to 2D
+- **Law 2** shows: 1D → 2D → 1D returns to 1D
+
+They're testing the **round trip in both directions**!
+
+---
+
+### Visual Summary
+
+```
+Forward (f):
+┌─────────────────────────┐
+│ (x, y) ────f───→ z ∈ [0,1]
+│                         
+│ 2D Grid            1D Line
+└─────────────────────────┘
+
+Reverse (f⁻¹):
+┌─────────────────────────┐
+│ z ∈ [0,1] ──f⁻¹──→ (x, y)
+│                         
+│ 1D Line            2D Grid
+└─────────────────────────┘
+
+Composition 1 (2D → 1D → 2D):
+┌──────────────────────────────┐
+│ (x,y) ─f─→ z ─f⁻¹─→ (x,y)   │
+│  "What we started with" = "What we got"
+└──────────────────────────────┘
+
+Composition 2 (1D → 2D → 1D):
+┌──────────────────────────────┐
+│ z ──f⁻¹─→ (x,y) ─f─→ z       │
+│  "What we started with" = "What we got"
+└──────────────────────────────┘
+```
+
+---
+
+### Mathematical Terminology
+
+**These laws define what it means to be an inverse:**
+
+```
+A function f⁻¹ is the inverse of f if and only if:
+
+1. f⁻¹ ∘ f = id_domain      (Going forward then backward is identity)
+2. f ∘ f⁻¹ = id_codomain    (Going backward then forward is identity)
+```
+
+**This is the DEFINITION of an inverse function in set theory and category theory!**
+
+---
+
+### Connection to Your Project
+
+**Ex10 → Ex11 Arc:**
+
+| Exercise | Task | Result |
+|----------|------|--------|
+| **Ex10** | Implement f (forward) | 2D → 1D bijection |
+| **Ex11** | Implement f⁻¹ (inverse) | 1D → 2D bijection |
+| **Property** | (f⁻¹ ∘ f) = id | Perfect round-trip both ways |
+
+You're building an **isomorphism** between spaces!
+
+```
+In Category Theory terms:
+[[0; 2¹⁶-1]]² ≅ [0, 1]
+
+(The ≅ symbol means "isomorphic to")
+```
+
+This means the two spaces have the **same structure**, just different representations.
+
+---
+
+### Why This Matters
+
+**In Computer Science:**
+
+1. **Data Serialization:** Convert multi-dimensional data to 1D for storage
+   ```
+   (x, y) coordinates → single float (Ex10)
+   Read from disk → recover (x, y) (Ex11)
+   ```
+
+2. **Hash Functions:** Map objects to indices
+   ```
+   grid coordinates → array index
+   array index → grid coordinates
+   ```
+
+3. **Spatial Indexing:** Organize 2D data on 1D structures
+   ```
+   B-trees, databases use space-filling curves
+   Store 2D geographic data in 1D index
+   ```
+
+4. **Morphisms:** Prove two structures are equivalent
+   ```
+   "These two spaces are the same algebraically"
+   Proven by showing bijective morphism
+   ```
+
+---
+
+### Summary: The Two Laws
+
+**You have it exactly right:**
+
+```
+(f⁻¹ ∘ f)(x, y) = (x, y)     ← "I can reverse the function and get back!"
+(f ∘ f⁻¹)(x) = x              ← "And it works going the other way too!"
+```
+
+Both express the same mathematical truth:
+- **f and f⁻¹ are perfect inverses**
+- **They form a bijection (one-to-one, onto)**
+- **Together they preserve all information**
+
+This is the pinnacle of your Boolean algebra journey! From sets and morphisms → to space-filling curves → to inverse functions. You've built up from pure theory to practical bijective mappings. 🎯
+
+
+Q:
+so it seems the f64 type is enough to represent the values. out of curiosity how many values can f64 represent in the space 0..1 included?
+A:
+About 9,007,199,254,740,993 distinct values in [0, 1] (i.e., 2⁵³ + 1).
+That’s because f64 has 53 bits of precision, so it can represent multiples of 2⁻⁵³ near 1, plus 0.
+
+So yes: f64 has far more than the 2³² values you need. f32 has only 24 bits of precision (~2²⁴ + 1 values in [0,1]), which is far less than 2³². So f32 cannot uniquely represent all your mapped values.

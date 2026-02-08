@@ -70,3 +70,6 @@ version = "0.1.0"
 [[package]]
 name = "ex11"
 version = "0.1.0"
+dependencies = [
+ "ex10",
+]

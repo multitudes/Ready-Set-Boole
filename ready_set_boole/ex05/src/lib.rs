@@ -77,11 +77,11 @@ pub fn negation_normal_form(formula: &str) -> String {
 /// # Examples
 ///
 /// ```
-/// use ex05::{to_nnf};
+/// use ex05::{ast_to_nnf};
 /// use ex03::parse_rpn;
 ///
 /// let tree = parse_rpn("AB&!").unwrap();
-/// let nnf = to_nnf(&tree);
+/// let nnf = ast_to_nnf(&tree);
 /// // nnf now represents A!B!|
 /// ```
 pub fn ast_to_nnf(node: &Node) -> Node {
