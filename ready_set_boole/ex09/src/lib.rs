@@ -1,11 +1,12 @@
 use ex03::{Node, parse_rpn};
+use ex04::get_variables;
 
 pub fn eval_set(formula: &str, sets: Vec<Vec<i32>>) -> Vec<i32> {
     let tree: Node = match parse_rpn(formula) {
         Ok(t) => t,
         Err(e) => {
             eprintln!("Error parsing formula: {}", e);
-            std::process::exit(1);
+            return vec![];
         }
     };
     let mut universe = Vec::new();
@@ -13,6 +14,14 @@ pub fn eval_set(formula: &str, sets: Vec<Vec<i32>>) -> Vec<i32> {
         universe.extend(s.clone());
     }
     let universe = clean(universe);
+    let variables = get_variables(formula);
+    if variables.len() != sets.len() {
+        eprintln!(
+            "Warning: Formula has {} variables, but {} sets provided. Extra sets will be ignored.",
+            variables.len(),
+            sets.len()
+        );
+    }
     evaluate_node(&tree, &sets, &universe)
 }
 

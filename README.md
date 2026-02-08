@@ -917,3 +917,246 @@ Because there was **no number that belonged to neither**, the "Neither" part of 
 | **Equiv** (`=`) | Shared elements **+** Shared absences |  |
 
 **Would you like to try a test case in your code like `eval_set("AB=", vec![vec![1], vec![1], vec![2]])`?** Since `2` is in the Universe but in neither A nor B, it should show up in the result!
+
+## bonus
+## Reading Mathematical Function Notation
+
+### The Expression Explained
+
+```
+Let f be a function and let A be a set such as:
+f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ² → A
+A ⊂ [0; 1] ⊂ ℝ
+```
+
+### Step-by-Step Reading
+
+**Line 1: The Domain (Input)**
+
+```
+f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ²
+```
+
+Reading from right to left (as mathematicians build up):
+
+1. **ℕ²** = "The Cartesian product ℕ × ℕ" = All pairs of natural numbers
+   - "Natural numbers squared" or "2D grid of natural numbers"
+
+2. **[[0; 2¹⁶ - 1]]²** = "The closed interval from 0 to 2¹⁶ - 1, squared"
+   - This means: pairs (x, y) where both x and y are in [0, 65535]
+   - In other words: {0, 1, 2, ..., 65535} × {0, 1, 2, ..., 65535}
+
+3. **⊂** = "is a subset of"
+   - Our specific range is a subset of all natural number pairs
+
+4. **(x, y) ∈** = "the pair (x, y) belongs to"
+
+5. **f :** = "the function f maps from"
+
+**Full reading:**
+> "f is a function that takes pairs (x, y) from the 2D grid of integers ranging from 0 to 2¹⁶ - 1 (which is 65535)"
+
+---
+
+**Line 2: The Codomain (Output Range)**
+
+```
+A ⊂ [0; 1] ⊂ ℝ
+```
+
+Reading from right to left:
+
+1. **ℝ** = "The real numbers" = All numbers on the number line
+
+2. **[0; 1]** = "The closed interval from 0 to 1"
+   - All real numbers between 0 and 1, inclusive
+   - Examples: 0, 0.5, 0.333..., 0.999..., 1
+
+3. **A ⊂** = "A is a subset of"
+
+**Full reading:**
+> "The set A (where f maps to) is a subset of the interval [0, 1], which itself is a subset of all real numbers"
+
+---
+
+### Complete Translation
+
+**In plain English:**
+
+> "Let f be a function that maps pairs of integers (x, y), where both x and y range from 0 to 65535, into some set A. The set A contains real numbers between 0 and 1."
+
+**In code terms (what you'd write in Rust):**
+
+```rust
+fn f(x: u16, y: u16) -> f64 {
+    // x ranges from 0 to 65535
+    // y ranges from 0 to 65535
+    // Output is a float between 0.0 and 1.0
+}
+```
+
+---
+
+### Breaking Down the Notation
+
+#### Domain Notation: [[0; 2¹⁶ - 1]]²
+
+**[[a; b]]** = Closed interval of integers from a to b
+- The double brackets [[...]] indicate **discrete** (integer) values
+- Single brackets [...] would indicate **continuous** (real) values
+
+**The "²" exponent:**
+- Means "Cartesian product with itself"
+- [[0; 2¹⁶ - 1]]² = [[0; 2¹⁶ - 1]] × [[0; 2¹⁶ - 1]]
+- All possible pairs (x, y) where x and y are both in that range
+
+**Why 2¹⁶ - 1?**
+- 2¹⁶ = 65536 (the number of values a u16 can hold)
+- 2¹⁶ - 1 = 65535 (the maximum value for u16)
+- Range: [0, 65535] = exactly all u16 values
+
+---
+
+#### Codomain Notation: A ⊂ [0; 1] ⊂ ℝ
+
+**[0; 1]** = Closed interval of reals from 0 to 1
+- Single brackets [...] indicate **continuous** (real) values
+- Includes 0, 1, and every real number in between
+- Examples: 0, 0.5, π/4, √2/2, 1
+
+**The chain of subsets:**
+```
+A ⊂ [0; 1] ⊂ ℝ
+
+A is inside [0; 1], which is inside ℝ
+```
+
+This tells us:
+1. A contains some (possibly all) numbers from [0, 1]
+2. All numbers in A are real numbers
+3. All numbers in A are between 0 and 1
+
+---
+
+### Connection to Your Ex10
+
+In **Ex10 (Curve Saturation)**, this notation describes your space-filling curve function!
+
+**The mathematical version:**
+```
+f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ² → A
+A ⊂ [0; 1] ⊂ ℝ
+```
+
+**Your Rust implementation:**
+```rust
+pub fn map(x: u16, y: u16, n: u16) -> f64 {
+    // Domain: (x, y) where x, y ∈ [0, 65535]
+    // Codomain: f64 value in [0.0, 1.0]
+}
+```
+
+**What it means:**
+1. **Input:** A coordinate pair (x, y) on a 65536 × 65536 grid
+2. **Output:** A single real number between 0 and 1
+3. **Purpose:** Map 2D discrete space to 1D continuous interval
+
+This is the **inverse** of a typical space-filling curve!
+- Typical: [0, 1] → [0, 1]² (1D to 2D)
+- Your Ex10: [[0; 2¹⁶ - 1]]² → [0, 1] (2D to 1D)
+
+---
+
+### Visual Representation
+
+```
+Domain (Input Space):
+┌─────────────────────┐
+│  (0, 65535)  65535  │
+│                     │  ← 2D Grid of integers
+│                     │     65536 × 65536 points
+│      (x, y)         │
+│                     │
+│  (0, 0)      65535  │
+└─────────────────────┘
+
+         ↓ f maps to
+
+Codomain (Output Space):
+├─────────────────────┤
+0                     1  ← Real number line
+                          Continuous values
+                          
+Example mappings:
+f(0, 0) = 0.0
+f(32767, 32767) ≈ 0.5
+f(65535, 65535) = 1.0
+```
+
+---
+
+### Notation Cheat Sheet
+
+| Symbol | Meaning | Example |
+|--------|---------|---------|
+| **[[a; b]]** | Discrete interval (integers) | [[0; 5]] = {0, 1, 2, 3, 4, 5} |
+| **[a; b]** | Continuous interval (reals) | [0; 1] = {all reals from 0 to 1} |
+| **A²** | Cartesian product A × A | ℕ² = ℕ × ℕ = pairs of naturals |
+| **⊂** | Subset (contained in) | {1, 2} ⊂ ℕ |
+| **∈** | Element of (belongs to) | 5 ∈ ℕ |
+| **→** | Maps to | f: A → B |
+| **ℕ** | Natural numbers | {0, 1, 2, 3, ...} |
+| **ℝ** | Real numbers | All numbers on number line |
+
+---
+
+### Common Variations
+
+**Discrete 2D → Discrete 1D:**
+```
+f : (x, y) ∈ [[0; 2¹⁶ - 1]]² → [[0; 2³² - 1]]
+
+// Your typical Ex10 implementation
+pub fn map(x: u16, y: u16) -> u32
+```
+
+**Continuous 1D → Continuous 2D:**
+```
+f : t ∈ [0; 1] → [0; 1]²
+
+// Classical space-filling curve
+fn space_filling(t: f64) -> (f64, f64)
+```
+
+**Discrete 1D → Discrete 2D:**
+```
+f⁻¹ : i ∈ [[0; 2³² - 1]] → [[0; 2¹⁶ - 1]]²
+
+// Inverse of your map function
+pub fn unmap(index: u32) -> (u16, u16)
+```
+
+---
+
+### Why This Notation Matters
+
+Understanding this notation helps you:
+
+1. **Understand the problem domain:**
+   - What types of inputs? (discrete integers vs continuous reals)
+   - What range of inputs? (0 to 65535)
+   - How many dimensions? (2D coordinate pairs)
+
+2. **Design the solution:**
+   - Output type? (real number between 0 and 1)
+   - Bijection required? (depends on subset notation)
+   - Continuous or discrete? (affects algorithm choice)
+
+3. **Verify correctness:**
+   - Are all inputs handled? (domain coverage)
+   - Are outputs in range? (codomain membership)
+   - Is mapping unique? (bijectivity)
+
+For your Ex10, this notation formally specifies that you need a function mapping **all 4,294,967,296 integer coordinate pairs** to **real values between 0 and 1**! 🎯
+
+

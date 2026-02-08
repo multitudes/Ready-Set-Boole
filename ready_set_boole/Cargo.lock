@@ -60,6 +60,7 @@ name = "ex09"
 version = "0.1.0"
 dependencies = [
  "ex03",
+ "ex04",
 ]
 
 [[package]]

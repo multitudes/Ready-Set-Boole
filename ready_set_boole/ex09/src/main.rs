@@ -102,4 +102,71 @@ fn main() {
     println!("    Sets: A=[], B=[]");
     let result = eval_set("AB|", vec![vec![], vec![]]);
     println!("    Result: {:?} (Expected: [])\n", result);
+
+    println!("\n--- Additional Test Cases ---");
+    println!("───────────────────────────────────────────\n");
+
+    // 11. COMPLEX NESTED LOGIC
+    let sets11 = vec![
+        vec![1, 2, 3], // A
+        vec![2, 3, 4], // B
+        vec![3, 4, 5], // C
+    ];
+    println!("11. Complex Nested: (A ^ B) & C");
+    println!(
+        "    Sets: A={:?}, B={:?}, C={:?}",
+        sets11[0], sets11[1], sets11[2]
+    );
+    println!("    A ^ B = {{1, 4}} (elements in A or B, but not both)");
+    println!("    {{1, 4}} & C = {{1, 4}} & {{3, 4, 5}} = {{4}}");
+    let result = eval_set("AB^C&", sets11);
+    println!("    AB^C& -> {:?} (Expected: [4])\n", result);
+
+    // 12. ERROR HANDLING: VARIABLE MISMATCH
+    println!("12. Error: Variable Mismatch (More Variables than Sets)");
+    let sets12 = vec![vec![1], vec![2]];
+    println!("    Formula: 'ABC|&' (3 variables: A, B, C)");
+    println!("    Sets: A={:?}, B={:?}", sets12[0], sets12[1]);
+    println!("    Missing: C (should error or default to empty)");
+    println!("    ABC|& ->");
+    let result = eval_set("ABC|&", sets12);
+    println!("    Result: {:?}\n", result);
+
+    // 13. ERROR HANDLING: INVALID RPN
+    println!("13. Error: Invalid RPN");
+    let sets13 = vec![vec![1, 2]];
+    println!("    Formula: 'A&' (AND needs two operands)");
+    println!("    Sets: A={:?}", sets13[0]);
+    println!("    A& ->");
+    let result = eval_set("A&", sets13);
+    println!("    Result: {:?}\n", result);
+
+    // 14. THE "EMPTY UNIVERSE" CASE
+    println!("14. Edge Case: Empty Universe");
+    let sets14: Vec<Vec<i32>> = vec![vec![], vec![]];
+    println!("    Formula: 'AB|' (A OR B)");
+    println!("    Sets: A=[], B=[]");
+    println!("    Universe: {{}}");
+    let result = eval_set("AB|", sets14);
+    println!("    AB| -> {:?} (Expected: [])\n", result);
+
+    // 15. REDUNDANT VARIABLES
+    println!("15. Redundant Variables: A & A");
+    let sets15 = vec![vec![1, 2, 3]];
+    println!("    Formula: 'AA&' (A AND A should equal A)");
+    println!("    Sets: A={:?}", sets15[0]);
+    let result = eval_set("AA&", sets15);
+    println!("    AA& -> {:?} (Expected: [1, 2, 3])\n", result);
+
+    // 16. DE MORGAN'S LAW VERIFICATION
+    println!("16. De Morgan's Law: !(A | B) = !A & !B");
+    let sets16a = vec![vec![1, 2], vec![2, 3]];
+    let sets16b = vec![vec![1, 2], vec![2, 3]];
+    println!("    Sets: A={:?}, B={:?}", sets16a[0], sets16a[1]);
+    println!("    Universe: {{1, 2, 3}}");
+    let result1 = eval_set("AB|!", sets16a);
+    let result2 = eval_set("A!B!&", sets16b);
+    println!("    AB|!  -> {:?}", result1);
+    println!("    A!B!& -> {:?}", result2);
+    println!("    Match: {} (Expected: true)\n", result1 == result2);
 }
