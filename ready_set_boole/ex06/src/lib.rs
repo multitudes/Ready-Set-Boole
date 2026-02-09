@@ -1,6 +1,65 @@
 use ex03::{Node, parse_rpn};
 use ex05::{ast_to_nnf, ast_to_rpn};
 
+/// Converts a Boolean formula to Conjunctive Normal Form (CNF).
+///
+/// Transforms a propositional formula in RPN notation to an equivalent CNF formula,
+/// where negations appear only directly after variables and the formula is structured
+/// as an AND of OR clauses (Product of Sums): $(C_1) \land (C_2) \land \ldots \land (C_n)$.
+///
+/// # Arguments
+///
+/// * `formula` - A valid RPN formula string (e.g., `"AB&C|"`)
+///
+/// # Returns
+///
+/// An equivalent CNF formula in RPN notation
+///
+/// # Panics
+///
+/// Panics if the input formula is not valid RPN or contains parse errors.
+///
+/// # Algorithm
+///
+/// 1. **Parse**: Convert RPN string to Abstract Syntax Tree (AST)
+/// 2. **NNF**: Transform to Negation Normal Form (push negations to variables)
+/// 3. **Distribute**: Apply distributivity law: $A \lor (B \land C) \equiv (A \lor B) \land (A \lor C)$
+/// 4. **Flatten**: Convert AST back to RPN string
+///
+/// # Examples
+///
+/// ```
+/// use ex06::conjunctive_normal_form;
+///
+/// // Negated AND becomes OR of negations (De Morgan's Law)
+/// assert_eq!(conjunctive_normal_form("AB&!"), "A!B!|");
+///
+/// // Distribution: (A & B) | C  →  (A | C) & (B | C)
+/// assert_eq!(conjunctive_normal_form("AB&C|"), "AC|BC|&");
+///
+/// // Already in CNF (unchanged)
+/// assert_eq!(conjunctive_normal_form("AB|C&"), "AB|C&");
+/// ```
+///
+/// # Mathematical Properties
+///
+/// **Distributivity Law (core transformation):**
+/// ```text
+/// A ∨ (B ∧ C) ⟺ (A ∨ B) ∧ (A ∨ C)
+/// ```
+///
+/// **CNF Structure:**
+/// - Outer operators: AND (conjunction) - the "Product"
+/// - Inner operators: OR (disjunction) - the "Sums"
+/// - Negations: Only on variables, never on compound expressions
+///
+/// **Time Complexity:** O(2^n) worst case due to exponential growth from distribution
+///
+/// **Applications:**
+/// - SAT solvers (standard input format)
+/// - Hardware verification
+/// - Automated theorem proving
+/// - Constraint satisfaction problems
 pub fn conjunctive_normal_form(formula: &str) -> String {
     // Parse RPN to AST
     let tree: Node = match parse_rpn(formula) {
@@ -10,6 +69,8 @@ pub fn conjunctive_normal_form(formula: &str) -> String {
             std::process::exit(1);
         }
     };
+    // alternate production code
+    // let tree = parse_rpn(formula).expect("Failed to parse formula");
     // Transform to NNF
     let nnf_tree = ast_to_nnf(&tree);
     // Transform to CNF

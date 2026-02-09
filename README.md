@@ -4,46 +4,53 @@ Ready, Set, Boole!
 The term "Boolean algebra" honors George Boole (1815–1864), a self-educated English mathematician. He introduced the algebraic system initially in a small pamphlet, The Mathematical Analysis of Logic, published in 1847 in response to an ongoing public controversy between Augustus De Morgan and William Hamilton, and later as a more substantial book, The Laws of Thought, published in 1854. Boole's formulation differs from that described above in some important respects. For example, conjunction and disjunction in Boole were not a dual pair of operations. Boolean algebra emerged in the 1860s, in papers written by William Jevons and Charles Sanders Peirce.
 
 The first systematic presentation of Boolean algebra and distributive lattices is owed to the 1890 Vorlesungen of Ernst Schröder.
-## workspaces
 
-As described in the docs I create a directory for the workspace:
-```
-$ mkdir ready_set_boole
-$ cd ready_set_boole
+## Rust workspaces
+
+To organize my project whch is a collectio of exercises I will create workspaces.
+As described in the Rust docs I first create a directory for the workspace:
+
+``` bash
+mkdir ready_set_boole
+cd ready_set_boole
 ```
 
 Then I manually create the Cargo.toml file:
+
 ```yaml
 [workspace]
 resolver = "3"
 ```
 
-Because the subject asks me for a "main" to test the single exercises I will add a binary called ready_set_boole_main just to run and play with the whole thing, Not really needed because each module-exercise will have a main, a lib.rs file with functions and tests.
+after creating the files manually I just need to type in the terminal:
 
-after creating the files manually I just need to add :
 ```rust
 cargo new ex00 --lib
 ```
-and so on for each new exercice. I will add the main.rs file manually as required by the subject so everyone is happy.
 
-## linting 
-I will use the rust analyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter.
+and so on for each new exercice. I will add the main.rs file manually as required by the subject.
 
-Great question! They're **different tools**:
+## linting / formatter
+
+I will use the rust analyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter. They are different tools.
 
 **Formatters** - Fix code style/spacing:
+
 - `rustfmt` - Reformats code to follow Rust style conventions
 - Example: `fn foo(a:u32)->u32{return a;}` → `fn foo(a: u32) -> u32 { return a; }`
 
 **Linters** - Find bugs/style issues:
+
 - `clippy` - Suggests improvements and catches common mistakes
 - Example: Warns about inefficient code, unused variables, better idioms, etc.
 
-**In your settings:**
+In my settings.json for vscode:
+
 ```json
 "editor.formatOnSave": true,
 "editor.defaultFormatter": "rust-lang.rust-analyzer"
 ```
+
 This uses **rustfmt** (formatter) to auto-format on save.
 
 ```json
@@ -52,21 +59,16 @@ This uses **rustfmt** (formatter) to auto-format on save.
   "source.fixAll.clippy": "explicit"
 }
 ```
+
 This uses **clippy** (linter) to check and auto-fix warnings on save.
 
-**Summary:**
-- ✅ **Formatter** (`rustfmt`) = Makes code look pretty
-- ✅ **Linter** (`clippy`) = Finds bugs & suggests improvements
+## boolean algebra precedences:
 
-Both run on save in your setup! 🦀
-
-## boolean algebra
-
-In Boolean algebra, **AND has higher precedence than OR**.
-
+In Boolean algebra, **AND has higher precedence than OR**.  
 So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
 
 **Precedence order (highest to lowest):**
+
 1. `!` (NOT) - highest
 2. `&` (AND)
 3. `|` (OR) - lowest
@@ -75,16 +77,15 @@ So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
 6. `=` (EQUIV) - lowest
 
 **Examples:**
+
 - `A & B | C` = `(A & B) | C`
 - `A | B & C` = `A | (B & C)`
 - `!A & B` = `(!A) & B`
 - `A & B & C | D` = `((A & B) & C) | D`
 
-This matches most programming languages and standard Boolean algebra notation! 
+This matches most programming languages and standard Boolean algebra notation!
 
-## comments
-
-### Documentation with `///`
+## Rust Documentation with `///`
 
 Rust uses `///` for documentation comments that generate HTML documentation. These go above the item you're documenting:
 
@@ -113,7 +114,7 @@ pub fn adder(a: u32, b: u32) -> u32 {
 Code blocks in doc comments are automatically tested by `cargo test`:
 
 ```bash
-$ cargo test --doc
+cargo test --doc
 ```
 
 This will run all the code examples in your `///` comments to ensure they compile and work correctly.
@@ -123,16 +124,17 @@ This will run all the code examples in your `///` comments to ensure they compil
 To generate and open the HTML documentation in your browser:
 
 ```bash
-$ cargo doc --open
+cargo doc --open
 ```
 
 Or if you're in a workspace, specify the package:
 
 ```bash
-$ cargo doc --package ex00 --open
+cargo doc --package ex00 --open
 ```
 
 This will:
+
 1. Generate HTML documentation in `target/doc/`
 2. Automatically open it in your default browser
 3. Include all public items with their documentation
@@ -140,12 +142,14 @@ This will:
 ## Ex00
 
 it will have this function signature in ex00:
+
 ```rust
 fn adder(a: u32, b: u32) -> u32;
 ```
 
 and I will add the following in the "main" top binary module so it will find the functions:
-```
+
+```yaml
 [package]
 name = "ready_set_boole_main"
 version = "0.1.0"
@@ -157,27 +161,126 @@ ex00 = { path = "../ex00" }
 
 This is in the cargo.toml in the ready_set_boole_main module which is just to play with the code and test all those modules together.
 
+## ex00 - Addition
+
+Implements addition using only bitwise operations (no `+` operator). Uses the binary addition algorithm with XOR for sum and AND for carry propagation.
+
+**Algorithm:** :
+
+```pseudocode
+while b > 0:
+carry = a AND b // Find bits that generate a carry
+a = a XOR b // Sum without carry
+b = carry << 1 // Shift carry left for next position
+return a
+```
+
+1. XOR computes the sum without carry
+2. AND (shifted left) computes the carry
+3. Repeat until no carry remains
+
+**Time Complexity:** O(log max(a,b)) ≈ O(32) = O(1) for u32
+
+**Example:**
+
+```text
+5 + 3 = 8
+0101 (5)
+0011 (3)
+Step 1: XOR = 0110 (sum without carry)
+AND<<1 = 0010 (carry)
+Step 2: XOR = 0100 (sum without carry)
+AND<<1 = 0100 (carry)
+Step 3: XOR = 0000 (sum without carry)
+AND<<1 = 1000 (carry = 8)
+Result: 1000 = 8
+```
+
+See `ex00/src/lib.rs` for detailed documentation.
+
+## ex01 - Multiplication
+
+Implements multiplication using only bitwise operations (no `*` operator). Uses the binary long multiplication algorithm: shift and add based on each bit of the multiplier.
+
+**Algorithm:** For each bit set in `b`, add `a << bit_position` to the result.
+
+```pseudocode
+result = 0
+while b > 0:
+if b AND 1 == 1: // Check if lowest bit of b is set
+result = result + a // Add current value of a to result
+a = a << 1 // Shift a left (multiply by 2)
+b = b >> 1 // Shift b right (divide by 2)
+return result
+```
+
+**Time Complexity:** O(log b) = O(32) = O(1) constant time for u32
+
+1. O(log b) — The General Case. 
+
+The algorithm processes each bit of the multiplier b:
+b has at most log₂(b) bits.  
+
+Example: b = 1000 has ⌈log₂(1000)⌉ = 10 bits. 
+The loop runs once per bit → O(log₂ b) iterations. 
+2. O(32) — For u32 Specifically.
+
+For u32 type:
+
+Maximum value: 2³² - 1.
+Number of bits: exactly 32 bits.
+So log₂(u32::MAX) = 32.
+The loop runs at most 32 times → O(32).
+
+**Example:**
+
+``` math
+3 × 5 = 15
+
+0011 (3)
+× 0101 (5)
+0011 ← 3 × bit₀
+0000 ← 3 × bit₁ (shifted)
+0011 ← 3 × bit₂ (shifted)
+1111 = 15
+```
+
+See `ex01/src/lib.rs` for detailed documentation.
+
 ## ex02 - Gray code
+
 Gray code is used to prevent errors in hardware because only one bit changes at a time (e.g., going from 1 to 2 in binary is 01 to 10—two bits changed! In Gray code, it's 01 to 11).
 
+The prototype of the function to write is the following: `fn gray_code(n: u32) -> u32;`  
+
 The formula is incredibly simple using bitwise operators:
-```
+
+```bool
 G=n⊕(n≫1)
 ```
 
 ## Ex03
 
-I had to understand the => implication truth table:
+> write a function that takes as input a string that contains a propositional formula in reverse polish notation, evaluates this formula, then returns the result.
 
-This is one of those concepts that feels counterintuitive until you look at the **Truth Table**. In logic, this is known as **Material Implication**.
+## Operator Symbols
 
-The best way to understand why is to think about what it means for a promise (an implication) to be **broken**.
+| Symbol | Mathematical Equivalent | Description |
+|--------|------------------------|-------------|
+| `0` | ⊥ | false |
+| `1` | ⊤ | true |
+| `!` | ¬ | Negation |
+| `&` | ∧ | Conjunction |
+| `\|` | ∨ | Disjunction |
+| `^` | ⊕ | Exclusive disjunction |
+| `>` | ⇒ | Material condition |
+| `=` | ⇔ | Logical equivalence |
 
----
+Two of those operators were new to me:
 
-### 1. The "Contract" Analogy
+### Material condition 
 
-Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
+The => implication in logic, is known as **Material Implication** as well. Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
 
 There are four possible scenarios:
 
@@ -188,10 +291,6 @@ There are four possible scenarios:
 
 Notice that the **only** time the statement is **False** is when the "If" () happens, but the "Then" () does not.
 
----
-
-### 2. Comparing the Truth Tables
-
 Let's look at the output of vs :
 
 |  |  |  |  |  |
@@ -201,305 +300,625 @@ Let's look at the output of vs :
 | 1 | 0 | **0** | 0 | **0** () |
 | 1 | 1 | **1** | 0 | **1** () |
 
-The columns match perfectly.
-
----
-
-### 3. The Logical Intuition
-
 The expression basically says:
-
 > "Either the condition () didn't happen, OR the result () did."
 
 If is false, the whole thing is true (we don't care about ). This is called **vacuous truth**. If is true, then for the whole expression to be true, **must** be true. This is exactly what "If , then " means.
 
-### implementation - stack
-At first I did a stack based approach. 
-```rust
-pub fn eval_formula(formula: &str) -> bool {
-    let mut stack: Vec<bool> = Vec::new();
+### Logical Equivalence (⇔)
 
-    for c in formula.chars() {
-        match c {
-            '0' => stack.push(false),
-            '1' => stack.push(true),
-            '&' | '|' | '^' | '>' | '=' => {
-                let b = stack.pop().expect("Empty stack");
-                let a = stack.pop().expect("Empty stack");
-                stack.push(match c {
-                    '&' => a & b,
-                    '|' => a | b,
-                    '^' => a ^ b,
-                    '>' => !a | b, // Logical implication: A => B is same as !A | B
-                    '=' => a == b, // Logical equivalence
-                    _ => unreachable!(),
-                    });
-            }
-            _ => continue, // Ignore whitespace or invalid chars if necessary
-        }
-    }
-    // if the formula is correct then I just have one value in the stack left
-    stack.pop().expect("Final stack is empty")
+The `=` symbol represents **Logical Equivalence** (also written as ⇔ or ≡). It means "if and only if" (iff).
+
+**Definition:** Two statements are equivalent when they always have the **same truth value**.
+
+**Example:** "The light is on ⇔ The switch is up"
+
+This means:
+- If the light is on, then the switch must be up
+- If the switch is up, then the light must be on
+- They **always agree**
+
+#### Truth Table
+
+| A | B | A = B | Meaning |
+|---|---|-------|---------|
+| 0 | 0 | **1** | Both false → They agree ✓ |
+| 0 | 1 | **0** | Different → They disagree ✗ |
+| 1 | 0 | **0** | Different → They disagree ✗ |
+| 1 | 1 | **1** | Both true → They agree ✓ |
+
+**Key insight:** `A = B` is true when A and B have the **same value** (both true OR both false).
+
+#### Equivalence vs Equality
+
+**In logic:**
+```
+A = B  means  "A and B always match"
+```
+
+**Equivalent to:**
+
+```
+(A → B) ∧ (B → A)   "A implies B AND B implies A"
+```
+
+**Also equivalent to:**
+
+```
+(A ∧ B) ∨ (¬A ∧ ¬B)   "Both true OR both false"
+```
+
+#### Examples
+
+**Example 1: Mathematical equivalence**
+
+```
+(x > 5) = (x ≥ 6)   for integers
+
+True when x = 7:  (True = True)  → True ✓
+True when x = 3:  (False = False) → True ✓
+False when x = 5.5: Would break if x could be real!
+```
+
+**Example 2: Logical equivalence**
+
+```
+"It's raining" = "The ground is wet"   (in a controlled scenario)
+
+Both true:  Raining AND ground wet → Equivalent ✓
+Both false: Not raining AND ground dry → Equivalent ✓
+One true, one false: NOT equivalent ✗
+```
+
+**Example 3: Circuit logic**
+```
+Switch A = Switch B   (for a two-way light switch)
+
+Both ON:  Light is on → Equivalent ✓
+Both OFF: Light is off → Equivalent ✓
+One ON, one OFF: Light state depends on wiring ✗
+```
+
+#### Why It's Called "If and Only If"
+
+**Breaking down "A ⇔ B":**
+
+1. **"If A then B"** (A → B)
+   - When A is true, B must be true
+   
+2. **"If B then A"** (B → A)  
+   - When B is true, A must be true
+
+3. **Together:** They **force each other** to have the same value
+
+**Example:**
+
+```text
+"You pass the exam ⇔ You scored ≥ 60%"
+
+If you pass → You scored ≥ 60% (first direction)
+If you scored ≥ 60% → You pass (second direction)
+They're tied together!
+```
+
+#### Connection to XOR (Exclusive OR)
+
+**Important relationship:**
+
+```text
+A = B  is the OPPOSITE of  A ⊕ B
+
+Equivalence = NOT(XOR)
+¬(A ⊕ B) = (A = B)
+```
+
+**Comparison:**
+
+| A | B | A ⊕ B (XOR) | A = B (Equivalence) |
+|---|---|-------------|---------------------|
+| 0 | 0 | 0 (same)    | **1** (agree) |
+| 0 | 1 | 1 (different) | **0** (disagree) |
+| 1 | 0 | 1 (different) | **0** (disagree) |
+| 1 | 1 | 0 (same)    | **1** (agree) |
+
+**XOR asks:** "Are they different?"  
+**Equivalence asks:** "Are they the same?"
+
+#### In Set Theory
+
+In your Ex09 set evaluation, `A = B` means:
+
+```text
+Elements that belong to BOTH sets OR belong to NEITHER set
+
+(A ∩ B) ∪ (A^c ∩ B^c)
+```
+
+**Example:**
+```text
+Universe: {1, 2, 3, 4}
+A = {1, 2}
+B = {2, 3}
+
+A = B:
+- Elements in both: {2} ✓
+- Elements in neither: {4} ✓  
+- Result: {2, 4}
+```
+
+**Why {2, 4}?**
+
+- 1: In A but not B → Disagree ✗
+- 2: In both → Agree ✓
+- 3: In B but not A → Disagree ✗
+- 4: In neither → Agree ✓
+
+#### Practical Applications
+
+**1. Digital Circuits (XNOR gate)**
+
+```text
+A = B creates an XNOR gate
+Output is HIGH when inputs match
+Used in equality checkers
+```
+
+**2. Password Verification**
+
+```text
+Stored Password = Entered Password
+True only if they're exactly the same
+```
+
+**3. Synchronization**
+
+```text
+State A = State B
+Used to check if two systems are in sync
+```
+
+**4. Mathematical Proofs**
+
+```text
+To prove A ⇔ B, you must prove:
+1. A → B (forward direction)
+2. B → A (backward direction)
+```
+
+#### Summary Table
+
+| Aspect | Material Implication (→) | Logical Equivalence (⇔) |
+|--------|-------------------------|------------------------|
+| **Symbol** | `>` | `=` |
+| **Meaning** | "If...then" | "If and only if" |
+| **False when** | A true, B false | A and B differ |
+| **True when** | B true OR A false | A and B match |
+| **Composition** | ¬A ∨ B | (A → B) ∧ (B → A) |
+| **Relationship** | One-way | Two-way (bidirectional) |
+
+#### Visual Mnemonic
+
+**Implication (→):**
+```
+A → B
+"A forces B"
+If A happens, B must happen
+But B can happen without A
+```
+
+**Equivalence (⇔):**
+```
+A ⇔ B
+"A and B are locked together"
+If either changes, both must change
+They always match
+```
+
+#### Mathematical Notation Variants
+
+Different fields use different symbols:
+
+| Symbol | Meaning | Usage |
+|--------|---------|-------|
+| `=` | Equivalence | Your exercise, some logic texts |
+| `⇔` | Equivalence | Most logic textbooks |
+| `≡` | Equivalence | Some mathematical logic |
+| `↔` | Equivalence | Alternative arrow notation |
+| `iff` | Equivalence | "If and only if" (written) |
+
+
+### implementation
+
+As the subject suggested I create an ast, an Abstract Syntax Tree like:
+
+```text
+      OR (|)
+     /    \
+   AND(&)  C
+   /   \
+  A     B
+```
+
+This is the first major exercise in the module. Here I start with my node implementation for the ast:
+```rust
+pub enum Node {
+    /// A boolean constant: true (1) or false (0)
+    Value(bool),
+    ///Will be used in later exercises: holds variable 'A', 'B', etc.
+    Variable(char),
+    /// Logical NOT: ¬a
+    Not(Box<Node>),
+    /// Logical AND: a ∧ b
+    And(Box<Node>, Box<Node>),
+    /// Logical OR: a ∨ b
+    Or(Box<Node>, Box<Node>),
+    /// Logical XOR: a ⊕ b
+    Xor(Box<Node>, Box<Node>),
+    /// Material implication: a ⇒ b
+    Imply(Box<Node>, Box<Node>),
+    /// Logical equivalence: a ⇔ b
+    Equiv(Box<Node>, Box<Node>),
 }
 ```
 
-and then as the subject suggested I refactored to a ast, a binary tree where each node has two children like a & b. but the 'and' property is associative, so this could be a regular tree as well (not implemented yet). We can add a debug description for the tree which can print the tree also not yet implemented but possible.
-However, it is a bit nonsense to use a regular tree in this case, since I use the polish notation and this means I expect two operands like 110|& would be (1 | 0) & 1. using a regular tree I would not know if the or takes two or tree operands... like (1 | 0 | 1) & ??
+## Ex04 - Truth Table
 
-## Ex05 
+Generates and displays a complete truth table for a Boolean formula with variables.
 
-Since you have already built the **AST (Tree)**, you are in a perfect position. Converting to **Negation Normal Form (NNF)** is essentially a "Tree-to-Tree" transformation.
+**Input:** RPN formula with variables A-Z (e.g., `AB&C|` = `(A ∧ B) ∨ C`)
+
+**Output:** Markdown truth table with all 2^n rows (n = number of variables)
+
+**Algorithm:**
+1. Parse RPN formula to AST
+2. Extract all variables from the formula
+3. Generate all 2^n variable combinations (truth assignments)
+4. Evaluate formula for each combination
+5. Display as formatted table
+
+**Example:**
+```
+Formula: AB&C|
+Variables: A, B, C (3 variables → 8 rows)
+
+| A | B | C | Result |
+|---|---|---|--------|
+| 0 | 0 | 0 |   0    |
+| 0 | 0 | 1 |   1    |
+| 0 | 1 | 0 |   0    |
+| 0 | 1 | 1 |   1    |
+| 1 | 0 | 0 |   0    |
+| 1 | 0 | 1 |   1    |
+| 1 | 1 | 0 |   1    |
+| 1 | 1 | 1 |   1    |
+```
+
+**Time Complexity:** O(2^n) where n = number of variables
+
+**Space Complexity:** O(2^n) for storing the table
+
+See `ex04/src/lib.rs` for detailed documentation.
+
+## Ex05
+
+Since I have already built the **AST (Tree)**, converting to **Negation Normal Form (NNF)** is essentially a "Tree-to-Tree" transformation.
 
 In NNF, negations (`!`) are only allowed to touch variables. To get there, you apply **De Morgan's Laws** and the **Double Negation Law** to "push" the NOT operators down from the top of the tree to the leaves.
 
----
-
 ### 1. The Transformation Rules
 
-You need to handle three main scenarios for a `NOT` node:
+We need to handle three main scenarios for a `NOT` node:
 
-| Case | Logical Rule | Transformation |
-| --- | --- | --- |
-| **Double Negation** |  | `Not(Not(A))` → `A` |
-| **De Morgan (AND)** |  | `Not(And(A, B))` → `Or(Not(A), Not(B))` |
-| **De Morgan (OR)** |  | `Not(Or(A, B))` → `And(Not(A), Not(B))` |
+| Case | Transformation |
+| --- | --- |
+| **Double Negation** | `Not(Not(A))` → `A` |
+| **De Morgan (AND)** | `Not(And(A, B))` → `Or(Not(A), Not(B))` |
+| **De Morgan (OR)** | `Not(Or(A, B))` → `And(Not(A), Not(B))` |
 
-**Wait! What about `>` and `=`?**
-Before applying NNF, you must eliminate Implication and Equivalence:
+What about `>` and `=`? 
+Before applying NNF, we must eliminate Implication and Equivalence:
 
 * A > B becomes ¬A | B
 * A = B becomes (A & B) | (¬A & ¬B)
 
----
-
 ### 2. How to implement it in Rust
 
-You should write a recursive function `ast_to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.
+We will write a recursive function `ast_to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.  
+The subject asks for a **string** in RPN as the return value. We'll need a helper function to turn your tree back into a string:
 
-```rust
-fn negate(node: Node) -> Node {
-    match node {
-        Node::Value(b) => Node::Value(!b),
-        Node::Variable(c) => Node::Not(Box::new(Node::Variable(c))),
-        Node::Not(child) => *child, // Double Negation: !!A -> A
-        Node::And(l, r) => Node::Or(Box::new(negate(*l)), Box::new(negate(*r))), // !(A & B) -> !A | !B
-        Node::Or(l, r) => Node::And(Box::new(negate(*l)), Box::new(negate(*r))), // !(A | B) -> !A & !B
-        // For Ex05, you'll need to handle Imply/Equiv here too or convert them first!
-        _ => todo!("Handle other operators"),
-    }
-}
-
-pub fn ast_to_nnf(node: Node) -> Node {
-    match node {
-        Node::Not(child) => negate(ast_to_nnf(*child)),
-        Node::And(l, r) => Node::And(Box::new(ast_to_nnf(*l)), Box::new(ast_to_nnf(*r))),
-        Node::Or(l, r) => Node::Or(Box::new(ast_to_nnf(*l)), Box::new(ast_to_nnf(*r))),
-        // Leaf nodes stay as they are
-        other => other,
-    }
-}
-```
-
----
-
-### 3. The 42 Requirement: RPN Output
-
-The subject asks for a **string** in RPN as the return value. You'll need a helper function to turn your tree back into a string:
-
-```rust
-fn tree_to_rpn(node: &Node) -> String {
-    match node {
-        Node::Value(b) => if *b { "1".to_string() } else { "0".to_string() },
-        Node::Variable(c) => c.to_string(),
-        Node::Not(child) => format!("{}!", tree_to_rpn(child)),
-        Node::And(l, r) => format!("{}{}&", tree_to_rpn(l), tree_to_rpn(r)),
-        // ... etc
-    }
-}
-```
-
-### Why your "Tree" approach is the winner:
-
-Doing this with strings (regex or find/replace) is almost impossible because of nested parentheses logic. With the Tree, you are just moving "Boxes" around.
-
-**Watch out for the "Order of Operations":**
+**The "Order of Operations":**
 
 1. **Convert** `>` and `=` into `&`, `|`, and `!`.
 2. **Push** `!` down using the `negate` logic above.
 3. **Simplify** double negations.
 
-## Ex06 - CNF and DNF
+## Ex06 - Conjunctive Normal Form (CNF)
 
-Here's a comprehensive explanation of CNF and DNF:
+Converts a Boolean formula to **Conjunctive Normal Form** - a standardized format required for SAT solvers and automated reasoning systems.
 
-### CNF (Conjunctive Normal Form):
+**Requirement:** Transform RPN formula so that:
+- Every negation (`!`) appears directly after a variable
+- Every conjunction (`&`) appears at the end of the formula
+- Result is an AND of ORs: `(A|B|C) & (D|E) & (F)`
 
-- A conjunction (AND) of disjunctions (OR)
-- Format: (A | B | C) & (D | E) & (F)
-- Example: AB|C& means (A | B) & C
+**Input:** RPN formula (e.g., `AB&!`)  
+**Output:** Equivalent CNF formula (e.g., `A!B!|`)
 
-### DNF (Disjunctive Normal Form):
+### What is CNF?
 
-- A disjunction (OR) of conjunctions (AND)
-- Format: (A & B & C) | (D & E) | (F)
-- Example: AB&CD&| means (A & B) | (C & D)
-
-To convert NNF to CNF, use distributivity: Push OR down over AND
-
-To convert NNF to DNF, use distributivity: Push AND down over OR
-
-### Why CNF?
-
-However, the "magic" of CNF is how we write the internals of each individual rule so the computer can understand them. While the rules are connected by AND, each rule itself must be expressed as a "Sum" (an OR).
-
-Here is how those specific examples translate from "Human Rules" into "CNF Clauses":
-
-1. "Every flight must have at least one Captain"
-
-Imagine a flight has three possible crew members: Smith, Jones, and Brown.
-
-Logical requirement: (Smith is Captain) OR (Jones is Captain) OR (Brown is Captain).
-
-CNF Clause: (S∨J∨B)
-
-Why it works: If the solver tries to set all three to "False," the clause becomes false, and the solver knows that's an invalid schedule.
-
-2. "If it lands in Berlin, the crew must rest"
-
-This is an Implication: Berlin⟹Rest.
-
-As you learned in Ex05, an implication A⟹B is equivalent to ¬A∨B.
-
-CNF Clause: (¬Berlin∨Rest)
-
-Why it works: This says: "Either we didn't land in Berlin, OR we are resting." The only thing forbidden is landing in Berlin and not resting.
-
-3. "Pilot A cannot fly more than 8 hours"
-
-This is usually a "Mutual Exclusion" rule. If we have two shifts (S1,S2) that would total more than 8 hours, the rule is: "You cannot do both."
-
-Logic: ¬(S1∧S2)
-
-Applying De Morgan (Ex05 again!): ¬S1∨¬S2
-
-CNF Clause: (¬S1∨¬S2)
-
-Why it works: It forces the solver to pick S1, or S2, or neither—but never both.
-
-### The Big Picture: The "Product of Sums"
-
-When you combine them, the SAT solver sees one giant formula where every single "OR" clause must be satisfied simultaneously:
-
-(Pilot₁ ∨ Pilot₂) ∧ (¬Berlin ∨ Rest) ∧ (¬S1 ∨ ¬S2) …
-
-This is why your Ex06 is so important. A scheduler doesn't just need one rule; it needs to find a solution that satisfies all rules at once. By converting your logic into a "Product of Sums" (CNF), you are creating a checklist where the computer can't move on until every single "OR" bracket has at least one "True" inside it.
-
-### CNF Distributivity
-
-Of the two distributivity laws, only the second one is needed for CNF:
+**Conjunctive Normal Form (CNF)** is a standardized way to write Boolean formulas as:
 
 ```
-(A ∨ (B ∧ C)) ⇔ ((A ∨ B) ∧ (A ∨ C))
-(A ∧ (B ∨ C)) ⇔ ((A ∧ B) ∨ (A ∧ C))
+(Clause₁) AND (Clause₂) AND (Clause₃) AND ...
 ```
 
-CNF requires the second rule, while DNF requires the first one.
+Where each clause is an OR of literals:
+```
+(A | B | ¬C) ∧ (¬A | D) ∧ (B | ¬D)
+```
 
-Think of the name to remember which is which:
+**Key characteristics:**
+- ✅ Outer operator: AND (conjunction) - the "Product"
+- ✅ Inner operators: OR (disjunction) - the "Sums"
+- ✅ Also called "Product of Sums"
 
-- **Conjunctive Normal Form (CNF)**: The "Main" connector is the Conjunction (AND). You want the ∧ on the outside.
-- **Disjunctive Normal Form (DNF)**: The "Main" connector is the Disjunction (OR). You want the ∨ on the outside.
+**RPN Example:**
+```
+Formula: AB|C&
+Infix: (A | B) & C
+CNF: Already in CNF (AND at top level)
+```
 
-### The "CNF Algorithm" in 3 Steps:
+### CNF vs DNF
 
-1. **NNF First**: Run your negation_normal_form from Ex05.
-2. **Simplify**: Ensure there are no >, =, or ^ left.
-3. **Distribute OR over AND**:
-   - Walk the tree recursively.
-   - Every time you see Node::Or(left, right):
-     - If right is an And(B, C), return And(Or(left, B), Or(left, C)).
-     - If left is an And(A, B), return And(Or(A, right), Or(B, right)).
+| Property | CNF (Conjunctive) | DNF (Disjunctive) |
+|----------|------------------|-------------------|
+| **Outer operator** | AND (∧) | OR (∨) |
+| **Inner operators** | OR (\|) | AND (&) |
+| **Structure** | (A\|B) & (C\|D) | (A&B) \| (C&D) |
+| **Name** | Product of Sums | Sum of Products |
+| **Used for** | SAT solvers | Circuit minimization |
+
+**Memory trick:** 
+- **C**NF = **C**onjunction (AND) on the outside
+- **D**NF = **D**isjunction (OR) on the outside
+
+### Why CNF Matters
+
+CNF is the **standard input format** for SAT solvers because:
+
+**1. Efficient evaluation:** Check if ANY clause fails (short-circuit)
+
+**2. Natural constraint representation:**
+```
+Rule: "Every flight must have a pilot"
+CNF: (PilotA | PilotB | PilotC)
+Meaning: At least one must be true
+```
+
+**3. Real-world applications:**
+- **Scheduling**: Aircraft crew assignments
+- **Hardware verification**: Circuit correctness proofs
+- **AI planning**: Action preconditions
+- **Sudoku solvers**: Cell value constraints
+
+### Real-World Examples
+
+#### Example 1: Flight Scheduling
+
+**Rule:** "Every flight must have at least one captain"
+
+**Variables:** Smith (S), Jones (J), Brown (B)
+
+**CNF clause:** `(S | J | B)`
+
+**Why it works:** If all three are false, the clause fails → invalid schedule
+
+#### Example 2: Constraint Implications
+
+**Rule:** "If landing in Berlin, crew must rest"
+
+**Implication:** `Berlin → Rest`
+
+**Convert to CNF:** 
+```
+A → B  ≡  ¬A | B    (from ex05)
+¬Berlin | Rest
+```
+
+**CNF clause:** `(¬Berlin | Rest)`
+
+**Why it works:** Only fails when `Berlin=true` and `Rest=false`
+
+#### Example 3: Mutual Exclusion
+
+**Rule:** "Pilot cannot work both morning and evening shifts"
+
+**Logic:** `¬(Morning ∧ Evening)`
+
+**Apply De Morgan's Law:**
+```
+¬(A ∧ B) ≡ ¬A | ¬B
+```
+
+**CNF clause:** `(¬Morning | ¬Evening)`
+
+**Why it works:** Forces at most one shift to be true
+
+### The Algorithm
+
+**Step 1: Convert to NNF** (use ex05)
+- Push all negations down to variables
+- Eliminate `>` and `=` operators
+
+**Step 2: Apply Distributivity**
+- Use the law: `A | (B & C) ≡ (A | B) & (A | C)`
+- Recursively distribute OR over AND
+
+**Step 3: Flatten to RPN**
+- Convert AST back to RPN string
+- Ensure ANDs appear at the end
+
+### Distributivity Law for CNF
+
+The **key transformation** is:
+
+```
+A ∨ (B ∧ C) ⟺ (A ∨ B) ∧ (A ∨ C)
+```
+
+**Visual example:**
+```
+      OR                AND
+     /  \              /   \
+    A   AND    →    OR     OR
+       /  \         / \    / \
+      B   C        A  B   A  C
+```
+
+**Why this works:**
+```
+Truth: A is true, OR (both B and C are true)
+Equivalent: (A is true OR B is true) AND (A is true OR C is true)
+```
+
+**Opposite law (for DNF):**
+```
+A ∧ (B ∨ C) ⟺ (A ∧ B) ∨ (A ∧ C)
+```
+
+### Implementation Sketch
+
+```rust
+pub fn conjunctive_normal_form(formula: &str) -> String {
+    // Parse RPN to AST
+    let tree: Node = match parse_rpn(formula) {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("Error parsing formula: {}", e);
+            std::process::exit(1);
+        }
+    };
+    // Transform to NNF
+    let nnf_tree = ast_to_nnf(&tree);
+    // Transform to CNF
+    let cnf_tree = to_cnf(nnf_tree);
+    // Convert back to RPN
+    ast_to_rpn(&cnf_tree)
+}
+```
+
+### Example Transformation
+
+**Input:** `AB&!`  
+**Infix:** `¬(A ∧ B)`
+
+**Step 1 - NNF (De Morgan's Law):**
+```
+¬(A ∧ B) → ¬A ∨ ¬B
+```
+
+**Step 2 - Already in CNF:**
+```
+(¬A ∨ ¬B)  ← Single clause
+```
+
+**Output:** `A!B!|`
+
+**Complex example:**
+
+**Input:** `AB|CD|&`  
+**Infix:** `(A ∨ B) ∧ (C ∨ D)`
+
+**Already in CNF:**
+```
+Two clauses ANDed together
+(A ∨ B) ∧ (C ∨ D)
+```
+
+**Output:** `AB|CD|&` (unchanged)
+
+**Distribution example:**
+
+**Input:** `AB&C|`  
+**Infix:** `(A ∧ B) ∨ C`
+
+**Apply distributivity:**
+```
+(A ∧ B) ∨ C  →  (A ∨ C) ∧ (B ∨ C)
+```
+
+**Output:** `AC|BC|&`
+
+### Time Complexity
+
+**Worst case:** Exponential in formula size
+
+**Why?** Distributivity can cause exponential growth:
+
+```
+(A₁ ∨ B₁) ∧ (A₂ ∨ B₂) ∧ ... ∧ (Aₙ ∨ Bₙ)
+
+Distributed fully → 2ⁿ clauses
+```
+
+**Practical tip:** Most real-world formulas don't hit worst case
 
 ### Karnaugh Maps (K-Maps) - Optional Bonus
 
-**Karnaugh Maps (K-maps)** are a visual method to **simplify Boolean expressions** by grouping terms to eliminate redundant variables.
+**K-Maps** are a visual method to **simplify** CNF/DNF by eliminating redundant terms.
 
-#### What is CNF Simplification?
+#### What is K-Map Simplification?
 
-Your CNF might be **logically correct but redundant**. For example:
-
-```
-(A | B) & (A | !B) = A
-```
-
-A K-map helps you find these redundancies and produce a **minimal CNF**.
-
-#### How K-maps Work
-
-1. **Draw a truth table grid** (2D for 2-4 variables)
-2. **Mark cells** where the formula is `true`
-3. **Group adjacent 1s** in powers of 2 (1, 2, 4, 8...)
-4. **Extract simplified terms** from each group
-
-#### Example: `AB|A!B|`
+Your CNF might be correct but **redundant**:
 
 ```
-    B  !B
-A   1   1   <- Both cells are 1, so group them
-!A  0   0
+(A | B) & (A | ¬B) = A   ← Can be simplified
 ```
 
-The group covers both `B` values → **A doesn't depend on B** → Simplified: `A`
+K-Maps find these redundancies to produce **minimal CNF**.
 
-#### Why It Matters
+#### How K-Maps Work
 
-For digital circuit design:
-- ✅ Fewer gates = cheaper hardware
-- ✅ Faster circuits
+1. Draw truth table as 2D grid (Gray code ordering)
+2. Mark cells where formula = 1
+3. Group adjacent 1s in powers of 2 (1, 2, 4, 8...)
+4. Extract simplified terms from groups
+
+**Example: `AB|A!B|` → `A`**
+
+```
+    B  ¬B
+A   1   1   ← Both cells are 1, group them
+¬A  0   0
+```
+
+Group covers both B values → **B is irrelevant** → Result: `A`
+
+#### Why K-Maps Matter
+
+For **digital circuit design:**
+- ✅ Fewer logic gates = cheaper hardware
+- ✅ Faster circuits (fewer propagation delays)
 - ✅ Lower power consumption
 
-#### Implementation Notes
+#### K-Map vs Your Implementation
 
-K-map simplification is **complex** because:
-- You need to handle 4+ variables (3D/4D grids)
-- Finding optimal groupings is NP-hard
-- Tools like Quine-McCluskey algorithm automate this
+**For Ready Set Boole:**
+- Evaluators expect: **Correct CNF** (not necessarily minimal)
+- K-Map simplification: **Optional bonus** (complex to implement)
 
-**For your project:** Implementing K-map simplification is **optional** but impressive. If you do:
-1. Convert CNF to truth table
-2. Apply grouping algorithm
-3. Generate minimal CNF from groups
+**Comparison:**
 
-#### A Brief History of K-Maps
+| Approach | Use Case | Difficulty |
+|----------|----------|------------|
+| **Distributive Law** | Generate CNF (your code) | Medium |
+| **K-Maps** | Simplify by hand (2-4 vars) | Easy |
+| **Quine-McCluskey** | Automate simplification | Hard |
 
-A **Karnaugh Map (K-Map)** is a visual method used to simplify Boolean algebra expressions without having to struggle through complex algebraic theorems or the recursive "explosions" of the distributive law.
+**History:** Invented by Maurice Karnaugh (1953), K-Maps use Gray code ordering so adjacent cells differ by only one variable.
 
-Invented by Maurice Karnaugh in 1953, it is essentially a **truth table rearranged into a 2D grid** where the cells are ordered using **Gray Code** (only one bit changes between adjacent cells).
-
-#### Why is it noteworthy?
-
-##### 1. Visual Pattern Recognition vs. Algebraic Grunt Work
-
-In your current Rust project, you are using the **Distributive Law**. As you've seen, it explodes into multiple clauses. A K-Map allows you to look at the "1s" (or "0s") on a grid and circle groups of 2, 4, or 8 cells. Each circle represents a simplified term.
-
-* **The "Magic":** If a variable changes state (e.g., goes from 0 to 1) within a circle, that variable is redundant and can be deleted.
-
-##### 2. Minimization (Optimal CNF/DNF)
-
-Your current recursive "Distributor" function might produce a correct CNF, but it won't necessarily be the **shortest** one. K-Maps are noteworthy because they guarantee the **minimal** form of a Boolean function, which is critical in hardware design to save on physical logic gates and reduce power consumption.
-
-##### 3. Gray Code Adjacency
-
-K-Maps use a specific ordering (00, 01, 11, 10) so that moving from one cell to the next only changes one variable. This "wraps around" like a torus (the top edge is adjacent to the bottom edge).
-
-#### K-Map vs. Your 42 Project
-
-In the context of **Ready Set Boole**, the evaluators aren't expecting you to implement a K-Map algorithm (which is quite hard to code). They want to see:
-
-1. **NNF:** NOTs pushed to variables.
-2. **CNF:** Distributing OR over AND.
-
-**K-Maps are the "Human way"** to solve this on paper during an exam. **The Distributive Law is the "Compiler way"** to solve it in code.
+See `ex06/src/lib.rs` for detailed implementation.
 
 ## Ex07 - SAT (Boolean Satisfiability)
 
@@ -534,7 +953,8 @@ A Powerset of a set S is the set of all possible subsets, including the empty se
 ### Example
 
 For set [1, 2, 3], the powerset contains 8 subsets:
-```
+
+```text
 []
 [1]
 [2]
@@ -588,35 +1008,29 @@ Binary  Decimal  Subset
 ```
 
 The algorithm iterates from 0 to 2^n - 1. For each number i:
+
 - Check each bit position j
 - If bit j is set, include element j in the subset
-
-### Why It's Amazing
-
-- ✅ **O(n·2^n) time** — optimal for powerset generation
-- ✅ **Very efficient** — just bit operations (`>>`, `&`)
-- ✅ **Natural ordering** — generates in binary order
-- ✅ **No recursion** — iterative, so no stack overhead
 
 ### Historical Origin
 
 This comes from **combinatorics** and **discrete mathematics**. The technique is sometimes called:
+
 - **Binary enumeration**
 - **Bitmask iteration**
 - **Gray code variant** (if ordered differently)
-
-It's taught in algorithms courses and used in competitive programming for subset problems! 🎯
-
 
 ## Boolean Lattices
 
 ### What is a Lattice?
 
 A **lattice** is a partially ordered set (poset) in which every pair of elements has:
+
 1. A **least upper bound** (supremum, or "join") - denoted ∨
 2. A **greatest lower bound** (infimum, or "meet") - denoted ∧
 
 Think of it as a structure where you can always find:
+
 - The "smallest thing that's bigger than both" (join)
 - The "biggest thing that's smaller than both" (meet)
 
@@ -624,7 +1038,7 @@ Think of it as a structure where you can always find:
 
 The powerset you generated in Ex08 forms a **Boolean lattice**! Here's the lattice for {1, 2}:
 
-```
+```text
         {1, 2}         ← Top (universal set)
          /  \
       {1}   {2}        ← Single elements
@@ -635,19 +1049,20 @@ The powerset you generated in Ex08 forms a **Boolean lattice**! Here's the latti
 **Ordering**: A ⊆ B means "A is below B in the lattice"
 
 **Operations**:
+
 - Join (∨): {1} ∨ {2} = {1, 2} (union)
 - Meet (∧): {1} ∧ {2} = {} (intersection)
 
 ### The Full {1, 2, 3} Boolean Lattice
 
-```
+```text
                 {1,2,3}
               /   |   \
           {1,2} {1,3} {2,3}
-           / \   / \   / \
-         {1} {2} {1} {3} {2} {3}
-           \  |  /     \  |  /
-                 {}
+           /|\   /|\   /|\
+         {1} {2} {3}
+           \  |  /
+              {}
 ```
 
 ### Properties of Boolean Lattices
@@ -658,11 +1073,11 @@ A **Boolean lattice** (or Boolean algebra) has these special properties:
    - {1} ∪ {2,3} = {1,2,3}
    - {1} ∩ {2,3} = {}
 
-2. **Distributivity**: 
+2. **Distributivity**:
    - A ∨ (B ∧ C) = (A ∨ B) ∧ (A ∨ C)
    - A ∧ (B ∨ C) = (A ∧ B) ∨ (A ∧ C)
 
-3. **De Morgan's Laws**: 
+3. **De Morgan's Laws**:
    - ¬(A ∧ B) = ¬A ∨ ¬B
    - ¬(A ∨ B) = ¬A ∧ ¬B
 
@@ -677,10 +1092,12 @@ A **Boolean lattice** (or Boolean algebra) has these special properties:
 **Test 1: Does every pair have a join and meet?**
 
 Take any two elements. Can you find:
+
 - Their least upper bound?
 - Their greatest lower bound?
 
 **Example - This IS a lattice:**
+
 ``` bool
     6
    / \
@@ -688,6 +1105,7 @@ Take any two elements. Can you find:
    \ /
     1
 ```
+
 - join(2,3) = 6 ✓
 - meet(2,3) = 1 ✓
 
@@ -733,18 +1151,21 @@ Divisors of 12: {1, 2, 3, 4, 6, 12}
     12
    / \
   4   6
-  |\ /|
-  2 3
-   \|
+  | / |
+  2   3
+   \ /
     1
 ```
 
 This is a lattice (join = LCM, meet = GCD) but NOT Boolean:
 
-- No complement for 2 (what ∨ 2 = 12 and ∧ 2 = 1?)
-- Not 2^n elements
+- **No complement for 2**: We need `x` where `LCM(2, x) = 12` AND `GCD(2, x) = 1`
+  - Try 6: `LCM(2, 6) = 6` ✗ (not 12), `GCD(2, 6) = 2` ✗ (not 1)
+  - Try 3: `LCM(2, 3) = 6` ✗ (not 12), `GCD(2, 3) = 1` ✓ (but LCM fails)
+  - No element in the lattice satisfies both conditions!
+- Not 2^n elements (has 6 elements, not a power of 2)
 
-### Connection to Your Project
+### Connection to the Project
 
 Your Boolean algebra exercises are working inside a Boolean lattice:
 
@@ -754,70 +1175,10 @@ Your Boolean algebra exercises are working inside a Boolean lattice:
 - **Ex07 (SAT)**: Finding if formula reaches ⊤ (true)
 - **Ex08 (Powerset)**: Building the entire Boolean lattice!
 
-### Why Lattices Matter
-
-**In Computer Science:**
-
-- **Type systems**: Subtyping forms a lattice
-- **Data flow analysis**: Information lattices
-- **Abstract interpretation**: Safety properties
-- **Concurrency**: Happens-before relations
-
-**In Hardware:**
-
-- Boolean lattices = digital circuits
-- Each gate operation preserves lattice structure
-- Simplification (K-maps) finds minimal lattice paths
-
-**In Math:**
-
-- Foundation of order theory
-- Connection between algebra and topology
-- Model for logical reasoning
-
-### Quick Reference: Is It a Lattice?
-
-✅ **These are lattices:**
-
-- Powerset with ⊆
-- Divisors with "divides"
-- Natural numbers with min/max
-- Boolean formulas with ⊢ (entailment)
-
-❌ **These are NOT lattices:**
-
-- Real numbers with < (no max/min for unbounded sets)
-- Siblings in a family tree (no unique common ancestor)
-- Partial orders with "diamonds" (multiple LUBs/GLBs)
-
----
-
-**Mathematical Note**: Every finite Boolean lattice is isomorphic to the powerset lattice of some finite set. This deep connection is why your Ex08 powerset exercise is fundamental to understanding Boolean algebra! 🎯
-
-ok! greeat but why join(2,3) = 6 ✓ 2 and 3 is not 5?
-
-This represents the divisors of 6 with the "divides" relation:
-
-1 divides everything (bottom)
-2 divides 6
-3 divides 6
-6 is divisible by everything (top)
-For join(2,3) = least upper bound:
-
-What numbers are divisible by BOTH 2 AND 3?
-Answer: 6, 12, 18, 24, ...
-The smallest of these is 6
-So join(2,3) = LCM(2,3) = 6 ✓
-For meet(2,3) = greatest lower bound:
-
-What numbers divide BOTH 2 AND 3?
-Answer: 1 (and nothing else)
-So meet(2,3) = GCD(2,3) = 1 ✓
-Different Lattices Have Different Operations
-The same numbers can form different lattices depending on the ordering:
-
+**Mathematical Note**: Every finite Boolean lattice is isomorphic to the powerset lattice of some finite set. This deep connection is why your Ex08 powerset exercise is fundamental to understanding Boolean algebra!
 
 ## **Material Implication**
+
 In logic, the **Material Implication**  is defined as "If A, then B." When we translate this into Set Theory, it represents the relationship: **"Everything that is NOT in A, OR everything that is in B."**
 
 The formula for this is:  (where  is the Universe).
@@ -844,13 +1205,7 @@ Now we take the result of  and combine it with everything in Set B.
 
 *  is `{3}`.
 * B is `{2, 3}`.
-* **`{3} | {2, 3}` results in `{2, 3}**`.
-
----
-
-### The Intuition: Why does this happen?
-
-It feels strange that results in Set B, but it makes sense when you look at the **Truth Table** for implication:
+* `{3} | {2, 3}` results in `{2, 3}`.
 
 | A | B |  |
 | --- | --- | --- |
@@ -865,28 +1220,11 @@ It feels strange that results in Set B, but it makes sense when you look at the 
 * **Number 2:** In A (1), In B (1). Table says **1**. (**2 is included**).
 * **Number 3:** Not in A (0), In B (1). Table says **1**. (**3 is included**).
 
-### Summary
-
-The result `[2, 3]` is not *just* Set B because it's Set B; it is the collection of all elements that **do not violate** the rule "If it's in A, it must be in B."
-
-* **1** violates the rule (It's in A, but B doesn't have it).
-* **2** follows the rule (It's in A, and B has it).
-* **3** doesn't care about the rule (It's not in A, so it's "vacuously true").
-
-
-
-I totally get why it looks that way! In your specific example `[[1, 2], [2, 3]]`, the result for **Equivalence** (`=`) and **Intersection** (`&`) is exactly the same: `[2]`.
+In this specific example `[[1, 2], [2, 3]]`, the result for **Equivalence** (`=`) and **Intersection** (`&`) is exactly the same: `[2]`.
 
 But they are doing very different "math" behind the scenes. The difference only appears when there are elements in the **Universe** that **neither** set contains.
 
 ### The "Neither" Difference
-
-In logic, **Equivalence** () is true if:
-
-1.  is True AND  is True (Intersection).
-2. **OR**  is False AND  is False (**The "Neither" part**).
-
-### Let's look at a case where they are NOT the same:
 
 Imagine this scenario:
 
@@ -908,31 +1246,9 @@ Imagine this scenario:
 
 In this case, `AB=` gives you the whole Universe because  and  are identical. They agree on everything.
 
----
-
-### Why your example felt like an "AND"
-
-In your test `[[1, 2], [2, 3]]`, every single number in the Universe (`1, 2, 3`) was "claimed" by at least one set.
-
-* **1** was in A.
-* **2** was in both.
-* **3** was in B.
-
-Because there was **no number that belonged to neither**, the "Neither" part of the equivalence formula was empty. When the "Neither" part is empty, Equivalence *collapses* and looks exactly like Intersection.
-
-### Summary Table
-
-| Operation | Goal | Logic |
-| --- | --- | --- |
-| **AND** (`&`) | Shared elements |  |
-| **Equiv** (`=`) | Shared elements **+** Shared absences |  |
-
-**Would you like to try a test case in your code like `eval_set("AB=", vec![vec![1], vec![1], vec![2]])`?** Since `2` is in the Universe but in neither A nor B, it should show up in the result!
-
 ## bonus
-## Reading Mathematical Function Notation
 
-### The Expression Explained
+### Reading Mathematical Function Notation
 
 ```
 Let f be a function and let A be a set such as:
@@ -940,11 +1256,9 @@ f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ² → A
 A ⊂ [0; 1] ⊂ ℝ
 ```
 
-### Step-by-Step Reading
-
 **Line 1: The Domain (Input)**
 
-```
+```text
 f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ²
 ```
 
