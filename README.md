@@ -1363,17 +1363,16 @@ This tells us:
 
 ---
 
-### Connection to Your Ex10
+### Ex10
 
-In **Ex10 (Curve Saturation)**, this notation describes your space-filling curve function!
-
-**The mathematical version:**
-```
+```text
+function:
 f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ² → A
 A ⊂ [0; 1] ⊂ ℝ
 ```
 
-**Your Rust implementation:**
+**Rust implementation:**
+
 ```rust
 pub fn map(x: u16, y: u16, n: u16) -> f64 {
     // Domain: (x, y) where x, y ∈ [0, 65535]
@@ -1386,9 +1385,7 @@ pub fn map(x: u16, y: u16, n: u16) -> f64 {
 2. **Output:** A single real number between 0 and 1
 3. **Purpose:** Map 2D discrete space to 1D continuous interval
 
-This is the **inverse** of a typical space-filling curve!
-- Typical: [0, 1] → [0, 1]² (1D to 2D)
-- Your Ex10: [[0; 2¹⁶ - 1]]² → [0, 1] (2D to 1D)
+- Ex10: [[0; 2¹⁶ - 1]]² → [0, 1] (2D to 1D)
 
 ---
 
@@ -1414,7 +1411,6 @@ Codomain (Output Space):
                           
 Example mappings:
 f(0, 0) = 0.0
-f(32767, 32767) ≈ 0.5
 f(65535, 65535) = 1.0
 ```
 
@@ -1433,71 +1429,12 @@ f(65535, 65535) = 1.0
 | **ℕ** | Natural numbers | {0, 1, 2, 3, ...} |
 | **ℝ** | Real numbers | All numbers on number line |
 
----
-
-### Common Variations
-
-**Discrete 2D → Discrete 1D:**
-```
-f : (x, y) ∈ [[0; 2¹⁶ - 1]]² → [[0; 2³² - 1]]
-
-// Your typical Ex10 implementation
-pub fn map(x: u16, y: u16) -> u32
-```
-
-**Continuous 1D → Continuous 2D:**
-```
-f : t ∈ [0; 1] → [0; 1]²
-
-// Classical space-filling curve
-fn space_filling(t: f64) -> (f64, f64)
-```
-
-**Discrete 1D → Discrete 2D:**
-```
-f⁻¹ : i ∈ [[0; 2³² - 1]] → [[0; 2¹⁶ - 1]]²
-
-// Inverse of your map function
-pub fn unmap(index: u32) -> (u16, u16)
-```
-
----
-
-### Why This Notation Matters
-
-Understanding this notation helps you:
-
-1. **Understand the problem domain:**
-   - What types of inputs? (discrete integers vs continuous reals)
-   - What range of inputs? (0 to 65535)
-   - How many dimensions? (2D coordinate pairs)
-
-2. **Design the solution:**
-   - Output type? (real number between 0 and 1)
-   - Bijection required? (depends on subset notation)
-   - Continuous or discrete? (affects algorithm choice)
-
-3. **Verify correctness:**
-   - Are all inputs handled? (domain coverage)
-   - Are outputs in range? (codomain membership)
-   - Is mapping unique? (bijectivity)
-
-For your Ex10, this notation formally specifies that you need a function mapping **all 4,294,967,296 integer coordinate pairs** to **real values between 0 and 1**! 🎯
-
-## Ex10 Implementation: Choosing Your Space-Filling Curve
-
-### What Does the Requirement Actually Say?
-
 **From the subject:**
+
 ```
-To satisfy the requirement that card(A) = 2^32,
-we interleave the 16 bits of x and 16 bits of y into a single u32.
+To satisfy the requirement that card(A) = 2^32, we interleave the 16 bits of x and 16 bits of y into a single u32. 
 Then, we map that u32 into the range [0, 1].
 ```
-
-**Translation:**
-
-This is a **two-step process**:
 
 1. **Step 1: Bit Interleaving** (Creates the bijection)
    - Combine 16 bits of x and 16 bits of y into a single u32
@@ -1509,684 +1446,49 @@ This is a **two-step process**:
    - Map it to a real number in [0, 1]
    - This is just scaling: divide by u32::MAX
 
----
-
-### Do You Choose the Algorithm?
-
-**Yes, with a caveat!**
-
-The subject gives you **freedom** in choosing which space-filling curve to use:
-
-```
-✅ You CAN implement Peano curve
-✅ You CAN implement Hilbert curve
-✅ You CAN implement Z-Order (Lebesgue) curve
-✅ You CAN invent your own bijective mapping
-```
-
-**The ONLY requirement is:**
-- Your function must be **bijective** (card(A) = 2^32)
-- You must normalize to [0, 1]
-
----
+- function must be **bijective** (card(A) = 2^32)
+- must normalize to [0, 1]
 
 ### Comparing the Three Curves
 
-#### 1. **Z-Order Curve (Lebesgue / Morton Code)** ⭐ EASIEST
+#### 1. **Z-Order Curve (Lebesgue / Morton Code)**
 
 **How it works:**
+
 ```
 Bit interleaving of x and y coordinates:
 
 x = 0b 0101 0011 (binary)
 y = 0b 1100 1010 (binary)
 
-Interleave bits:
-Result = 0b 11_01_10_00_10_11_00_10
+Interleave bits (y,x):
+Result = 0b 10_11_00_01_10_00_11_01
 
 Pattern: y₁₅ x₁₅ y₁₄ x₁₄ ... y₀ x₀
 ```
 
-**Code example:**
-```rust
-fn map_z_order(x: u16, y: u16) -> f64 {
-    let mut z: u32 = 0;
-    
-    // Interleave bits of x and y
-    for i in 0..16 {
-        z |= ((x as u32 >> i) & 1) << (2 * i);      // x bit at position 2*i
-        z |= ((y as u32 >> i) & 1) << (2 * i + 1);  // y bit at position 2*i+1
-    }
-    
-    // Normalize to [0, 1]
-    z as f64 / u32::MAX as f64
-}
-```
 
-**Pros:**
-- ✅ Simple to understand
-- ✅ Easy to implement
-- ✅ Computationally fast (O(16) operations)
-- ✅ Creates Z-pattern at each scale
-- ✅ This is likely what the subject intends!
-
-**Cons:**
-- ❌ Locality not as good as Hilbert
-- ❌ Some jumps between regions
+- Computationally fast (O(16) operations)
+- Creates Z-pattern at each scale
 
 **Visual Pattern:**
-```
+
+``` text
 ┌─────┬─────┐
 │ ┌─┐ │ ┌─┐ │
-│ │0│ │ │2│ │
+│ │0│ │ │1│ │
 │ └─┘ │ └─┘ │
 ├─────┼─────┤
 │ ┌─┐ │ ┌─┐ │
-│ │1│ │ │3│ │
+│ │2│ │ │3│ │
 │ └─┘ │ └─┘ │
 └─────┴─────┘
 
 Forms Z-shape at each level of subdivision
 ```
 
----
+** the TRUE "Z" shape:**
 
-#### 2. **Hilbert Curve** ⭐⭐ BEST LOCALITY
-
-**How it works:**
-```
-Recursive subdivision with 90-degree rotations
-
-Level 1:        Level 2:         Level 3:
-┌─┐            ┌─┬─┐           ┌─┬───┬─┐
-│→│            │ ┌─┐ │         │ ├──┬┤ │
-└─┘            └─┘ └─┘         └─┴──┴─┘
-
-Each iteration rotates quadrants to maintain continuity
-```
-
-**Code example:**
-```rust
-fn map_hilbert(x: u16, y: u16, n: u16) -> f64 {
-    let mut d: u32 = 0;
-    let mut s = 1 << (n - 1);
-    let mut x = x as u32;
-    let mut y = y as u32;
-    
-    while s > 0 {
-        let rx = ((x & s) > 0) as u32;
-        let ry = ((y & s) > 0) as u32;
-        d += s * s * ((3 * rx) ^ ry);
-        
-        // Rotate coordinates
-        if ry == 0 {
-            if rx == 1 {
-                x = s - 1 - x;
-                y = s - 1 - y;
-            }
-            std::mem::swap(&mut x, &mut y);
-        }
-        s >>= 1;
-    }
-    
-    d as f64 / ((1u32 << (2 * n)) - 1) as f64
-}
-```
-
-**Pros:**
-- ✅ Best locality preservation
-- ✅ Nearby points in grid are nearby on curve
-- ✅ Great for cache performance
-- ✅ Most "natural" ordering
-
-**Cons:**
-- ❌ More complex to implement
-- ❌ Requires rotation logic
-- ❌ Needs parameter n (iterations/order)
-- ❌ Slower than Z-order (O(log n) operations)
-
-**Visual Pattern:**
-```
-Each quadrant connects smoothly via rotations
-┌───────┐
-│1  2   │
-│  ╱╲   │
-│0╱  ╲3 │
-└───────┘
-
-Maintains locality across all scales
-```
-
----
-
-#### 3. **Peano Curve** ⭐⭐ FIRST DISCOVERED
-
-**How it works:**
-```
-9-fold division (3×3 grid instead of 2×2)
-
-More chaotic than Hilbert
-Fills space in a more "jumpy" way
-```
-
-**Code example:**
-```rust
-fn map_peano(x: u16, y: u16) -> f64 {
-    let mut d: u32 = 0;
-    let mut power = 1;
-    let mut x = x as u32;
-    let mut y = y as u32;
-    
-    while power < (1u32 << 16) {
-        let (dx, dy) = peano_position(x / power, y / power);
-        d += (dx * 3 + dy) * power * power;
-        power *= 3;
-    }
-    
-    d as f64 / ((1u32 << 32) - 1) as f64
-}
-
-fn peano_position(x: u32, y: u32) -> (u32, u32) {
-    // Complex mapping for 3×3 grid positions
-    // ...
-}
-```
-
-**Pros:**
-- ✅ Historical significance
-- ✅ First proved continuous bijection existed
-
-**Cons:**
-- ❌ Much more complex to implement
-- ❌ Works on 3×3 (doesn't map cleanly to binary)
-- ❌ No inherent 16-bit structure
-- ❌ Poor locality
-- ❌ Not recommended for this problem!
-
-**Recommendation:** Don't use this for Ex10
-
----
-
-### What the Subject Actually Recommends
-
-Looking at the subject's hint:
-
-```
-"To satisfy the requirement that card(A) = 2^32,
-we interleave the 16 bits of x and 16 bits of y into a single u32."
-```
-
-**This is describing the Z-Order curve!**
-
-The mention of "interleaving bits" is a dead giveaway:
-- Z-Order = bit interleaving
-- Hilbert = requires rotations
-- Peano = requires 3×3 logic
-
----
-
-### Recommendation: Use Z-Order Curve
-
-**For Ex10, Z-Order is the best choice because:**
-
-1. ✅ **Matches the subject description** ("interleave 16 bits of x and 16 bits of y")
-2. ✅ **Simple to implement** (1-2 lines of code vs 20+ for Hilbert)
-3. ✅ **Correct cardinality** (produces exactly 2^32 unique values)
-4. ✅ **Efficient** (fast computation, no recursion)
-5. ✅ **Still a valid space-filling curve** (bijective, with reasonable locality)
-
----
-
-### Implementation Strategy
-
-**Step 1: Interleave Bits (Z-Order)**
-
-```rust
-pub fn map(x: u16, y: u16) -> f64 {
-    let mut z: u32 = 0;
-    
-    // Interleave 16 bits from x and y
-    for i in 0..16 {
-        z |= ((x as u32 >> i) & 1) << (2 * i);      // x bit at even positions
-        z |= ((y as u32 >> i) & 1) << (2 * i + 1);  // y bit at odd positions
-    }
-    
-    // Normalize to [0, 1]
-    z as f64 / u32::MAX as f64
-}
-```
-
-**Step 2: Verify Cardinality**
-
-```rust
-#[test]
-fn test_cardinality() {
-    // Every (x, y) should produce a unique value
-    let mut seen = std::collections::HashSet::new();
-    
-    for x in 0..256 {  // Test subset
-        for y in 0..256 {
-            let value = map(x as u16, y as u16);
-            assert!(!seen.contains(&value.to_bits()), "Collision detected!");
-            seen.insert(value.to_bits());
-        }
-    }
-    
-    // Should have seen 256 * 256 unique values
-    assert_eq!(seen.len(), 256 * 256);
-}
-```
-
-**Step 3: Verify Range**
-
-```rust
-#[test]
-fn test_range() {
-    // All outputs should be in [0, 1]
-    for x in 0..=u16::MAX {
-        for y in 0..=u16::MAX {
-            let value = map(x, y);
-            assert!(value >= 0.0 && value <= 1.0);
-        }
-    }
-}
-```
-
----
-
-### Can You Do Better?
-
-**If you want to implement Hilbert for better locality:**
-
-```rust
-pub fn map_hilbert(x: u16, y: u16) -> f64 {
-    let n = 16;  // For u16 × u16
-    let mut d: u32 = 0;
-    let mut s = 1u32 << (n - 1);
-    let mut x = x as u32;
-    let mut y = y as u32;
-    
-    while s > 0 {
-        let rx = ((x & s) > 0) as u32;
-        let ry = ((y & s) > 0) as u32;
-        d += s * s * ((3 * rx) ^ ry);
-        
-        if ry == 0 {
-            if rx == 1 {
-                x = s - 1 - x;
-                y = s - 1 - y;
-            }
-            std::mem::swap(&mut x, &mut y);
-        }
-        s >>= 1;
-    }
-    
-    // Normalize to [0, 1]
-    d as f64 / ((1u64 << 32) - 1) as f64
-}
-```
-
-**Pros of implementing Hilbert:**
-- ✅ Shows deeper understanding
-- ✅ Better spatial locality
-- ✅ Impressive in code review
-- ✅ More elegant mathematically
-
-**Cons:**
-- ❌ More complex code
-- ❌ Harder to debug
-- ❌ Not explicitly required
-
----
-
-### Summary: What You Should Do
-
-| Aspect | Z-Order | Hilbert |
-|--------|---------|---------|
-| **Matches subject** | ✅ YES | ❌ NO |
-| **Difficulty** | ⭐ Easy | ⭐⭐⭐ Hard |
-| **Performance** | ⭐⭐⭐ Fast | ⭐⭐ Slower |
-| **Code length** | ~10 lines | ~30 lines |
-| **Locality** | Good | Excellent |
-| **Recommended** | ✅ YES | ⭐ Optional |
-
----
-
-### Final Recommendation
-
-**Implement Z-Order Curve because:**
-
-1. It matches the subject description ("interleave bits")
-2. It's simple and efficient
-3. It satisfies all requirements
-4. It's the "obvious" choice for this problem
-
-**But if you want to go further:**
-
-Implement both Z-Order and Hilbert, and compare:
-```rust
-pub fn map_z_order(x: u16, y: u16) -> f64 { ... }
-pub fn map_hilbert(x: u16, y: u16) -> f64 { ... }
-pub fn map(x: u16, y: u16) -> f64 {
-    // Use Z-order as default
-    map_z_order(x, y)
-}
-```
-
-This shows you understand the space of possible solutions! 🎯
-
-## Z-Order Curve: Why It's Called "Z-Order"
-
-### The Z Pattern Visualization
-
-You're correct to question this! Let me show you the **actual Z pattern** at different scales:
-
-### Level 1: 2×2 Grid
-
-```
-┌─────┬─────┐
-│  0  │  2  │  The curve visits:
-│     │     │  0 → 1 → 2 → 3
-├─────┼─────┤
-│  1  │  3  │  This makes a "Z" shape:
-│     │     │  
-└─────┴─────┘
-     
-     0 ──→ 2
-     ↓     ↑
-     1 ──→ 3
-```
-
-That's not quite a Z either, it's more like this:
-
-```
-0 ───→ 2
-      ╱
-     ╱
-1 ───→ 3
-
-Actually draws an "N" rotated 90° clockwise!
-```
-
-### Level 2: 4×4 Grid
-
-```
-┌────┬────┬────┬────┐
-│  0 │  1 │  4 │  5 │
-├────┼────┼────┼────┤
-│  2 │  3 │  6 │  7 │
-├────┼────┼────┼────┤
-│  8 │  9 │ 12 │ 13 │
-├────┼────┼────┼────┤
-│ 10 │ 11 │ 14 │ 15 │
-└────┴────┴────┴────┘
-
-The path:
-0→1    4→5
- ↓↑     ↓↑
-2→3    6→7
-
-8→9   12→13
- ↓↑     ↓↑
-10→11  14→15
-```
-
-### Why "Z-Order" is a Misnomer
-
-You're absolutely correct! The pattern actually looks more like an **"N"** or a **rotated "Z"** depending on how you look at it.
-
-**The truth is:**
-
-1. **Historical naming:** The name "Z-order" comes from the observation that at certain scales, the curve makes a shape **somewhat resembling a Z**, but it's not a perfect Z.
-
-2. **Morton's naming:** It's also called "Morton code" after G.M. Morton who invented it in 1966. That's actually a more accurate name!
-
-3. **The actual shape:** At the smallest 2×2 scale, it looks more like:
-   ```
-   Start → 2
-   ↓       ↑
-   1   →   End
-   
-   Which is closer to an "N" rotated!
-   ```
-
-### More Accurate Description
-
-The Z-order curve is better described as:
-
-**"A recursive space-filling curve that subdivides space into quadrants and visits them in a specific order that creates a fractal pattern through bit-interleaving."**
-
-### The Real Z-Pattern (If We Squint)
-
-At higher levels, you can kind of see a Z if you look at the **overall flow**:
-
-```
-Level 3 (8×8) - Showing just the flow:
-
-Top-left quadrant    →    Top-right quadrant
-       ↓                          ↓
-       ↓                          ↓
-       ↓                          ↓
-Bottom-left quadrant  →  Bottom-right quadrant
-
-This overall flow makes a "Z":
-TL ──→ TR
- ↓
-BL ──→ BR
-```
-
-But within each quadrant, it's the same recursive N/rotated-Z pattern!
-
-### Alternative Name: "Morton Code"
-
-Many people prefer calling it **Morton code** or **Morton order** because:
-- ✅ Named after the inventor
-- ✅ No confusion about the shape
-- ✅ More technically accurate
-- ✅ Emphasizes it's an encoding/indexing scheme
-
-### The Bit-Interleaving Pattern Creates the Curve
-
-The **real reason** for the pattern is the bit interleaving:
-
-```
-For coordinates (x, y):
-x = 0b ...x₂ x₁ x₀
-y = 0b ...y₂ y₁ y₀
-
-Morton code = ...y₂ x₂ y₁ x₁ y₀ x₀
-
-This interleaving naturally creates the recursive pattern!
-```
-
-**Example:**
-```
-(0,0) = x=0b00, y=0b00 → 0b0000 = 0
-(1,0) = x=0b01, y=0b00 → 0b0001 = 1
-(0,1) = x=0b00, y=0b01 → 0b0010 = 2
-(1,1) = x=0b01, y=0b01 → 0b0011 = 3
-
-The order 0→1→2→3 makes that N/rotated-Z shape!
-```
-
-### Summary: You're Right!
-
-**You are correct:**
-- The pattern looks more like an **"N"** (or rotated/mirrored Z)
-- The name "Z-order" is somewhat misleading
-- It's more accurately called **"Morton code"**
-- The pattern comes from bit interleaving, not from drawing a Z
-
-**Why we still call it Z-order:**
-- Historical convention
-- Widely used term in computer graphics
-- "Sounds cooler" than "N-order curve" 😄
-- At macro scale, the overall flow vaguely resembles a Z
-
-**For your implementation:**
-- The name doesn't matter—the algorithm is the same!
-- Bit interleaving creates the pattern
-- It's still a valid space-filling curve
-- It still satisfies card(A) = 2³²
-
-Great observation! Mathematical naming isn't always perfectly accurate. 🎯
-
-## Z-Order Curve: The REAL Z Pattern
-
-### You're Correct: It Depends on Bit Order!
-
-**If we interleave as (x, y):** We get an "N" pattern
-**If we interleave as (y, x):** We get a true "Z" pattern!
-
-Let me show both:
-
----
-
-### Pattern 1: (x, y) Interleaving → "N" Pattern
-
-```
-Interleaving pattern: x₀ y₀ x₁ y₁ x₂ y₂ ...
-Result bits at positions: [... y₃ x₃ y₂ x₂ y₁ x₁ y₀ x₀]
-                              odd even odd even odd even odd even
-```
-
-**Creates this ordering in 2×2 grid:**
-```
-┌─────┬─────┐
-│  0  │  2  │   0 ──→ 2
-│     │     │        ╱
-├─────┼─────┤       ╱
-│  1  │  3  │   1 ──→ 3
-└─────┴─────┘
-```
-
-This makes an **"N" shape** (or rotated Z)!
-
----
-
-### Pattern 2: (y, x) Interleaving → TRUE "Z" Pattern ✓
-
-```
-Interleaving pattern: y₀ x₀ y₁ x₁ y₂ x₂ ...
-Result bits at positions: [... x₃ y₃ x₂ y₂ x₁ y₁ x₀ y₀]
-                              even odd even odd even odd even odd
-```
-
-**Creates this ordering in 2×2 grid:**
-```
-┌─────┬─────┐
-│  0  │  1  │   0 ──→ 1
-│     │     │   ↓       ↘
-├─────┼─────┤   ↓         ↘
-│  2  │  3  │   2 ──────→ 3
-└─────┴─────┘
-```
-
-This makes a **TRUE "Z" shape**! ✓
-
----
-
-### Your Example Corrected
-
-**Original data:**
-```
-x = 0b 0101_0011
-y = 0b 1100_1010
-```
-
-### Option A: (x, y) Interleaving - "N" Pattern
-
-```
-Pattern: x₀ y₀ x₁ y₁ x₂ y₂ x₃ y₃ ...
-
-Bit positions:
-  i:   7  6  5  4  3  2  1  0
-  x:   0  1  0  1  0  0  1  1
-  y:   1  1  0  0  1  0  1  0
-
-Result = x₀ y₀ x₁ y₁ x₂ y₂ x₃ y₃ x₄ y₄ x₅ y₅ x₆ y₆ x₇ y₇
-       =  1  0  1  1  0  0  1  0  0  1  1  0  1  1  0  1
-
-Result = 0b 01_11_10_01_10_00_11_10
-       = 0b 0111100110001110 (binary)
-```
-
-### Option B: (y, x) Interleaving - TRUE "Z" Pattern ✓
-
-```
-Pattern: y₀ x₀ y₁ x₁ y₂ x₂ y₃ x₃ ...
-
-Bit positions:
-  i:   7  6  5  4  3  2  1  0
-  x:   0  1  0  1  0  0  1  1
-  y:   1  1  0  0  1  0  1  0
-
-Result = y₀ x₀ y₁ x₁ y₂ x₂ y₃ x₃ y₄ x₄ y₅ x₅ y₆ x₆ y₇ x₇
-       =  0  1  1  1  0  0  0  1  1  0  0  1  0  1  1  0
-
-Result = 0b 10_11_01_00_11_00_11_01
-       = 0b 1011010011001101 (binary)
-```
-
----
-
-### Updated Code for TRUE Z-Pattern
-
-```rust
-pub fn map_z_order(x: u16, y: u16) -> f64 {
-    let mut z: u32 = 0;
-    
-    // Interleave bits: y at even positions, x at odd positions
-    // This creates the TRUE "Z" pattern!
-    for i in 0..16 {
-        let x_bit = (x >> i) & 1;
-        let y_bit = (y >> i) & 1;
-        
-        z |= (y_bit as u32) << (2 * i);      // y_bit at position 2*i (even)
-        z |= (x_bit as u32) << (2 * i + 1);  // x_bit at position 2*i+1 (odd)
-    }
-    
-    // Normalize to [0, 1]
-    z as f64 / u32::MAX as f64
-}
-```
-
-**Or more concisely:**
-```rust
-pub fn map_z_order(x: u16, y: u16) -> f64 {
-    let mut z: u32 = 0;
-    
-    for i in 0..16 {
-        z |= ((y as u32 >> i) & 1) << (2 * i);      // y → even positions
-        z |= ((x as u32 >> i) & 1) << (2 * i + 1);  // x → odd positions
-    }
-    
-    z as f64 / u32::MAX as f64
-}
-```
-
----
-
-### Visual Comparison at Scale
-
-**Pattern with (x, y) - "N" shape:**
-```
-4×4 grid:
-┌────┬────┬────┬────┐
-│  0 │  2 │  8 │ 10 │     0→2   8→10
-│    │    │    │    │      ↓↑    ↓↑
-├────┼────┼────┼────┤     1→3   9→11
-│  1 │  3 │  9 │ 11 │
-│    │    │    │    │     4→6  12→14
-├────┼────┼────┼────┤      ↓↑    ↓↑
-│  4 │  6 │ 12 │ 14 │     5→7  13→15
-│    │    │    │    │
-├────┼────┼────┼────┤  Makes "N" shapes
-│  5 │  7 │ 13 │ 15 │
-└────┴────┴────┴────┘
-```
-
-**Pattern with (y, x) - TRUE "Z" shape:**
 ```
 4×4 grid:
 ┌────┬────┬────┬────┐
@@ -2198,172 +1500,29 @@ pub fn map_z_order(x: u16, y: u16) -> f64 {
 ├────┼────┼────┼────┤     ↓  ↘  ↓  ↘
 │  8 │  9 │ 12 │ 13 │    10→11 14→15
 │    │    │    │    │
-├────┼────┼────┼────┤  Makes TRUE "Z" shapes!
+├────┼────┼────┼────┤  
 │ 10 │ 11 │ 14 │ 15 │
 └────┴────┴────┴────┘
 ```
 
----
-
-### Which One Should You Use?
-
-**Both are valid space-filling curves!** The choice depends on convention:
-
-| Aspect | (x, y) Interleaving | (y, x) Interleaving |
-|--------|---------------------|---------------------|
-| **Pattern** | "N" shape | TRUE "Z" shape |
-| **Convention** | More common in literature | Makes name accurate |
-| **Bijectivity** | ✅ YES (2³²) | ✅ YES (2³²) |
-| **Locality** | Good | Good (same) |
-| **Name accuracy** | Misleading | Accurate! |
-
-**Most implementations use (x, y) order** because:
-- It matches the conventional coordinate order
-- It's what most papers and books use
-- The name "Z-order" is historical anyway
-
-**But (y, x) order is totally valid** and actually makes the name make sense!
-
----
-
-### The Real Answer: Both Work!
-
-For your Ex10, **either pattern satisfies the requirements:**
-
-```
-✅ Bijective: card(A) = 2³²
-✅ Maps to [0, 1]
-✅ Computable via bit interleaving
-✅ Valid space-filling curve
-```
-
-The only difference is the **visual pattern** of how you traverse the grid.
-
----
-
-### My Recommendation
-
-**Use (x, y) order** (the "N" pattern) because:
-1. ✅ Matches standard Morton code implementations
-2. ✅ More common in graphics/database literature
-3. ✅ Easier to find reference implementations
-4. ✅ Conventional coordinate order (x, y)
-
-But if you want to implement the **TRUE Z-pattern**, use (y, x) order—it's equally valid and makes the name accurate!
-
----
-
-### Summary
-
-**You discovered something important:**
-- The "Z" vs "N" pattern depends on bit interleaving order
-- (x, y) → "N" pattern (conventional)
-- (y, x) → TRUE "Z" pattern (name-accurate)
-- Both are valid bijective space-filling curves
-- The choice is mostly aesthetic/conventional
-
-Excellent observation! This is the kind of detail that shows deep understanding. 🎯
-
-To show a "jump," you want to find a spot where the Z-curve has to travel all the way across the grid to start the next section. These jumps occur at the boundaries of power-of-two squares.
-
-For example, when you move from  to , you are crossing a major binary threshold.
-
-### 1. The "Locality Jump" Test
-
-Add this to your `main` to show that while the curve is mostly local, it isn't perfect (unlike the Hilbert curve):
-
-```rust
-println!("Demonstrating a Z-Curve 'Jump':");
-let a = map(127, 127);
-let b = map(128, 127); // Only 1 pixel away in 2D space!
-
-println!("Point A (127, 127): {:.15}", a);
-println!("Point B (128, 127): {:.15}", b);
-println!("Distance in 1D:      {:.15}", (a - b).abs());
-println!("Note: A small 1-pixel step in 2D caused a massive jump in 1D!");
-
-```
-
-### 2. Final Logic Polish
-
-Just to make sure your internal logic is crystal clear for your README or defense:
-
-* **Interleaving  at  and  at :** This means  is the "Least Significant" part of each bit-pair. Therefore, moving horizontally () changes the -value **faster** than moving vertically ().
-* **Result:** You get a horizontal "Z".
-
-If you swapped them ( at ), moving vertically would change the -value faster, and you'd get a vertical "N".
-
-### 3. Summary for your Defense
-
-If an evaluator asks why you chose the Z-order curve:
-
-1. **Efficiency:** It uses simple bitwise shifts and OR operations ( where  is bit depth).
-2. **Cardinality:** It is a perfect **Bijection**. Since every bit of the input is preserved in a unique position in the output, no two coordinates can ever map to the same float.
-3. **Morphism:** It preserves the "structure" of the binary data while transforming the dimensionality.
-
-Exercise 10: Curve Saturation — The Grand Finale
-The Goal
-
-The objective was to create a morphism (a structure-preserving map) from a 2D discrete space into a 1D continuous space:
-
-f:(x,y)∈[[0;2 
-16
- −1]] 
-2
- →[0;1]⊂R
-Why the Z-Order Curve?
-
-I chose the Z-order curve (also known as the Morton Curve) because it provides a perfect bijection. By interleaving the bits of the x and y coordinates, we ensure that:
-
-Cardinality is preserved: Every unique (x,y) coordinate maps to exactly one unique value on the number line. Since there are 2 
-16
- ×2 
-16
-  possible coordinates, there are exactly 2 
-32
-  unique outputs.
-
-Locality is maintained: Points that are close together in 2D space generally stay relatively close together in 1D space, which is a key property of space-filling curves.
-
-How it Works (The Bit Weaving)
-
-To map the coordinates, the bits are "interleaved" like teeth on a zipper:
-
-Input: Two 16-bit integers (x and y).
-
-Processing:
-
-Bits of x are moved to even positions (0,2,4…30).
-
-Bits of y are moved to odd positions (1,3,5…31).
-
-Result: A 32-bit integer that represents the "Morton code" or Z-index.
-
-Mathematical Significance
-
-This exercise demonstrates the transition from Discrete Mathematics (counting bits and sets) to Continuous Mathematics (mapping to the Real number line R). By dividing the final integer by 2 
-32
- −1, we "saturate" the unit interval [0,1], proving that we can represent multi-dimensional data in a single dimension without losing information.
-
- ## Ex11: Inverse Function and Function Composition
+## Ex11: Inverse Function and Function Composition
 
 ### What is an Inverse Function?
 
 An **inverse function** f⁻¹ "undoes" what f does. If f maps from A to B, then f⁻¹ maps from B back to A.
 
 **Notation:**
-```
+
+```text
 f : A → B     (forward function)
 f⁻¹ : B → A   (inverse function)
 ```
 
----
-
 ### The Two Composition Laws
 
-Your exercise requires two properties to hold:
+The exercise requires two properties to hold:
 
-```
+```text
 (f⁻¹ ∘ f)(x, y) = (x, y)
 (f ∘ f⁻¹)(x) = x
 ```
@@ -2378,7 +1537,7 @@ Your exercise requires two properties to hold:
 
 **Breaking it down:**
 
-```
+```text
 (f⁻¹ ∘ f)(x, y) means: f⁻¹(f(x, y))
                        └──┬──┘  └─┬─┘
                          Apply f first
@@ -2398,22 +1557,19 @@ Step 2: Apply f⁻¹
         f⁻¹(some_value) = ?
         Result: back to (x, y)
 
-Expected: (x, y)  ← We got back what we started with!
+Expected: (x, y)  ← We got back what we started with
 ```
-
-**Why this works:**
 
 Since f is a **bijection** (one-to-one, onto), every point in [0, 1] came from exactly one (x, y) pair. So when you apply f⁻¹ to that point, it must return to the original (x, y).
 
 **Example:**
-```
+
+```text
 f(100, 200) = 0.001234567  (some value in [0, 1])
 f⁻¹(0.001234567) = (100, 200)  ← Back to the original!
 
 So: (f⁻¹ ∘ f)(100, 200) = f⁻¹(f(100, 200)) = f⁻¹(0.001234567) = (100, 200) ✓
 ```
-
----
 
 ### Law 2: (f ∘ f⁻¹)(x) = x
 
@@ -2441,7 +1597,7 @@ Step 2: Apply f
         f(a, b) = ?
         Result: back to a float
 
-Expected: x  ← We got back what we started with!
+Expected: x  ← We got back what we started with
 ```
 
 **Why this works:**
@@ -2456,350 +1612,7 @@ f(100, 200) = 0.001234567  ← Back to the original!
 So: (f ∘ f⁻¹)(0.001234567) = f(f⁻¹(0.001234567)) = f(100, 200) = 0.001234567 ✓
 ```
 
----
-
-### Why Both Laws Express the Same Thing
-
-**They are complementary:**
-
 | Law | Direction | Meaning |
 |-----|-----------|---------|
 | **(f⁻¹ ∘ f)** | 2D → 1D → 2D | "Going forward then backward gets you home" |
 | **(f ∘ f⁻¹)** | 1D → 2D → 1D | "Going backward then forward gets you home" |
-
-**Both express the same mathematical truth:** f and f⁻¹ are **perfect inverses** of each other.
-
-Think of it like a door:
-
-```
-Room A                      Room B
-(2D space)                  (1D space)
-[[0; 2¹⁶-1]]²            [0, 1]
-
-  (x, y) ───f──→ value
-                    ↓
-                  f⁻¹
-                    ↓
-              (x, y) again ✓
-
-  value ───f⁻¹──→ (x, y)
-               ↓
-              f
-               ↓
-          value again ✓
-```
-
----
-
-### Formal Definition: Function Composition
-
-**Composition symbol ∘** means "apply the right function first, then the left"
-
-```
-(g ∘ f)(x) = g(f(x))
-             └──┬──┘  Apply f first
-              Then g
-```
-
-**Important:** The order matters!
-```
-(g ∘ f)(x) ≠ (f ∘ g)(x)  in general
-```
-
----
-
-### The Identity Function
-
-Both laws mention "the identity":
-
-```
-Identity on [[0; 2¹⁶-1]]²:
-id₂D(x, y) = (x, y)        ← Returns the same pair
-
-Identity on [0, 1]:
-id₁D(x) = x               ← Returns the same value
-```
-
-**The laws say:**
-```
-f⁻¹ ∘ f = id₂D   (2D identity)
-f ∘ f⁻¹ = id₁D   (1D identity)
-```
-
-This is the **definition of an inverse function**!
-
----
-
-### Implementing the Inverse (Ex11)
-
-For your Z-order curve, you need to implement the inverse:
-
-```rust
-pub fn unmap(z: f64) -> (u16, u16) {
-    // Step 1: Convert from [0, 1] back to u32
-    let index = (z * u32::MAX as f64) as u32;
-    
-    // Step 2: De-interleave bits
-    // Extract x from even positions: 0, 2, 4, ...
-    let mut x: u16 = 0;
-    for i in 0..16 {
-        x |= ((index >> (2 * i)) & 1) as u16;
-        x <<= 1;
-    }
-    
-    // Extract y from odd positions: 1, 3, 5, ...
-    let mut y: u16 = 0;
-    for i in 0..16 {
-        y |= ((index >> (2 * i + 1)) & 1) as u16;
-        y <<= 1;
-    }
-    
-    (x, y)
-}
-```
-
-**OR more cleanly:**
-
-```rust
-pub fn unmap(z: f64) -> (u16, u16) {
-    let index = (z * u32::MAX as f64) as u32;
-    
-    let mut x: u16 = 0;
-    let mut y: u16 = 0;
-    
-    for i in 0..16 {
-        x |= ((index >> (2 * i)) & 1) as u16 << i;      // Even positions → x bits
-        y |= ((index >> (2 * i + 1)) & 1) as u16 << i;  // Odd positions → y bits
-    }
-    
-    (x, y)
-}
-```
-
----
-
-### Testing the Inverse
-
-**Test both composition laws:**
-
-```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_f_inverse_f() {
-        // (f⁻¹ ∘ f)(x, y) = (x, y)
-        let test_points = vec![
-            (0, 0),
-            (100, 200),
-            (u16::MAX, u16::MAX),
-            (12345, 54321),
-        ];
-        
-        for (x, y) in test_points {
-            let z = map(x, y);              // Apply f
-            let (x_recovered, y_recovered) = unmap(z);  // Apply f⁻¹
-            
-            assert_eq!((x_recovered, y_recovered), (x, y),
-                      "Failed for ({}, {})", x, y);
-        }
-    }
-
-    #[test]
-    fn test_f_of_f_inverse() {
-        // (f ∘ f⁻¹)(x) = x
-        let test_values = vec![
-            0.0,
-            0.5,
-            1.0,
-            0.001234567,
-            0.999999999,
-        ];
-        
-        for z in test_values {
-            let (x, y) = unmap(z);           // Apply f⁻¹
-            let z_recovered = map(x, y);     // Apply f
-            
-            // Use approximate equality for floats
-            assert!((z_recovered - z).abs() < 1e-10,
-                   "Failed for {}", z);
-        }
-    }
-
-    #[test]
-    fn test_bijectivity() {
-        // If they're true inverses, they should be bijective
-        use std::collections::HashSet;
-        let mut forward_values = HashSet::new();
-        let mut reverse_coords = HashSet::new();
-        
-        for x in 0..256 {
-            for y in 0..256 {
-                let z = map(x as u16, y as u16);
-                forward_values.insert(z.to_bits());
-                
-                let (x_back, y_back) = unmap(z);
-                reverse_coords.insert((x_back, y_back));
-            }
-        }
-        
-        // All forward mappings should be unique
-        assert_eq!(forward_values.len(), 256 * 256);
-        // All reverse mappings should be unique
-        assert_eq!(reverse_coords.len(), 256 * 256);
-    }
-}
-```
-
----
-
-### Why "x alone" Works Too
-
-You asked: **"does it work for x alone too?"**
-
-**YES! Absolutely!** Here's why:
-
-```
-For Law 2: (f ∘ f⁻¹)(x) = x
-
-This takes a SINGLE value x and shows that:
-f⁻¹(x) produces a coordinate pair (a, b)
-Then f(a, b) produces back the original x
-
-So yes, this law works entirely with a single 1D value!
-```
-
-**The key insight:**
-
-- **Law 1** shows: 2D → 1D → 2D returns to 2D
-- **Law 2** shows: 1D → 2D → 1D returns to 1D
-
-They're testing the **round trip in both directions**!
-
----
-
-### Visual Summary
-
-```
-Forward (f):
-┌─────────────────────────┐
-│ (x, y) ────f───→ z ∈ [0,1]
-│                         
-│ 2D Grid            1D Line
-└─────────────────────────┘
-
-Reverse (f⁻¹):
-┌─────────────────────────┐
-│ z ∈ [0,1] ──f⁻¹──→ (x, y)
-│                         
-│ 1D Line            2D Grid
-└─────────────────────────┘
-
-Composition 1 (2D → 1D → 2D):
-┌──────────────────────────────┐
-│ (x,y) ─f─→ z ─f⁻¹─→ (x,y)   │
-│  "What we started with" = "What we got"
-└──────────────────────────────┘
-
-Composition 2 (1D → 2D → 1D):
-┌──────────────────────────────┐
-│ z ──f⁻¹─→ (x,y) ─f─→ z       │
-│  "What we started with" = "What we got"
-└──────────────────────────────┘
-```
-
----
-
-### Mathematical Terminology
-
-**These laws define what it means to be an inverse:**
-
-```
-A function f⁻¹ is the inverse of f if and only if:
-
-1. f⁻¹ ∘ f = id_domain      (Going forward then backward is identity)
-2. f ∘ f⁻¹ = id_codomain    (Going backward then forward is identity)
-```
-
-**This is the DEFINITION of an inverse function in set theory and category theory!**
-
----
-
-### Connection to Your Project
-
-**Ex10 → Ex11 Arc:**
-
-| Exercise | Task | Result |
-|----------|------|--------|
-| **Ex10** | Implement f (forward) | 2D → 1D bijection |
-| **Ex11** | Implement f⁻¹ (inverse) | 1D → 2D bijection |
-| **Property** | (f⁻¹ ∘ f) = id | Perfect round-trip both ways |
-
-You're building an **isomorphism** between spaces!
-
-```
-In Category Theory terms:
-[[0; 2¹⁶-1]]² ≅ [0, 1]
-
-(The ≅ symbol means "isomorphic to")
-```
-
-This means the two spaces have the **same structure**, just different representations.
-
----
-
-### Why This Matters
-
-**In Computer Science:**
-
-1. **Data Serialization:** Convert multi-dimensional data to 1D for storage
-   ```
-   (x, y) coordinates → single float (Ex10)
-   Read from disk → recover (x, y) (Ex11)
-   ```
-
-2. **Hash Functions:** Map objects to indices
-   ```
-   grid coordinates → array index
-   array index → grid coordinates
-   ```
-
-3. **Spatial Indexing:** Organize 2D data on 1D structures
-   ```
-   B-trees, databases use space-filling curves
-   Store 2D geographic data in 1D index
-   ```
-
-4. **Morphisms:** Prove two structures are equivalent
-   ```
-   "These two spaces are the same algebraically"
-   Proven by showing bijective morphism
-   ```
-
----
-
-### Summary: The Two Laws
-
-**You have it exactly right:**
-
-```
-(f⁻¹ ∘ f)(x, y) = (x, y)     ← "I can reverse the function and get back!"
-(f ∘ f⁻¹)(x) = x              ← "And it works going the other way too!"
-```
-
-Both express the same mathematical truth:
-- **f and f⁻¹ are perfect inverses**
-- **They form a bijection (one-to-one, onto)**
-- **Together they preserve all information**
-
-This is the pinnacle of your Boolean algebra journey! From sets and morphisms → to space-filling curves → to inverse functions. You've built up from pure theory to practical bijective mappings. 🎯
-
-
-Q:
-so it seems the f64 type is enough to represent the values. out of curiosity how many values can f64 represent in the space 0..1 included?
-A:
-About 9,007,199,254,740,993 distinct values in [0, 1] (i.e., 2⁵³ + 1).
-That’s because f64 has 53 bits of precision, so it can represent multiples of 2⁻⁵³ near 1, plus 0.
-
-So yes: f64 has far more than the 2³² values you need. f32 has only 24 bits of precision (~2²⁴ + 1 values in [0,1]), which is far less than 2³². So f32 cannot uniquely represent all your mapped values.
