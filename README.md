@@ -7,7 +7,7 @@ The first systematic presentation of Boolean algebra and distributive lattices i
 
 ## Rust workspaces
 
-To organize my project whch is a collectio of exercises I will create workspaces.
+To organize my project which is a collection of exercises I will create workspaces.
 As described in the Rust docs I first create a directory for the workspace:
 
 ``` bash
@@ -28,7 +28,7 @@ after creating the files manually I just need to type in the terminal:
 cargo new ex00 --lib
 ```
 
-and so on for each new exercice. I will add the main.rs file manually as required by the subject.
+and so on for each new exercise. I will add the main.rs file manually as required by the subject.
 
 ## linting / formatter
 
@@ -117,11 +117,11 @@ Code blocks in doc comments are automatically tested by `cargo test`:
 cargo test --doc
 ```
 
-This will run all the code examples in your `///` comments to ensure they compile and work correctly.
+This will run all the code examples in my `///` comments to ensure they compile and work correctly.
 
 ### Generating and Viewing Documentation
 
-To generate and open the HTML documentation in your browser:
+To generate and open the HTML documentation in my browser:
 
 ```bash
 cargo doc --open
@@ -136,7 +136,7 @@ cargo doc --package ex00 --open
 This will:
 
 1. Generate HTML documentation in `target/doc/`
-2. Automatically open it in your default browser
+2. Automatically open it in my default browser
 3. Include all public items with their documentation
 
 ## Ex00
@@ -278,9 +278,9 @@ G=n⊕(n≫1)
 
 Two of those operators were new to me:
 
-### Material condition 
+### The Material condition (⇒)
 
-The => implication in logic, is known as **Material Implication** as well. Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
+The `>` implication in logic, is known as **Material condition** as well. Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
 
 There are four possible scenarios:
 
@@ -295,10 +295,10 @@ Let's look at the output of vs :
 
 |  |  |  |  |  |
 | --- | --- | --- | --- | --- |
-| 0 | 0 | **1** | 1 | **1** () |
-| 0 | 1 | **1** | 1 | **1** () |
-| 1 | 0 | **0** | 0 | **0** () |
-| 1 | 1 | **1** | 0 | **1** () |
+| 0 | 0 | **1** | 1 | **1** |
+| 0 | 1 | **1** | 1 | **1** |
+| 1 | 0 | **0** | 0 | **0** |
+| 1 | 1 | **1** | 0 | **1** |
 
 The expression basically says:
 > "Either the condition () didn't happen, OR the result () did."
@@ -322,10 +322,10 @@ This means:
 
 | A | B | A = B | Meaning |
 |---|---|-------|---------|
-| 0 | 0 | **1** | Both false → They agree ✓ |
-| 0 | 1 | **0** | Different → They disagree ✗ |
-| 1 | 0 | **0** | Different → They disagree ✗ |
-| 1 | 1 | **1** | Both true → They agree ✓ |
+| 0 | 0 | **1** | Both false → They agree |
+| 0 | 1 | **0** | Different → They disagree |
+| 1 | 0 | **0** | Different → They disagree |
+| 1 | 1 | **1** | Both true → They agree |
 
 **Key insight:** `A = B` is true when A and B have the **same value** (both true OR both false).
 
@@ -355,9 +355,8 @@ A = B  means  "A and B always match"
 ```
 (x > 5) = (x ≥ 6)   for integers
 
-True when x = 7:  (True = True)  → True ✓
-True when x = 3:  (False = False) → True ✓
-False when x = 5.5: Would break if x could be real!
+True when x = 7:  (True = True)  → True 
+True when x = 3:  (False = False) → True 
 ```
 
 **Example 2: Logical equivalence**
@@ -365,49 +364,25 @@ False when x = 5.5: Would break if x could be real!
 ```
 "It's raining" = "The ground is wet"   (in a controlled scenario)
 
-Both true:  Raining AND ground wet → Equivalent ✓
-Both false: Not raining AND ground dry → Equivalent ✓
-One true, one false: NOT equivalent ✗
+Both true:  Raining AND ground wet → Equivalent 
+Both false: Not raining AND ground dry → Equivalent 
+One true, one false: NOT equivalent 
 ```
 
 **Example 3: Circuit logic**
 ```
 Switch A = Switch B   (for a two-way light switch)
 
-Both ON:  Light is on → Equivalent ✓
-Both OFF: Light is off → Equivalent ✓
-One ON, one OFF: Light state depends on wiring ✗
-```
-
-#### Why It's Called "If and Only If"
-
-**Breaking down "A ⇔ B":**
-
-1. **"If A then B"** (A → B)
-   - When A is true, B must be true
-   
-2. **"If B then A"** (B → A)  
-   - When B is true, A must be true
-
-3. **Together:** They **force each other** to have the same value
-
-**Example:**
-
-```text
-"You pass the exam ⇔ You scored ≥ 60%"
-
-If you pass → You scored ≥ 60% (first direction)
-If you scored ≥ 60% → You pass (second direction)
-They're tied together!
+Both ON:  Light is on → Equivalent 
+Both OFF: Light is off → Equivalent 
+One ON, one OFF: Light state depends on wiring 
 ```
 
 #### Connection to XOR (Exclusive OR)
 
-**Important relationship:**
+`A = B`  is the OPPOSITE of `A ⊕ B`.  
 
 ```text
-A = B  is the OPPOSITE of  A ⊕ B
-
 Equivalence = NOT(XOR)
 ¬(A ⊕ B) = (A = B)
 ```
@@ -421,12 +396,9 @@ Equivalence = NOT(XOR)
 | 1 | 0 | 1 (different) | **0** (disagree) |
 | 1 | 1 | 0 (same)    | **1** (agree) |
 
-**XOR asks:** "Are they different?"  
-**Equivalence asks:** "Are they the same?"
-
 #### In Set Theory
 
-In your Ex09 set evaluation, `A = B` means:
+In the Ex09 set evaluation, `A = B` means:
 
 ```text
 Elements that belong to BOTH sets OR belong to NEITHER set
@@ -435,7 +407,9 @@ Elements that belong to BOTH sets OR belong to NEITHER set
 ```
 
 **Example:**
+
 ```text
+
 Universe: {1, 2, 3, 4}
 A = {1, 2}
 B = {2, 3}
@@ -463,21 +437,8 @@ Output is HIGH when inputs match
 Used in equality checkers
 ```
 
-**2. Password Verification**
 
-```text
-Stored Password = Entered Password
-True only if they're exactly the same
-```
-
-**3. Synchronization**
-
-```text
-State A = State B
-Used to check if two systems are in sync
-```
-
-**4. Mathematical Proofs**
+**2. Mathematical Proofs**
 
 ```text
 To prove A ⇔ B, you must prove:
@@ -520,12 +481,11 @@ Different fields use different symbols:
 
 | Symbol | Meaning | Usage |
 |--------|---------|-------|
-| `=` | Equivalence | Your exercise, some logic texts |
+| `=` | Equivalence | Some logic texts |
 | `⇔` | Equivalence | Most logic textbooks |
 | `≡` | Equivalence | Some mathematical logic |
 | `↔` | Equivalence | Alternative arrow notation |
 | `iff` | Equivalence | "If and only if" (written) |
-
 
 ### implementation
 
@@ -539,7 +499,8 @@ As the subject suggested I create an ast, an Abstract Syntax Tree like:
   A     B
 ```
 
-This is the first major exercise in the module. Here I start with my node implementation for the ast:
+This is the first major exercise in the module. Here I start with my node implementation for the ast. My Node will have associated values
+
 ```rust
 pub enum Node {
     /// A boolean constant: true (1) or false (0)
@@ -624,7 +585,7 @@ Before applying NNF, we must eliminate Implication and Equivalence:
 ### 2. How to implement it in Rust
 
 We will write a recursive function `ast_to_nnf(node: Node) -> Node`. The key is to handle the `Node::Not` case by looking at its **child**.  
-The subject asks for a **string** in RPN as the return value. We'll need a helper function to turn your tree back into a string:
+The subject asks for a **string** in RPN as the return value. We'll need a helper function to turn my tree back into a string:
 
 **The "Order of Operations":**
 
@@ -658,9 +619,9 @@ Where each clause is an OR of literals:
 ```
 
 **Key characteristics:**
-- ✅ Outer operator: AND (conjunction) - the "Product"
-- ✅ Inner operators: OR (disjunction) - the "Sums"
-- ✅ Also called "Product of Sums"
+- Outer operator: AND (conjunction) - the "Product"
+- Inner operators: OR (disjunction) - the "Sums"
+- Also called "Product of Sums"
 
 **RPN Example:**
 ```
@@ -743,7 +704,7 @@ A → B  ≡  ¬A | B    (from ex05)
 
 **CNF clause:** `(¬Morning | ¬Evening)`
 
-**Why it works:** Forces at most one shift to be true
+Forces at most one shift to be true
 
 ### The Algorithm
 
@@ -788,6 +749,8 @@ A ∧ (B ∨ C) ⟺ (A ∧ B) ∨ (A ∧ C)
 ```
 
 ### Implementation Sketch
+
+The 42 subject forces me to return a string otherwise it would have been better to return the result type from the function to be able to propagate the errors... I know it is not optimal:
 
 ```rust
 pub fn conjunctive_normal_form(formula: &str) -> String {
@@ -870,7 +833,7 @@ Distributed fully → 2ⁿ clauses
 
 #### What is K-Map Simplification?
 
-Your CNF might be correct but **redundant**:
+My CNF might be correct but **redundant**:
 
 ```
 (A | B) & (A | ¬B) = A   ← Can be simplified
@@ -898,13 +861,15 @@ Group covers both B values → **B is irrelevant** → Result: `A`
 #### Why K-Maps Matter
 
 For **digital circuit design:**
-- ✅ Fewer logic gates = cheaper hardware
-- ✅ Faster circuits (fewer propagation delays)
-- ✅ Lower power consumption
 
-#### K-Map vs Your Implementation
+- Fewer logic gates = cheaper hardware
+- Faster circuits (fewer propagation delays)
+- Lower power consumption
+
+#### K-Map vs My Implementation
 
 **For Ready Set Boole:**
+
 - Evaluators expect: **Correct CNF** (not necessarily minimal)
 - K-Map simplification: **Optional bonus** (complex to implement)
 
@@ -912,7 +877,7 @@ For **digital circuit design:**
 
 | Approach | Use Case | Difficulty |
 |----------|----------|------------|
-| **Distributive Law** | Generate CNF (your code) | Medium |
+| **Distributive Law** | Generate CNF (my code) | Medium |
 | **K-Maps** | Simplify by hand (2-4 vars) | Easy |
 | **Quine-McCluskey** | Automate simplification | Hard |
 
@@ -948,7 +913,7 @@ O(2^n) where n is the number of variables (exponential)
 
 ### What is a Powerset?
 
-A Powerset of a set S is the set of all possible subsets, including the empty set and S itself. If your set has n elements, the powerset will have 2^n elements.
+A Powerset of a set S is the set of all possible subsets, including the empty set and S itself. If my set has n elements, the powerset will have 2^n elements.
 
 ### Example
 
@@ -1012,14 +977,6 @@ The algorithm iterates from 0 to 2^n - 1. For each number i:
 - Check each bit position j
 - If bit j is set, include element j in the subset
 
-### Historical Origin
-
-This comes from **combinatorics** and **discrete mathematics**. The technique is sometimes called:
-
-- **Binary enumeration**
-- **Bitmask iteration**
-- **Gray code variant** (if ordered differently)
-
 ## Boolean Lattices
 
 ### What is a Lattice?
@@ -1056,13 +1013,13 @@ The powerset you generated in Ex08 forms a **Boolean lattice**! Here's the latti
 ### The Full {1, 2, 3} Boolean Lattice
 
 ```text
-                {1,2,3}
+               {1,2,3}
               /   |   \
           {1,2} {1,3} {2,3}
-           /|\   /|\   /|\
-         {1} {2} {3}
-           \  |  /
-              {}
+             |/  \ /  \ |
+            {1}  {2}  {3}
+               \  |  /
+                 {}
 ```
 
 ### Properties of Boolean Lattices
@@ -1123,13 +1080,6 @@ Take any two elements. Can you find:
 
 - What's join(2,3)? Could be 6, 12, 18... no unique least upper bound! 
 
-Test 2: Check the Hasse diagram
-
-Draw the partial order as a directed graph (Hasse diagram):
-
-- Every "fork" must rejoin at exactly one element above
-- Every "merge" must split from exactly one element below
-
 ### Boolean Lattices vs General Lattices
 
 Not all lattices are Boolean:
@@ -1167,7 +1117,7 @@ This is a lattice (join = LCM, meet = GCD) but NOT Boolean:
 
 ### Connection to the Project
 
-Your Boolean algebra exercises are working inside a Boolean lattice:
+My Boolean algebra exercises are working inside a Boolean lattice:
 
 - **Ex00-Ex03**: Operations (∧, ∨, ¬) in the 2-element lattice {0, 1}
 - **Ex05 (NNF)**: Pushing ¬ down preserves lattice structure
@@ -1175,15 +1125,15 @@ Your Boolean algebra exercises are working inside a Boolean lattice:
 - **Ex07 (SAT)**: Finding if formula reaches ⊤ (true)
 - **Ex08 (Powerset)**: Building the entire Boolean lattice!
 
-**Mathematical Note**: Every finite Boolean lattice is isomorphic to the powerset lattice of some finite set. This deep connection is why your Ex08 powerset exercise is fundamental to understanding Boolean algebra!
+**Mathematical Note**: Every finite Boolean lattice is isomorphic to the powerset lattice of some finite set. This deep connection is why my Ex08 powerset exercise is fundamental to understanding Boolean algebra!
 
-## **Material Implication**
+## **Material Implication with sets ** 
 
 In logic, the **Material Implication**  is defined as "If A, then B." When we translate this into Set Theory, it represents the relationship: **"Everything that is NOT in A, OR everything that is in B."**
 
 The formula for this is:  (where  is the Universe).
 
-### Why the result is `[2, 3]` in your example:
+### Why the result is `[2, 3]` in my example:
 
 Let’s break it down step-by-step using your specific inputs:
 
@@ -1207,7 +1157,7 @@ Now we take the result of  and combine it with everything in Set B.
 * B is `{2, 3}`.
 * `{3} | {2, 3}` results in `{2, 3}`.
 
-| A | B |  |
+| A | B | A > B |
 | --- | --- | --- |
 | 1 | 1 | **1** (Element is in both) |
 | 1 | 0 | **0** (Element in A but NOT in B — The only "False" case) |
@@ -1247,6 +1197,10 @@ Imagine this scenario:
 In this case, `AB=` gives you the whole Universe because  and  are identical. They agree on everything.
 
 ## bonus
+
+You must write a function (the inverse of a space-filling curve, used to encode spatial
+data into a line) that takes a pair of coordinates in two dimensions and assigns a unique
+value in the closed interval `[0; 1] ∈ R`
 
 ### Reading Mathematical Function Notation
 
