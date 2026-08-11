@@ -532,6 +532,7 @@ Generates and displays a complete truth table for a Boolean formula with variabl
 **Output:** Markdown truth table with all 2^n rows (n = number of variables)
 
 **Algorithm:**
+
 1. Parse RPN formula to AST
 2. Extract all variables from the formula
 3. Generate all 2^n variable combinations (truth assignments)
@@ -539,7 +540,7 @@ Generates and displays a complete truth table for a Boolean formula with variabl
 5. Display as formatted table
 
 **Example:**
-```
+```txt
 Formula: AB&C|
 Variables: A, B, C (3 variables → 8 rows)
 
