@@ -267,7 +267,7 @@ G=n⊕(n≫1)
 ## Operator Symbols
 
 | Symbol | Mathematical Equivalent | Description |
-|--------|------------------------|-------------|
+| -------- | ------------------------ | ------------- |
 | `0` | ⊥ | false |
 | `1` | ⊤ | true |
 | `!` | ¬ | Negation |
@@ -279,73 +279,66 @@ G=n⊕(n≫1)
 
 Two of those operators were new to me:
 
-### The Material condition (⇒)
+### The Material Condition (⇒)
 
-The `>` implication in logic, is known as **Material condition** as well. Imagine I make you a promise: **"If it rains (), then I will bring an umbrella ()."**
+The `>` implication in logic is also known as the material condition. Consider the premise: "If it rains (A), then I will bring an umbrella (B)."
 
 There are four possible scenarios:
 
-1. **It rains (), and I bring an umbrella ():** I kept my promise. (**True**)
-2. **It rains (), but I don't bring an umbrella ():** I broke my promise. (**False**)
-3. **It doesn't rain (), but I bring an umbrella anyway ():** I didn't break my promise. (I'm just prepared). (**True**)
-4. **It doesn't rain (), and I don't bring an umbrella ():** I didn't break my promise. (**True**)
+1. **It rains (A), and I bring an umbrella (B):** The promise is kept. (**True**)
+2. **It rains (A), but I don't bring an umbrella (B):** The promise is broken. (**False**)
+3. **It doesn't rain (A), but I bring an umbrella anyway (B):** The promise is not broken. (**True**)
+4. **It doesn't rain (A), and I don't bring an umbrella (B):** The promise is not broken. (**True**)
 
-Notice that the **only** time the statement is **False** is when the "If" () happens, but the "Then" () does not.
+The statement is only false when the condition (A) happens, but the result (B) does not.
 
-Let's look at the output of vs :
+| A | B | A > B |
+|---|---|---|
+| 0 | 0 | **1** |
+| 0 | 1 | **1** |
+| 1 | 0 | **0** |
+| 1 | 1 | **1** |
 
-|  |  |  |  |  |
-| --- | --- | --- | --- | --- |
-| 0 | 0 | **1** | 1 | **1** |
-| 0 | 1 | **1** | 1 | **1** |
-| 1 | 0 | **0** | 0 | **0** |
-| 1 | 1 | **1** | 0 | **1** |
-
-The expression basically says:
-> "Either the condition () didn't happen, OR the result () did."
-
-If is false, the whole thing is true (we don't care about ). This is called **vacuous truth**. If is true, then for the whole expression to be true, **must** be true. This is exactly what "If , then " means.
+The expression states that either the condition (A) didn't happen, or the result (B) did. If A is false, the entire expression is true regardless of B (vacuous truth). If A is true, B must be true for the expression to remain true.
 
 ### Logical Equivalence (⇔)
 
-The `=` symbol represents **Logical Equivalence** (also written as ⇔ or ≡). It means "if and only if" (iff).
+The `=` symbol represents logical equivalence (also written as $\iff$ or $\equiv$). It means "if and only if" (iff). Two statements are equivalent when they always have the same truth value.
 
-**Definition:** Two statements are equivalent when they always have the **same truth value**.
+**Example:** "The light is on $\iff$ The switch is up"
 
-**Example:** "The light is on ⇔ The switch is up"
-
-This means:
-- If the light is on, then the switch must be up
-- If the switch is up, then the light must be on
-- They **always agree**
+- If the light is on, the switch must be up.
+- If the switch is up, the light must be on.
+- They always agree.
 
 #### Truth Table
 
 | A | B | A = B | Meaning |
 |---|---|-------|---------|
-| 0 | 0 | **1** | Both false → They agree |
+| 0 | 0 | **1** | Both false → They agree   |
 | 0 | 1 | **0** | Different → They disagree |
 | 1 | 0 | **0** | Different → They disagree |
-| 1 | 1 | **1** | Both true → They agree |
+| 1 | 1 | **1** | Both true → They agree    |
 
-**Key insight:** `A = B` is true when A and B have the **same value** (both true OR both false).
+`A = B` is true when A and B have the same value.
 
 #### Equivalence vs Equality
 
 **In logic:**
-```
+
+```txt
 A = B  means  "A and B always match"
 ```
 
 **Equivalent to:**
 
-```
+```txt
 (A → B) ∧ (B → A)   "A implies B AND B implies A"
 ```
 
 **Also equivalent to:**
 
-```
+```txt
 (A ∧ B) ∨ (¬A ∧ ¬B)   "Both true OR both false"
 ```
 
@@ -353,7 +346,7 @@ A = B  means  "A and B always match"
 
 **Example 1: Mathematical equivalence**
 
-```
+```txt
 (x > 5) = (x ≥ 6)   for integers
 
 True when x = 7:  (True = True)  → True 
@@ -362,7 +355,7 @@ True when x = 3:  (False = False) → True
 
 **Example 2: Logical equivalence**
 
-```
+```txt
 "It's raining" = "The ground is wet"   (in a controlled scenario)
 
 Both true:  Raining AND ground wet → Equivalent 
@@ -371,7 +364,8 @@ One true, one false: NOT equivalent
 ```
 
 **Example 3: Circuit logic**
-```
+
+```txt
 Switch A = Switch B   (for a two-way light switch)
 
 Both ON:  Light is on → Equivalent 
@@ -391,11 +385,11 @@ Equivalence = NOT(XOR)
 **Comparison:**
 
 | A | B | A ⊕ B (XOR) | A = B (Equivalence) |
-|---|---|-------------|---------------------|
-| 0 | 0 | 0 (same)    | **1** (agree) |
+| --- | --- | ------------- | --------------------- |
+| 0 | 0 | 0 (same) | **1** (agree) |
 | 0 | 1 | 1 (different) | **0** (disagree) |
 | 1 | 0 | 1 (different) | **0** (disagree) |
-| 1 | 1 | 0 (same)    | **1** (agree) |
+| 1 | 1 | 0 (same) | **1** (agree) |
 
 #### In Set Theory
 
@@ -410,7 +404,6 @@ Elements that belong to BOTH sets OR belong to NEITHER set
 **Example:**
 
 ```text
-
 Universe: {1, 2, 3, 4}
 A = {1, 2}
 B = {2, 3}
@@ -438,7 +431,6 @@ Output is HIGH when inputs match
 Used in equality checkers
 ```
 
-
 **2. Mathematical Proofs**
 
 ```text
@@ -450,7 +442,7 @@ To prove A ⇔ B, we must prove:
 #### Summary Table
 
 | Aspect | Material Implication (→) | Logical Equivalence (⇔) |
-|--------|-------------------------|------------------------|
+| -------- | ------------------------- | ------------------------ |
 | **Symbol** | `>` | `=` |
 | **Meaning** | "If...then" | "If and only if" |
 | **False when** | A true, B false | A and B differ |
@@ -461,7 +453,8 @@ To prove A ⇔ B, we must prove:
 #### Visual Mnemonic
 
 **Implication (→):**
-```
+
+```txt
 A → B
 "A forces B"
 If A happens, B must happen
@@ -469,7 +462,8 @@ But B can happen without A
 ```
 
 **Equivalence (⇔):**
-```
+
+```txt
 A ⇔ B
 "A and B are locked together"
 If either changes, both must change
@@ -600,6 +594,7 @@ The subject asks for a **string** in RPN as the return value. We'll need a helpe
 Converts a Boolean formula to **Conjunctive Normal Form** - a standardized format required for SAT solvers and automated reasoning systems.
 
 **Requirement:** Transform RPN formula so that:
+
 - Every negation (`!`) appears directly after a variable
 - Every conjunction (`&`) appears at the end of the formula
 - Result is an AND of ORs: `(A|B|C) & (D|E) & (F)`
@@ -611,22 +606,23 @@ Converts a Boolean formula to **Conjunctive Normal Form** - a standardized forma
 
 **Conjunctive Normal Form (CNF)** is a standardized way to write Boolean formulas as:
 
-```
+```txt
 (Clause₁) AND (Clause₂) AND (Clause₃) AND ...
 ```
 
 Where each clause is an OR of literals:
-```
+```txt
 (A | B | ¬C) ∧ (¬A | D) ∧ (B | ¬D)
 ```
 
 **Key characteristics:**
+
 - Outer operator: AND (conjunction) - the "Product"
 - Inner operators: OR (disjunction) - the "Sums"
 - Also called "Product of Sums"
 
 **RPN Example:**
-```
+```txt
 Formula: AB|C&
 Infix: (A | B) & C
 CNF: Already in CNF (AND at top level)
@@ -635,7 +631,7 @@ CNF: Already in CNF (AND at top level)
 ### CNF vs DNF
 
 | Property | CNF (Conjunctive) | DNF (Disjunctive) |
-|----------|------------------|-------------------|
+| ---------- | ------------------ | ------------------- |
 | **Outer operator** | AND (∧) | OR (∨) |
 | **Inner operators** | OR (\|) | AND (&) |
 | **Structure** | (A\|B) & (C\|D) | (A&B) \| (C&D) |
@@ -643,6 +639,7 @@ CNF: Already in CNF (AND at top level)
 | **Used for** | SAT solvers | Circuit minimization |
 
 **Memory trick:** 
+
 - **C**NF = **C**onjunction (AND) on the outside
 - **D**NF = **D**isjunction (OR) on the outside
 
@@ -653,13 +650,14 @@ CNF is the **standard input format** for SAT solvers because:
 **1. Efficient evaluation:** Check if ANY clause fails (short-circuit)
 
 **2. Natural constraint representation:**
-```
+```txt
 Rule: "Every flight must have a pilot"
 CNF: (PilotA | PilotB | PilotC)
 Meaning: At least one must be true
 ```
 
 **3. Real-world applications:**
+
 - **Scheduling**: Aircraft crew assignments
 - **Hardware verification**: Circuit correctness proofs
 - **AI planning**: Action preconditions
@@ -684,7 +682,7 @@ Meaning: At least one must be true
 **Implication:** `Berlin → Rest`
 
 **Convert to CNF:** 
-```
+```txt
 A → B  ≡  ¬A | B    (from ex05)
 ¬Berlin | Rest
 ```
@@ -700,7 +698,7 @@ A → B  ≡  ¬A | B    (from ex05)
 **Logic:** `¬(Morning ∧ Evening)`
 
 **Apply De Morgan's Law:**
-```
+```txt
 ¬(A ∧ B) ≡ ¬A | ¬B
 ```
 
@@ -711,14 +709,17 @@ Forces at most one shift to be true
 ### The Algorithm
 
 **Step 1: Convert to NNF** (use ex05)
+
 - Push all negations down to variables
 - Eliminate `>` and `=` operators
 
 **Step 2: Apply Distributivity**
+
 - Use the law: `A | (B & C) ≡ (A | B) & (A | C)`
 - Recursively distribute OR over AND
 
 **Step 3: Flatten to RPN**
+
 - Convert AST back to RPN string
 - Ensure ANDs appear at the end
 
@@ -726,11 +727,12 @@ Forces at most one shift to be true
 
 The **key transformation** is:
 
-```
+```txt
 A ∨ (B ∧ C) ⟺ (A ∨ B) ∧ (A ∨ C)
 ```
 
 **Visual example:**
+
 ```txt
       OR                AND
      /  \              /   \
@@ -746,7 +748,8 @@ Equivalent: (A is true OR B is true) AND (A is true OR C is true)
 ```
 
 **Opposite law (for DNF):**
-```
+
+```txt
 A ∧ (B ∨ C) ⟺ (A ∧ B) ∨ (A ∧ C)
 ```
 
@@ -779,12 +782,14 @@ pub fn conjunctive_normal_form(formula: &str) -> String {
 **Infix:** `¬(A ∧ B)`
 
 **Step 1 - NNF (De Morgan's Law):**
-```
+
+```txt
 ¬(A ∧ B) → ¬A ∨ ¬B
 ```
 
 **Step 2 - Already in CNF:**
-```
+
+```txt
 (¬A ∨ ¬B)  ← Single clause
 ```
 
@@ -796,7 +801,7 @@ pub fn conjunctive_normal_form(formula: &str) -> String {
 **Infix:** `(A ∨ B) ∧ (C ∨ D)`
 
 **Already in CNF:**
-```
+```txt
 Two clauses ANDed together
 (A ∨ B) ∧ (C ∨ D)
 ```
@@ -809,7 +814,7 @@ Two clauses ANDed together
 **Infix:** `(A ∧ B) ∨ C`
 
 **Apply distributivity:**
-```
+```txt
 (A ∧ B) ∨ C  →  (A ∨ C) ∧ (B ∨ C)
 ```
 
@@ -821,7 +826,7 @@ Two clauses ANDed together
 
 **Why?** Distributivity can cause exponential growth:
 
-```
+```txt
 (A₁ ∨ B₁) ∧ (A₂ ∨ B₂) ∧ ... ∧ (Aₙ ∨ Bₙ)
 
 Distributed fully → 2ⁿ clauses
@@ -837,7 +842,7 @@ Distributed fully → 2ⁿ clauses
 
 My CNF might be correct but **redundant**:
 
-```
+```txt
 (A | B) & (A | ¬B) = A   ← Can be simplified
 ```
 
@@ -852,7 +857,7 @@ K-Maps find these redundancies to produce **minimal CNF**.
 
 **Example: `AB|A!B|` → `A`**
 
-```
+```txt
     B  ¬B
 A   1   1   ← Both cells are 1, group them
 ¬A  0   0
@@ -921,7 +926,7 @@ A Powerset of a set S is the set of all possible subsets, including the empty se
 
 For set [1, 2, 3], the powerset contains 8 subsets:
 
-```text
+```txt
 []
 [1]
 [2]
@@ -961,7 +966,7 @@ The key insight: **each subset corresponds to a binary number**.
 
 For a set of `n` elements, we have `2^n` subsets. Each subset can be represented as an `n`-bit binary number:
 
-```
+```txt
 For [1, 2, 3]:
 Binary  Decimal  Subset
 000   →   0    → []
@@ -997,7 +1002,7 @@ Think of it as a structure where you can always find:
 
 The powerset we generated in Ex08 forms a **Boolean lattice**. Here's the lattice for {1, 2}:
 
-```text
+```txt
         {1, 2}         ← Top (universal set)
          /  \
       {1}   {2}        ← Single elements
@@ -1014,7 +1019,7 @@ The powerset we generated in Ex08 forms a **Boolean lattice**. Here's the lattic
 
 ### The Full {1, 2, 3} Boolean Lattice
 
-```text
+```txt
                {1,2,3}
               /   |   \
           {1,2} {1,3} {2,3}
@@ -1057,7 +1062,7 @@ Take any two elements. Can we find:
 
 **Example - This IS a lattice:**
 
-``` bool
+```txt
     6
    / \
   2   3
@@ -1070,7 +1075,7 @@ Take any two elements. Can we find:
 
 **Example - This is NOT a lattice:**
 
-``` bool
+```txt
     ?
    / \
   2   3
@@ -1088,7 +1093,7 @@ Not all lattices are Boolean:
 
 **Boolean Lattice** (like powersets):
 
-``` bool
+```txt
 - Has complements
 - Is distributive
 - Has 2^n elements for n atoms
@@ -1097,7 +1102,7 @@ Not all lattices are Boolean:
 
 **Non-Boolean Lattice** (like divisibility):
 
-``` bool
+```txt
 Divisors of 12: {1, 2, 3, 4, 6, 12}
 
     12
@@ -1241,7 +1246,7 @@ Reading from right to left (as mathematicians build up):
 
 **Line 2: The Codomain (Output Range)**
 
-```
+```txt
 A ⊂ [0; 1] ⊂ ℝ
 ```
 
@@ -1351,7 +1356,7 @@ pub fn map(x: u16, y: u16, n: u16) -> f64 {
 
 ### Visual Representation
 
-```
+```txt
 Domain (Input Space):
 ┌─────────────────────┐
 │  (0, 65535)  65535  │
@@ -1415,7 +1420,7 @@ Then, we map that u32 into the range [0, 1].
 
 **How it works:**
 
-```
+```txt
 Bit interleaving of x and y coordinates:
 
 x = 0b 0101 0011 (binary)
@@ -1433,7 +1438,7 @@ Pattern: y₁₅ x₁₅ y₁₄ x₁₄ ... y₀ x₀
 
 **Visual Pattern:**
 
-``` text
+```text
 ┌─────┬─────┐
 │ ┌─┐ │ ┌─┐ │
 │ │0│ │ │1│ │
@@ -1449,7 +1454,7 @@ Forms Z-shape at each level of subdivision
 
 ** the TRUE "Z" shape:**
 
-```
+```txt
 4×4 grid:
 ┌────┬────┬────┬────┐
 │  0 │  1 │  4 │  5 │     0→1   4→5
@@ -1506,7 +1511,7 @@ The exercise requires two properties to hold:
 
 **Step by step:**
 
-```
+```txt
 Input: (x, y) ∈ [[0; 2¹⁶ - 1]]²
 
 Step 1: Apply f
@@ -1537,7 +1542,7 @@ So: (f⁻¹ ∘ f)(100, 200) = f⁻¹(f(100, 200)) = f⁻¹(0.001234567) = (100,
 
 **Breaking it down:**
 
-```
+```txt
 (f ∘ f⁻¹)(x) means: f(f⁻¹(x))
                     └───┬───┘  └┬┘
                     Apply f⁻¹ first
