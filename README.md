@@ -1,4 +1,5 @@
 # Ready-Set-Boole
+
 Ready, Set, Boole!
 
 The term "Boolean algebra" honors George Boole (1815–1864), a self-educated English mathematician. He introduced the algebraic system initially in a small pamphlet, The Mathematical Analysis of Logic, published in 1847 in response to an ongoing public controversy between Augustus De Morgan and William Hamilton, and later as a more substantial book, The Laws of Thought, published in 1854. Boole's formulation differs from that described above in some important respects. For example, conjunction and disjunction in Boole were not a dual pair of operations. Boolean algebra emerged in the 1860s, in papers written by William Jevons and Charles Sanders Peirce.
@@ -87,7 +88,7 @@ This matches most programming languages and standard Boolean algebra notation!
 
 ## Rust Documentation with `///`
 
-Rust uses `///` for documentation comments that generate HTML documentation. These go above the item you're documenting:
+Rust uses `///` for documentation comments that generate HTML documentation. These go above the item we're documenting:
 
 ```rust
 /// Adds two numbers using only bitwise operators.
@@ -127,7 +128,7 @@ To generate and open the HTML documentation in my browser:
 cargo doc --open
 ```
 
-Or if you're in a workspace, specify the package:
+Or if we're in a workspace, specify the package:
 
 ```bash
 cargo doc --package ex00 --open
@@ -441,7 +442,7 @@ Used in equality checkers
 **2. Mathematical Proofs**
 
 ```text
-To prove A ⇔ B, you must prove:
+To prove A ⇔ B, we must prove:
 1. A → B (forward direction)
 2. B → A (backward direction)
 ```
@@ -564,7 +565,7 @@ See `ex04/src/lib.rs` for detailed documentation.
 
 Since I have already built the **AST (Tree)**, converting to **Negation Normal Form (NNF)** is essentially a "Tree-to-Tree" transformation.
 
-In NNF, negations (`!`) are only allowed to touch variables. To get there, you apply **De Morgan's Laws** and the **Double Negation Law** to "push" the NOT operators down from the top of the tree to the leaves.
+In NNF, negations (`!`) are only allowed to touch variables. To get there, we apply **De Morgan's Laws** and the **Double Negation Law** to "push" the NOT operators down from the top of the tree to the leaves.
 
 ### 1. The Transformation Rules
 
@@ -729,7 +730,7 @@ A ∨ (B ∧ C) ⟺ (A ∨ B) ∧ (A ∨ C)
 ```
 
 **Visual example:**
-```
+```txt
       OR                AND
      /  \              /   \
     A   AND    →    OR     OR
@@ -737,8 +738,8 @@ A ∨ (B ∧ C) ⟺ (A ∨ B) ∧ (A ∨ C)
       B   C        A  B   A  C
 ```
 
-**Why this works:**
-```
+
+```txt
 Truth: A is true, OR (both B and C are true)
 Equivalent: (A is true OR B is true) AND (A is true OR C is true)
 ```
@@ -957,7 +958,7 @@ pub fn powerset(set: Vec<i32>) -> Vec<Vec<i32>> {
 
 The key insight: **each subset corresponds to a binary number**.
 
-For a set of `n` elements, you have `2^n` subsets. Each subset can be represented as an `n`-bit binary number:
+For a set of `n` elements, we have `2^n` subsets. Each subset can be represented as an `n`-bit binary number:
 
 ```
 For [1, 2, 3]:
@@ -993,7 +994,7 @@ Think of it as a structure where you can always find:
 
 ### Visual Example: The Powerset Lattice
 
-The powerset you generated in Ex08 forms a **Boolean lattice**! Here's the lattice for {1, 2}:
+The powerset we generated in Ex08 forms a **Boolean lattice**. Here's the lattice for {1, 2}:
 
 ```text
         {1, 2}         ← Top (universal set)
@@ -1048,7 +1049,7 @@ A **Boolean lattice** (or Boolean algebra) has these special properties:
 
 **Test 1: Does every pair have a join and meet?**
 
-Take any two elements. Can you find:
+Take any two elements. Can we find:
 
 - Their least upper bound?
 - Their greatest lower bound?
@@ -1135,7 +1136,7 @@ The formula for this is:  (where  is the Universe).
 
 ### Why the result is `[2, 3]` in my example:
 
-Let’s break it down step-by-step using your specific inputs:
+Let’s break it down step-by-step using our specific inputs:
 
 * **Set A:** `{1, 2}`
 * **Set B:** `{2, 3}`
@@ -1194,17 +1195,17 @@ Imagine this scenario:
 * They **also** agree on **2, 3, and 4** (neither has them!).
 * **Result: `{1, 2, 3, 4}**`
 
-In this case, `AB=` gives you the whole Universe because  and  are identical. They agree on everything.
+In this case, `AB=` gives us the whole Universe because  and  are identical. They agree on everything.
 
 ## bonus
 
-You must write a function (the inverse of a space-filling curve, used to encode spatial
+We must write a function (the inverse of a space-filling curve, used to encode spatial
 data into a line) that takes a pair of coordinates in two dimensions and assigns a unique
 value in the closed interval `[0; 1] ∈ R`
 
 ### Reading Mathematical Function Notation
 
-```
+```txt
 Let f be a function and let A be a set such as:
 f : (x, y) ∈ [[0; 2¹⁶ - 1]]² ⊂ ℕ² → A
 A ⊂ [0; 1] ⊂ ℝ
@@ -1264,7 +1265,7 @@ Reading from right to left:
 
 > "Let f be a function that maps pairs of integers (x, y), where both x and y range from 0 to 65535, into some set A. The set A contains real numbers between 0 and 1."
 
-**In code terms (what you'd write in Rust):**
+**In code terms:**
 
 ```rust
 fn f(x: u16, y: u16) -> f64 {
@@ -1281,15 +1282,18 @@ fn f(x: u16, y: u16) -> f64 {
 #### Domain Notation: [[0; 2¹⁶ - 1]]²
 
 **[[a; b]]** = Closed interval of integers from a to b
+
 - The double brackets [[...]] indicate **discrete** (integer) values
 - Single brackets [...] would indicate **continuous** (real) values
 
 **The "²" exponent:**
+
 - Means "Cartesian product with itself"
 - [[0; 2¹⁶ - 1]]² = [[0; 2¹⁶ - 1]] × [[0; 2¹⁶ - 1]]
 - All possible pairs (x, y) where x and y are both in that range
 
 **Why 2¹⁶ - 1?**
+
 - 2¹⁶ = 65536 (the number of values a u16 can hold)
 - 2¹⁶ - 1 = 65535 (the maximum value for u16)
 - Range: [0, 65535] = exactly all u16 values
@@ -1299,12 +1303,13 @@ fn f(x: u16, y: u16) -> f64 {
 #### Codomain Notation: A ⊂ [0; 1] ⊂ ℝ
 
 **[0; 1]** = Closed interval of reals from 0 to 1
+
 - Single brackets [...] indicate **continuous** (real) values
 - Includes 0, 1, and every real number in between
 - Examples: 0, 0.5, π/4, √2/2, 1
 
 **The chain of subsets:**
-```
+```txt
 A ⊂ [0; 1] ⊂ ℝ
 
 A is inside [0; 1], which is inside ℝ
@@ -1514,7 +1519,7 @@ Step 2: Apply f⁻¹
 Expected: (x, y)  ← We got back what we started with
 ```
 
-Since f is a **bijection** (one-to-one, onto), every point in [0, 1] came from exactly one (x, y) pair. So when you apply f⁻¹ to that point, it must return to the original (x, y).
+Since f is a **bijection** (one-to-one, onto), every point in [0, 1] came from exactly one (x, y) pair. So when we apply f⁻¹ to that point, it must return to the original (x, y).
 
 **Example:**
 
@@ -1554,9 +1559,7 @@ Step 2: Apply f
 Expected: x  ← We got back what we started with
 ```
 
-**Why this works:**
-
-Since f⁻¹ is the inverse, it maps [0, 1] back to [[0; 2¹⁶ - 1]]². When you then apply f to that coordinate pair, it must return the original float value.
+Since f⁻¹ is the inverse, it maps [0, 1] back to [[0; 2¹⁶ - 1]]². When we then apply f to that coordinate pair, it must return the original float value.
 
 **Example:**
 ```
@@ -1570,3 +1573,7 @@ So: (f ∘ f⁻¹)(0.001234567) = f(f⁻¹(0.001234567)) = f(100, 200) = 0.00123
 |-----|-----------|---------|
 | **(f⁻¹ ∘ f)** | 2D → 1D → 2D | "Going forward then backward gets you home" |
 | **(f ∘ f⁻¹)** | 1D → 2D → 1D | "Going backward then forward gets you home" |
+
+## Links
+
+[https://doc.rust-lang.org/stable/book/index.html](https://doc.rust-lang.org/stable/book/index.html)

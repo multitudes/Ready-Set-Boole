@@ -51,9 +51,9 @@ A **group** is a set **PLUS** a binary operation that satisfies 4 special proper
 
 ### Examples: Set vs Group
 
-**Example 1: Natural Numbers**
+#### Example 1: Natural Numbers
 
-```
+```txt
 Set: ℕ = {0, 1, 2, 3, ...}  (just elements, no operation)
 
 Group: (ℕ, +) = Natural numbers WITH addition
@@ -65,9 +65,9 @@ Group: (ℕ, +) = Natural numbers WITH addition
 So (ℕ, +) is NOT a group, but (ℤ, +) IS a group!
 ```
 
-**Example 2: Boolean Values**
+#### Example 2: Boolean Values
 
-```
+```txt
 Set: {0, 1}  (just true/false, no operation)
 
 Group: ({0, 1}, XOR) = Boolean values WITH XOR operation
@@ -79,7 +79,7 @@ Group: ({0, 1}, XOR) = Boolean values WITH XOR operation
 So ({0, 1}, XOR) IS a group!
 ```
 
-**Example 3: Rotation of a Square**
+#### Example 3: Rotation of a Square
 
 ```
 Set: {0°, 90°, 180°, 270°}  (just angles)
@@ -98,7 +98,7 @@ This is the famous "Cyclic Group of Order 4"!
 ### Quick Comparison Table
 
 | Concept | Set | Group |
-|---------|-----|-------|
+| --------- | ----- | ------- |
 | **Definition** | Collection of elements | Set + binary operation |
 | **Structure** | No relationships | Elements can be combined |
 | **Example** | {apple, banana, cherry} | (ℤ, +) integers with addition |
@@ -108,9 +108,9 @@ This is the famous "Cyclic Group of Order 4"!
 
 ---
 
-### Connection to Your Boolean Algebra Project
+### Connection to The Boolean Algebra Project
 
-**In your exercises:**
+**In the exercises:**
 
 - **Sets** (Ex08 Powerset): Just collecting all subsets {}, {A}, {B}, {A,B}...
 - **Operations** (Ex00-Ex06): Defining ∧, ∨, ¬ on sets
@@ -133,11 +133,11 @@ Groups are the language of **symmetry** in mathematics:
 - **Symmetries** of crystals form a group
 - **Molecular chemistry** uses group theory
 
-They appear everywhere because any time you have a **reversible operation** (like addition, XOR, rotation), you likely have a group! 🎯
+They appear everywhere because any time we have a **reversible operation** (like addition, XOR, rotation), we likely have a group.
 
-## The **Order** of a group
+## The Order of a group
 
-The **Order** of a group (often denoted as  or ) is simply the number of elements in the group's underlying set.
+The Order of a group (often denoted as  or ) is simply the number of elements in the group's underlying set.
 
 ### 1. Finite vs. Infinite Orders
 
@@ -147,19 +147,19 @@ The **Order** of a group (often denoted as  or ) is simply the number of element
 
 - **Infinite Groups:** If the set is something like the Integers (), we say the group has **infinite order**.
 
-### 2. Why "Cardinal"?
+### 2. What is "Cardinality"?
 
 The term **Cardinality** is used because it refers to the "size" of the set, regardless of how the elements are arranged or what the operation is.
 
-In your project, the **Truth Table** for  variables has  rows. In a way, you are dealing with a Boolean space of **Order**.
+In our project, the **Truth Table** for  variables has  rows. In a way, we are dealing with a Boolean space of **Order**.
 
 ---
 
 ### 3. Order of an Element (A different concept!)
 
-Be careful not to confuse the **Order of the Group** with the **Order of an Element**.
+We should be careful not to confuse the **Order of the Group** with the **Order of an Element**.
 
-- The **Order of an Element**  is the smallest positive integer  such that applying the operation  times brings you back to the **Identity** ().
+- The **Order of an Element**  is the smallest positive integer such that applying the operation n times brings us back to the **Identity** ().
 -
 
 In the XOR group :
@@ -171,13 +171,13 @@ In the XOR group :
 
 ### Ex10: Bringing it all together
 
-For **Ex10 (Curve Saturation)**, you are working within a discrete coordinate space.
+For **Ex10 (Curve Saturation)**, we are working within a discrete coordinate space.
 
 - If  and  are `u16`, each has  possible values.
 - The "Space" of all possible  pairs is a grid with a "Cardinality" (Order) of .
-- Your `map` function takes these  discrete points and maps them to  points on a 1D line.
+- Our `map` function takes these  discrete points and maps them to  points on a 1D line.
 
-Because the mapping is **Symmetrical** (Bijective), you are essentially rearranging the order of these  points without losing a single one.
+Because the mapping is **Symmetrical** (Bijective), we are essentially rearranging the order of these  points without losing a single one.
 
 ## Morphisms: Structure-Preserving Maps
 
@@ -187,30 +187,30 @@ A **morphism** is a map (function) between two algebraic structures that **prese
 
 The word comes from Greek: "morphe" = form/shape, "ism" = the study of.
 
-**Intuition:** A morphism is a "respectful translation" between two structures. It's not arbitrary—it must respect how the elements relate to each other.
+A morphism is a "respectful translation" between two structures. It's not arbitrary—it must respect how the elements relate to each other.
 
 ---
 
-### The Core Idea
+### Example of a morphism
 
-Imagine you have two groups:
+Imagine we have two groups:
 
 - Group A with elements and operation ∘
 - Group B with elements and operation ★
 
 A morphism f: A → B is a function where:
 
-```
+```txt
 f(a ∘ b) = f(a) ★ f(b)
 ```
 
-**Translation:** "It doesn't matter if you combine first then map, or map first then combine—you get the same result!"
+It doesn't matter if we combine first then map, or map first then combine— we get the same result.
 
 ---
 
 ### Visual Example: The Integers
 
-```
+```txt
 (ℤ, +)  ────────────→  (ℤ/5ℤ, +)
  
  Integer Addition    Modulo 5 Addition
@@ -229,7 +229,7 @@ f(5) + f(3) = 0 + 3 = 3  ✓ Same result!
 ### Types of Morphisms
 
 | Type | Name | Definition | Example |
-|------|------|-----------|---------|
+| ------ | ------ | ----------- | --------- |
 | **Homomorphism** | Structure-preserving | f(a ∘ b) = f(a) ★ f(b) | f(x) = x mod 5 |
 | **Isomorphism** | Bijective + structure-preserving | Homomorphism that's 1-to-1 and onto | f(x) = 2x (ℝ → ℝ) |
 | **Endomorphism** | Maps to itself | Morphism f: G → G | f(x) = x² in (ℝ, ×) |
@@ -237,9 +237,9 @@ f(5) + f(3) = 0 + 3 = 3  ✓ Same result!
 
 ---
 
-### Example 1: Logarithm (Classic!)
+### Example 1: Logarithm
 
-```
+```txt
 GROUP A: (ℝ⁺, ×)        GROUP B: (ℝ, +)
 Positive reals           All reals
 with multiplication      with addition
@@ -262,7 +262,7 @@ This is an ISOMORPHISM because:
 
 ### Example 2: Boolean Values and XOR
 
-```
+```txt
 GROUP A: ({0, 1}, XOR)      GROUP B: (ℤ/2ℤ, +)
 Boolean XOR               Integers mod 2
 
@@ -286,7 +286,7 @@ This is an ISOMORPHISM because:
 
 ### Example 3: Determinant Function
 
-```
+```txt
 GROUP A: (GL₂(ℝ), ×)              GROUP B: (ℝ*, ×)
 2×2 invertible matrices           Non-zero real numbers
 with multiplication               with multiplication
@@ -309,43 +309,41 @@ This is a HOMOMORPHISM but NOT an isomorphism
 
 ---
 
-### Why Morphisms Matter
+### Morphisms in the real world
 
-**1. Classification**
+#### 1. Classification
 
 - Morphisms help classify structures
 - If two groups are isomorphic, they're "the same" algebraically
 
-**2. Simplification**
+#### 2. Simplification
 
 - Map a complex structure to a simpler one
 - Solve the problem in the simpler space, then translate back
 
-**3. Computer Science**
+#### 3. Computer Science
 
 - **Hashing** is a homomorphism (structure preserved but not bijective)
 - **Encoding/Decoding** uses morphisms
 - **Cryptography** exploits properties of morphisms
 
-**4. Physics**
+#### 4. Physics
 
 - Symmetries of physical systems are automorphisms
 - Conservation laws arise from morphisms
 
 ---
 
-### Connection to Your Project
+### Connection to the project
 
-**In your exercises:**
-
-**Ex00-Ex03:** You define operations on {0, 1}
+**Ex00-Ex03:** we define operations on {0, 1}
 
 - These operations form group structures
 - f(x) = NOT x is an automorphism of ({0, 1}, XOR)
 
 **Ex05-Ex06:** Formula transformations (NNF, CNF)
 
-- Converting between normal forms is a **morphism**!
+- Converting between normal forms is a **morphism**
 - The formula structure is preserved: f(A & B) = f(A) & f(B)
 
 **Ex08:** Powerset
@@ -355,15 +353,13 @@ This is a HOMOMORPHISM but NOT an isomorphism
 
 **Ex09:** Set evaluation
 
-- Your `eval_set` function is a homomorphism!
+- Our `eval_set` function is a homomorphism
 - It maps formulas to their set-theoretic meaning
-- f(A & B) = f(A) ∩ f(B) ✓
+- f(A & B) = f(A) ∩ f(B)
 
 ---
 
-### Quick Reference
-
-**To check if something is a morphism:**
+### How To check if something is a morphism
 
 1. Define two structures with operations
 2. Pick a function f
@@ -373,7 +369,7 @@ This is a HOMOMORPHISM but NOT an isomorphism
 
 **Types by "strength":**
 
-```
+```txt
 Isomorphism (strongest)
     ↓
 Homomorphism
@@ -381,7 +377,7 @@ Homomorphism
 Regular function (weakest)
 ```
 
-An isomorphism preserves **everything**. A homomorphism preserves only the **operation**. A regular function preserves nothing!
+An isomorphism preserves **everything**. A homomorphism preserves only the **operation**. A regular function preserves nothing.
 
 ## Categories and Function Properties
 
@@ -389,16 +385,12 @@ An isomorphism preserves **everything**. A homomorphism preserves only the **ope
 
 A **category** is a collection of objects (like sets, groups, etc.) together with **morphisms** (functions/arrows) between them that follow certain rules.
 
-**Intuition:** Think of it as a "universe of mathematical structures" where:
+#### Example: The Category "Set":
 
-- **Objects** = the things we study (sets, groups, vector spaces, etc.)
-- **Morphisms** = the allowed ways to map between them
-
-**The Category "Set":**
+This is the most fundamental category in mathematics
 
 - **Objects:** All sets
 - **Morphisms:** All functions between sets
-- This is the most fundamental category in mathematics!
 
 ---
 
@@ -407,7 +399,7 @@ A **category** is a collection of objects (like sets, groups, etc.) together wit
 When we have a function f: A → B (mapping from set A to set B), we can classify it based on three key properties:
 
 | Property | Definition | Visualization | Example |
-|----------|-----------|----------------|---------|
+| ---------- | ----------- | ---------------- | --------- |
 | **Injective** (One-to-One) | Every element in A maps to a **different** element in B. No two elements share the same image. | No "collisions" | f(x) = 2x (ℝ → ℝ) |
 | **Surjective** (Onto) | Every element in B is mapped **from** at least one element in A. No "orphans" in B. | Every target is hit | f(x) = ⌊x⌋ (ℝ → ℤ) |
 | **Bijective** | Both injective AND surjective. Perfect one-to-one correspondence. | Perfect pairing | f(x) = x + 5 (ℝ → ℝ) |
@@ -418,7 +410,7 @@ When we have a function f: A → B (mapping from set A to set B), we can classif
 
 #### Example 1: Injective but NOT Surjective
 
-```
+```txt
 Set A: {1, 2, 3}          Set B: {a, b, c, d, e}
 
 f(1) → a
@@ -438,7 +430,7 @@ f(3) → c
 
 #### Example 2: Surjective but NOT Injective
 
-```
+```txt
 Set A: {1, 2, 3, 4, 5}    Set B: {a, b, c}
 
 f(1) → a
@@ -460,7 +452,7 @@ f(5) → c
 
 #### Example 3: Bijective (Both!)
 
-```
+```txt
 Set A: {1, 2, 3}          Set B: {a, b, c}
 
 f(1) → a
@@ -480,7 +472,7 @@ f(3) → c
 
 #### Example 4: Neither Injective NOR Surjective
 
-```
+```txt
 Set A: {1, 2, 3, 4}       Set B: {a, b, c, d, e, f}
 
 f(1) → a
@@ -500,11 +492,11 @@ f(4) → b
 
 ---
 
-### Why These Properties Matter
+### Recap
 
 **Injectivity (One-to-One):**
 
-- ✅ Allows you to **recover the original** from the image
+- ✅ Allows us to **recover the original** from the image
 - ✅ Used in **encoding** (no information loss)
 - ✅ Used in **hashing** (but perfect hashing requires injectivity + same-sized domains)
 - ❌ Makes **compression** impossible
@@ -526,11 +518,9 @@ f(4) → b
 
 ---
 
-### Connection to Your Project
+### Ex08: Powerset Function
 
-#### Ex08: Powerset Function
-
-```
+```txt
 f: Set → PowerSet
 
 f({1, 2}) → {{}, {1}, {2}, {1,2}}
@@ -540,9 +530,9 @@ This is BIJECTIVE:
 - Surjective: Every subset appears in the powerset
 ```
 
-#### Ex09: Set Evaluation Function
+### Ex09: Set Evaluation Function
 
-```
+```txt
 f: Formula → Set
 
 f("AB&") → {elements in A ∩ B}
@@ -553,19 +543,19 @@ This is SURJECTIVE but NOT always INJECTIVE:
   (e.g., "A" and "AA&" both evaluate to A)
 ```
 
-#### Morphisms and Function Properties
+### Morphisms and Function Properties
 
 **Isomorphism = Bijective Morphism**
 
 An isomorphism is a morphism (structure-preserving) that is also bijective!
 
-```
+```txt
 f: G → H is an isomorphism if:
   1. f(a ∘ b) = f(a) ★ f(b)  [morphism]
   2. f is bijective              [one-to-one and onto]
 ```
 
-**Examples from your project:**
+**Examples**
 
 - **Bijective Morphism:** The logarithm log: (ℝ⁺, ×) → (ℝ, +)
 - **Non-bijective Morphism:** Modulo m: (ℤ, +) → (ℤ/mℤ, +) [surjective but not injective]
@@ -577,20 +567,20 @@ f: G → H is an isomorphism if:
 In category theory, we classify morphisms based on their properties:
 
 | Morphism Type | Injective | Surjective | Bijective | Category |
-|---------------|-----------|-----------|-----------|----------|
+| --------------- | ----------- | ----------- | ----------- | ---------- |
 | **Monomorphism** | ✓ | - | - | "injective-like" |
 | **Epimorphism** | - | ✓ | - | "surjective-like" |
 | **Isomorphism** | ✓ | ✓ | ✓ | "structure-preserving bijection" |
 | **Endomorphism** | - | - | - | "maps to itself" |
 | **Automorphism** | ✓ | ✓ | ✓ | "bijective self-map" |
 
-**The key insight:** By choosing different morphisms, we can define different categories on the same collection of objects!
+By choosing different morphisms, we can define different categories on the same collection of objects
 
 ---
 
 ### Quick Test: Classify These Functions
 
-```
+```txt
 1. f(x) = x² from ℝ to ℝ
    Injective? NO (f(-2) = f(2) = 4)
    Surjective? NO (negative numbers never appear)
@@ -609,16 +599,14 @@ In category theory, we classify morphisms based on their properties:
 
 ---
 
-### Why This Matters for Programming
-
-In your Rust code and algorithms:
+In our Rust code and algorithms:
 
 - **Hashing functions:** Need to be fast, don't need to be injective (collisions ok)
 - **Encoding/Compression:** Injective (can decompress without loss)
 - **Encryption:** Bijective (must be reversible)
 - **Transformations:** Often morphisms that preserve the domain structure
 
-Your `eval_set` function is a **surjective morphism**—multiple formulas can describe the same set! 🎯
+The `eval_set` function is a **surjective morphism**—multiple formulas can describe the same set.
 
 ## Inverse Morphisms and Functional Inverses
 
@@ -626,7 +614,7 @@ Your `eval_set` function is a **surjective morphism**—multiple formulas can de
 
 If a morphism f is **bijective**, there exists an **inverse morphism** f⁻¹ such that:
 
-```
+```txt
 (f⁻¹ ∘ f)(x) = (f ∘ f⁻¹)(x) = idX(x) = x
 ```
 
@@ -636,7 +624,7 @@ Where:
 - idX is the **identity morphism** over set X
 - ∘ denotes **function composition**
 
-**In plain English:** Composing a function with its inverse (in either order) gives you back the original element unchanged.
+Composing a function with its inverse (in either order) gives us back the original element unchanged.
 
 ---
 
@@ -644,7 +632,7 @@ Where:
 
 **Function Composition (∘):**
 
-```
+```txt
 (f ∘ g)(x) = f(g(x))
 
 "First apply g, then apply f"
@@ -652,7 +640,7 @@ Where:
 
 **Identity Morphism (idX):**
 
-```
+```txt
 idX(x) = x
 
 "Do nothing—return the element unchanged"
@@ -660,7 +648,7 @@ idX(x) = x
 
 **Inverse Morphism (f⁻¹):**
 
-```
+```txt
 f⁻¹(f(x)) = x
 f(f⁻¹(y)) = y
 
@@ -671,7 +659,7 @@ f(f⁻¹(y)) = y
 
 ### Example 1: Simple Addition
 
-```
+```txt
 f(x) = x + 5 from ℝ → ℝ
 
 Inverse: f⁻¹(x) = x - 5
@@ -680,14 +668,14 @@ Verification:
 (f⁻¹ ∘ f)(x) = f⁻¹(f(x)) = f⁻¹(x + 5) = (x + 5) - 5 = x ✓
 (f ∘ f⁻¹)(x) = f(f⁻¹(x)) = f(x - 5) = (x - 5) + 5 = x ✓
 
-Both compositions give the identity!
+Both compositions give the identity
 ```
 
 ---
 
 ### Example 2: Logarithm and Exponential
 
-```
+```txt
 f(x) = log(x) from ℝ⁺ → ℝ
 
 Inverse: f⁻¹(x) = eˣ
@@ -696,14 +684,14 @@ Verification:
 (f⁻¹ ∘ f)(x) = f⁻¹(log(x)) = e^(log(x)) = x ✓
 (f ∘ f⁻¹)(x) = f(eˣ) = log(eˣ) = x ✓
 
-They perfectly undo each other!
+They perfectly undo each other
 ```
 
 ---
 
 ### Example 3: Bit Flip (Boolean)
 
-```
+```txt
 f(x) = NOT x from {0, 1} → {0, 1}
 
 Inverse: f⁻¹(x) = NOT x (self-inverse!)
@@ -712,7 +700,7 @@ Verification:
 (f⁻¹ ∘ f)(0) = NOT(NOT(0)) = NOT(1) = 0 ✓
 (f ∘ f⁻¹)(1) = NOT(NOT(1)) = NOT(0) = 1 ✓
 
-NOT is its own inverse!
+NOT is its own inverse
 ```
 
 ---
@@ -724,7 +712,7 @@ This is the key insight: **The set of all bijective functions with composition (
 Let's verify the group axioms for (Bijections, ∘):
 
 | Axiom | Verification | Example |
-|-------|--------------|---------|
+| ------- | -------------- | --------- |
 | **Closure** | Composing two bijections gives a bijection | f(x) = 2x, g(x) = x+3, then (f∘g)(x) = 2x+6 ✓ |
 | **Associativity** | (f∘g)∘h = f∘(g∘h) | Function composition is always associative ✓ |
 | **Identity** | idX is the identity element | f ∘ id = f, id ∘ f = f ✓ |
@@ -737,7 +725,7 @@ Let's verify the group axioms for (Bijections, ∘):
 ### Why Bijections are Special
 
 | Property | Bijection | Non-bijection |
-|----------|-----------|---------------|
+| ---------- | ----------- | --------------- |
 | **Invertible** | ✅ Has a unique inverse | ❌ No inverse exists |
 | **Information Loss** | ✅ Reversible (no loss) | ❌ Some info is lost |
 | **Group Element** | ✅ Part of a group structure | ❌ Not a group element |
@@ -751,7 +739,7 @@ Encryption relies entirely on bijections and their inverses!
 
 **AES (Advanced Encryption Standard):**
 
-```
+```txt
 Plaintext ──[f: encryption]──> Ciphertext
                 ↑
 Ciphertext ──[f⁻¹: decryption]──> Plaintext
@@ -768,7 +756,7 @@ Requirement: f must be BIJECTIVE!
 
 Notice the **symmetry** in the definition:
 
-```
+```txt
 (f⁻¹ ∘ f)(x) = x    [right inverse]
 (f ∘ f⁻¹)(x) = x    [left inverse]
 ```
@@ -786,37 +774,37 @@ This symmetry reflects the **group property**: both orders give the identity.
 
 **Function that is NOT injective:**
 
-```
+```txt
 f(x) = x² from ℝ → ℝ⁺
 
 Problem: f(-2) = f(2) = 4
          ↓
 What should f⁻¹(4) equal? -2 or 2?
-There's no consistent answer!
+There's no consistent answer
 ```
 
 **Function that is NOT surjective:**
 
-```
+```txt
 f(x) = x² from ℝ → ℝ
 
 Problem: -1 is in the codomain but never reached
          ↓
 What should f⁻¹(-1) equal?
-There's no element to map back to!
+There's no element to map back to...
 ```
 
-**Only bijections escape these problems!**
+**Only bijections escape these problems.**
 
 ---
 
 ## Comprehensive Morphism Taxonomy
 
-Beyond the basic distinction between homomorphisms, isomorphisms, and others, there's a rich vocabulary for describing different types of morphisms. Here's the complete picture:
+Beyond the basic distinction between homomorphisms, isomorphisms, and others, there's a rich vocabulary for describing different types of morphisms:
 
 ### The Morphism Spectrum
 
-```
+```txt
 All Functions
     ↓
 Morphisms (structure-preserving functions)
@@ -861,7 +849,7 @@ Morphisms (structure-preserving functions)
 
 **Definition:** A morphism f: A → B that is **injective** (one-to-one)
 
-**Intuition:** "No information loss" — you can always recover the original
+**Intuition:** "No information loss" — we can always recover the original
 
 **Examples:**
 
@@ -980,7 +968,7 @@ Morphisms (structure-preserving functions)
 **The Automorphism Group:**
 The set of all automorphisms of a structure G with composition forms a group!
 
-```
+```txt
 Example: Automorphisms of ({0, 1}, XOR)
 - f₁(x) = x (identity)
 - f₂(x) = NOT x (bit flip)
@@ -1023,7 +1011,7 @@ f₂ ∘ f₂ = identity
 
 ### Complete Morphism Classification Table
 
-```
+```txt
 Type           | Domain    | Codomain  | Injective | Surjective | Bijective | Invertible
 ═══════════════════════════════════════════════════════════════════════════════════════
 Homomorphism   | Any       | Any       |     ?     |     ?      |     ?     |    ✗
@@ -1039,7 +1027,7 @@ Exomorphism    | G         | H (≠G)    |     ?     |     ?      |     ?     | 
 
 #### Ex00-Ex03: Boolean Operations
 
-```
+```txt
 f(x) = NOT x from ({0, 1}, XOR) to ({0, 1}, XOR)
 
 This is an AUTOMORPHISM:
@@ -1051,7 +1039,7 @@ This is an AUTOMORPHISM:
 
 #### Ex05-Ex06: Formula Transformations (NNF, CNF)
 
-``` bool
+```txt
 f: Formula → NNF Formula
 
 This is an ENDOMORPHISM:
@@ -1064,7 +1052,7 @@ This is an ENDOMORPHISM:
 
 #### Ex08: Powerset Bijection
 
-```
+```txt
 f: Set → PowerSet(Set)
 
 This is an ISOMORPHIC EXOMORPHISM:
@@ -1077,7 +1065,7 @@ This is an ISOMORPHIC EXOMORPHISM:
 
 #### Ex09: Set Evaluation
 
-``` bool
+```txt
 f: Formula → Set
 
 This is a SURJECTIVE EXOMORPHISM:
@@ -1090,9 +1078,7 @@ This is a SURJECTIVE EXOMORPHISM:
 
 ---
 
-### Why This Taxonomy Matters
-
-By understanding morphism types, you can:
+### understanding morphism types matters
 
 1. **Classify problems:** Know if transformation is reversible
 2. **Design algorithms:** Choose appropriate mapping types
@@ -1100,14 +1086,14 @@ By understanding morphism types, you can:
 4. **Understand symmetry:** Automorphisms encode structure symmetries
 5. **Build abstractions:** Endomorphisms help organize computations
 
-The vocabulary precision allows mathematicians and computer scientists to talk about transformations with incredible specificity! 🎯
+The vocabulary precision allows mathematicians and computer scientists to talk about transformations with incredible specificity! 
 
 ---
 
 ### Quick Reference: When to Use Each
 
-| When You Need | Use This Type | Why |
-|---------------|---------------|-----|
+| When We Need | Use | Why |
+| --------------- | --------------- | ----- |
 | General structure preservation | Homomorphism | Simplest requirement |
 | No information loss | Monomorphism | Can recover original |
 | Coverage guarantee | Epimorphism | All targets reachable |
@@ -1117,7 +1103,7 @@ The vocabulary precision allows mathematicians and computer scientists to talk a
 | Embedding one in another | Monomorphic exomorphism | Injection into larger space |
 | Quotient/abstraction | Epimorphic endomorphism | Grouping equivalent elements |
 
-## XVI.4: Space-Filling Curves
+## Space-Filling Curves
 
 ### What is a **Space-Filling Curve**?
 
@@ -1125,7 +1111,7 @@ A **space-filling curve** is a continuous curve that maps a closed interval [0, 
 
 **Mathematical Definition:**
 
-```
+```txt
 f : [0, 1] → Mⁿ
 ```
 
@@ -1144,7 +1130,7 @@ Where:
 
 ---
 
-### Why "Space-Filling"?
+### What is meant by "Space-Filling"?
 
 The term **space-filling** is slightly misleading in classical mathematics:
 
@@ -1152,7 +1138,7 @@ The term **space-filling** is slightly misleading in classical mathematics:
 - However, we can get arbitrarily close with discrete approximations
 - For practical computational purposes, we treat them as bijective mappings
 
-In your **Ex10 (Curve Saturation)**, you're working with a discrete approximation that IS truly bijective!
+In the **Ex10 (Curve Saturation)**, we're working with a discrete approximation that IS truly bijective.
 
 ---
 
@@ -1170,7 +1156,7 @@ The **Hilbert Curve** is perhaps the most famous space-filling curve.
 
 **Visual Progression (Iterations 1-4):**
 
-```
+```txt
 Iteration 1:     Iteration 2:        Iteration 3:           Iteration 4:
 ┌─────┐         ┌───┬───┐          ┌─┬─────┬─┐            (very detailed)
 │  →  │         │ ┌─┐ ┌─┐│          │ ├──┬──┤ │             Each generation
@@ -1205,7 +1191,7 @@ The **Z-Order Curve** (also called Morton curve or Morton code) is simpler and m
 
 **How it works:**
 
-```
+```txt
 For 2D: Interleave bits of x and y coordinates
 
 x = 0b101 = 5
@@ -1218,16 +1204,16 @@ The resulting curve follows a Z-pattern at each scale!
 
 ---
 
-### Your Ex10: Discrete Space-Filling Curve
+### Ex10: Discrete Space-Filling Curve
 
-In **Ex10 (Curve Saturation)**, you implement a bijective mapping between:
+In **Ex10 (Curve Saturation)**, we implement a bijective mapping between:
 
-```
+```txt
 Source: Discrete 2D grid [0, width) × [0, height)
 Target: 1D linear array [0, width * height)
 ```
 
-**Your function signature:**
+**Our function signature:**
 
 ```rust
 fn map(x: u16, y: u16) -> u32 {
@@ -1244,20 +1230,20 @@ fn map(x: u16, y: u16) -> u32 {
 
 **Why it's a discrete space-filling curve:**
 
-```
+```txt
 Input space: u16 × u16 = 2^16 × 2^16 = 2^32 total points
 Output space: u32 = 2^32 total values
 
-Your function creates a bijection between these spaces!
+The function creates a bijection between these spaces.
 ```
 
 ---
 
 ### Connection to Morphism Theory
 
-Your **Ex10 map function is a bijective morphism (isomorphism)!**
+The **Ex10 map function is a bijective morphism (isomorphism)!**
 
-```
+```txt
 f: (ℤ/2¹⁶ℤ × ℤ/2¹⁶ℤ, +) → (ℤ/2³²ℤ, +)
 
 Properties:
@@ -1272,12 +1258,12 @@ Properties:
 ### Properties of Space-Filling Curves
 
 | Property | Meaning | Ex10 |
-|----------|---------|------|
-| **Continuity** | No jumps in the curve | ✓ If implemented carefully |
-| **Bijection** | One-to-one correspondence | ✓ Guaranteed by design |
+| ---------- | --------- | ------ |
+| **Continuity** | No jumps in the curve |  If implemented carefully |
+| **Bijection** | One-to-one correspondence |  Guaranteed by design |
 | **Locality** | Nearby points map to nearby regions | Depends on implementation |
-| **Computational** | Efficiently computable | ✓ Single formula |
-| **Invertible** | Can reverse the mapping | ✓ Inverse function possible |
+| **Computational** | Efficiently computable |  Single formula |
+| **Invertible** | Can reverse the mapping |  Inverse function possible |
 
 ---
 
@@ -1302,7 +1288,7 @@ Properties:
 - ✅ Easy to compute (bit interleaving)
 - ✅ Extends to n dimensions easily
 - ❌ Locality not as good as Hilbert
-- **Use when:** Need simplicity and efficiency (your Ex10!)
+- **Use when:** Need simplicity and efficiency (Ex10)
 
 #### 4. **Gray Code Curve**
 
@@ -1313,13 +1299,13 @@ Properties:
 
 ---
 
-### Z-Order Curve: Your Ex10 Implementation
+### Z-Order Curve: The Ex10 Implementation
 
-The **Z-Order (Morton Code)** curve is perfect for Ex10 because:
+The **Z-Order (Morton Code)** curve for Ex10:
 
 **Bit Interleaving Formula:**
 
-```
+```txt
 For 2D coordinates (x, y) to index i:
 
 Take each bit of x and y alternately:
@@ -1333,7 +1319,7 @@ This creates a zigzag pattern that covers the entire grid!
 
 **Example with small numbers:**
 
-```
+```txt
 Point (1, 2):
 x = 1 = 0b01
 y = 2 = 0b10
@@ -1343,8 +1329,6 @@ Interleaved: 0b 1 0 0 1 = 9
 
 The pattern: (0,0)→(1,0)→(0,1)→(1,1)→(2,0)... follows a Z shape
 ```
-
-**Why Z-Order works for Ex10:**
 
 1. ✅ Both x and y are u16, total 2³² combinations
 2. ✅ Output index fits in u32 (2³² values)
@@ -1358,7 +1342,7 @@ The pattern: (0,0)→(1,0)→(0,1)→(1,1)→(2,0)... follows a Z shape
 
 #### 1. **Database Indexing**
 
-```
+```txt
 Multi-dimensional spatial data → 1D index
 Used in: Geographic databases, image retrieval systems
 Example: PostGIS uses space-filling curves for spatial indexing
@@ -1366,21 +1350,21 @@ Example: PostGIS uses space-filling curves for spatial indexing
 
 #### 2. **Image Processing**
 
-```
+```txt
 2D image pixels → 1D array following curve pattern
 Benefit: Improves cache locality, better compression
 ```
 
 #### 3. **Graphics & Gaming**
 
-```
+```txt
 3D coordinates → 1D texture coordinates
 Used in: Volumetric rendering, procedural generation
 ```
 
 #### 4. **Data Compression**
 
-```
+```txt
 Multi-dimensional data → 1D sequence
 Benefit: Nearby data points are close in sequence
 Result: Better compression ratios
@@ -1388,14 +1372,14 @@ Result: Better compression ratios
 
 #### 5. **Memory Organization**
 
-```
+```txt
 2D grid access → Linear memory layout
 Benefit: Improves CPU cache performance
 ```
 
 #### 6. **Cryptography**
 
-```
+```txt
 Confusion/diffusion properties
 Space-filling curves shuffle data across dimensions
 ```
@@ -1406,7 +1390,7 @@ Space-filling curves shuffle data across dimensions
 
 **For a space-filling curve to work:**
 
-```
+```txt
 Must be SURJECTIVE:
 - Every point in the target space (grid) must be reached
 - No "holes" or uncovered regions
@@ -1423,7 +1407,7 @@ Must be BIJECTIVE:
 - Invertible: can go from index back to (x,y)
 ```
 
-**This is why your Ex10 requires a bijective function—without it, you'd have gaps or collisions in your curve!**
+**This is why Ex10 requires a bijective function—without it, we'd have gaps or collisions in our curve**
 
 ---
 
@@ -1471,16 +1455,16 @@ The Z-Order is much simpler and perfect for Ex10!
 
 ---
 
-### Connection to All Your Concepts
+### Connection to All The Concepts
 
-```
+```txt
 Morphism Theory:
-  Your map function is an isomorphism between
+  Our map function is an isomorphism between
   (u16 × u16, ordering) and (u32, linear ordering)
 
 Group Theory:
   The discrete grid forms a group under addition
-  Your mapping preserves this group structure
+  Our mapping preserves this group structure
 
 Sets & Functions:
   Domain: Set of all (u16, u16) pairs
@@ -1489,10 +1473,8 @@ Sets & Functions:
 
 Categories:
   This is an object in the category Set
-  Your function is a morphism (specifically an isomorphism)
+  Our function is a morphism (specifically an isomorphism)
 ```
-
-**Your Ex10 is the beautiful convergence of all these mathematical concepts into a practical, efficient algorithm!** 🎯
 
 ---
 
@@ -1500,7 +1482,7 @@ Categories:
 
 In **Curve Saturation**, the space-filling curve ordering becomes important:
 
-```
+```txt
 Without proper mapping:
   Random access to (x, y) → unpredictable memory patterns
   Poor cache performance, inconsistent access times
@@ -1532,7 +1514,7 @@ Space-filling curves demonstrate several deep mathematical principles:
 
 4. **Fractal Self-Similarity:** Many space-filling curves exhibit recursive, fractal patterns
 
-5. **Morphism Theory in Action:** Your Ex10 is a concrete example of isomorphic structure-preserving mapping
+5. **Morphism Theory in Action:** The Ex10 is a concrete example of isomorphic structure-preserving mapping
 
 Space-filling curves are where **pure mathematics meets practical computation**! 🌟
 
@@ -1542,14 +1524,14 @@ Space-filling curves are where **pure mathematics meets practical computation**!
 
 **Mathematical Definition:** A function f: A → B is **continuous** if small changes in the input produce small changes in the output. More formally:
 
-```
+```txt
 For every ε > 0, there exists a δ > 0 such that:
 if |x - y| < δ, then |f(x) - f(y)| < ε
 
 "Arbitrarily small input changes lead to arbitrarily small output changes"
 ```
 
-**Intuition:** You can draw the function without lifting your pen from the paper. No jumps, breaks, or sudden discontinuities.
+**Intuition:** We can draw the function without lifting the pen from the paper. No jumps, breaks, or sudden discontinuities.
 
 ---
 
@@ -1557,16 +1539,16 @@ if |x - y| < δ, then |f(x) - f(y)| < ε
 
 In the context of space-filling curves, **continuity means:**
 
-```
+```txt
 f : [0, 1] → M²  (or M^n in higher dimensions)
 
-If you have two points t₁ and t₂ that are CLOSE on the line [0, 1],
+If we have two points t₁ and t₂ that are CLOSE on the line [0, 1],
 then their images f(t₁) and f(t₂) must be CLOSE in the 2D space M².
 ```
 
 **Visual Example (2D Square):**
 
-```
+```txt
 Line [0, 1]:
 0.000 ─── 0.333 ─── 0.666 ─── 1.000
  │         │         │         │
@@ -1598,9 +1580,9 @@ This shocked mathematicians because:
 
 ### Three Levels of Understanding Continuity
 
-#### Level 1: Intuitive (What You Feel)
+#### Level 1: Intuitive
 
-```
+```txt
 Continuous: Can draw without lifting pen
 Discontinuous: Must lift pen (has jumps)
 
@@ -1608,11 +1590,11 @@ Space-filling curve: A pen-drawn path that somehow touches every point
 in a 2D square, yet never crosses itself!
 ```
 
-#### Level 2: Geometric (What You See)
+#### Level 2: Geometric (What We See)
 
 For a curve f: [0, 1] → ℝ²:
 
-```
+```txt
 CONTINUOUS:
   Point at t=0.5:     f(0.5) = (0.5, 0.5)
   Point at t=0.5001:  f(0.5001) ≈ (0.5001, 0.5001)  [very close!]
@@ -1639,7 +1621,7 @@ A function f: X → Y is continuous if:
 
 A function f: X → Y is continuous at point x₀ if:
 
-```
+```txt
 For all ε > 0, there exists δ > 0 such that:
   distance(x, x₀) < δ  ⟹  distance(f(x), f(x₀)) < ε
 ```
@@ -1650,7 +1632,7 @@ For all ε > 0, there exists δ > 0 such that:
 
 #### Example 1: Simple Continuous Function
 
-```
+```txt
 f(t) = (t, t) from [0, 1] to the line y = x in ℝ²
 
 Continuity check:
@@ -1664,7 +1646,7 @@ The curve is just a straight diagonal line from (0,0) to (1,1).
 
 #### Example 2: Discontinuous Function
 
-```
+```txt
 f(t) = { (0, 0)  if t < 0.5
        { (1, 1)  if t ≥ 0.5
 
@@ -1679,7 +1661,7 @@ The curve teleports from one corner to the opposite corner!
 
 #### Example 3: Hilbert Curve
 
-```
+```txt
 f: [0, 1] → [0, 1]²
 
 Properties:
@@ -1698,7 +1680,7 @@ Answer: Because continuity doesn't require smoothness—just no jumps!
 
 **Without Continuity:**
 
-```
+```txt
 Parameter t = 0.333333
 Curve position = (0.1, 0.9)
 
@@ -1711,7 +1693,7 @@ No coherent path, no nice properties
 
 **With Continuity:**
 
-```
+```txt
 Parameter t = 0.333333
 Curve position = (0.1, 0.9)
 
@@ -1728,7 +1710,7 @@ Before reaching distant regions
 
 **Classical Theorem (Surprising but True):**
 
-```
+```txt
 A continuous bijection from [0, 1] to [0, 1]² EXISTS!
 
 But it cannot be SMOOTH (differentiable everywhere).
@@ -1758,9 +1740,9 @@ Fractal curve: A road network with infinite detail (visits everywhere)
 
 ---
 
-### Your Ex10: Discrete Continuity
+### Ex10: Discrete Continuity
 
-In **Ex10 (Curve Saturation)**, your discrete space-filling curve should preserve **discrete continuity**:
+In **Ex10 (Curve Saturation)**, the discrete space-filling curve should preserve **discrete continuity**:
 
 ```rust
 fn map(x: u16, y: u16) -> u32 {
@@ -1770,7 +1752,7 @@ fn map(x: u16, y: u16) -> u32 {
 
 **Discrete Continuity Check:**
 
-```
+```txt
 Point (x, y):         map(x, y) = index₁
 Point (x+1, y):       map(x+1, y) = index₂
 Point (x, y+1):       map(x, y+1) = index₃
@@ -1784,12 +1766,12 @@ For DISCRETE CONTINUITY:
 
 **Why It Matters for Saturation:**
 
-```
-If you process pixels in curve order:
+```txt
+If we process pixels in curve order:
 pixel[0] → nearby pixels [1, 2, 3]
 pixel[1] → nearby pixels [0, 2, 3]
 
-This preserves spatial locality!
+This preserves spatial locality.
 Better cache performance, faster processing.
 ```
 
@@ -1797,8 +1779,8 @@ Better cache performance, faster processing.
 
 ### Comparing Continuous vs Discrete Space-Filling Curves
 
-| Property | Continuous (Classical) | Discrete (Your Ex10) |
-|----------|------------------------|----------------------|
+| Property | Continuous (Classical) | Discrete (Ex10) |
+| ---------- | ------------------------ | ---------------------- |
 | **Domain** | [0, 1] (real numbers) | {0, 1, ..., 2³²-1} |
 | **Codomain** | [0, 1]² (real plane) | u16 × u16 grid |
 | **Bijective** | YES | YES |
@@ -1813,7 +1795,7 @@ Better cache performance, faster processing.
 
 **Mathematical Definition:**
 
-```
+```txt
 A continuous space-filling curve is a function f: [0, 1] → ℝⁿ such that:
 
 1. f is CONTINUOUS:
@@ -1836,78 +1818,3 @@ A continuous space-filling curve is a function f: [0, 1] → ℝⁿ such that:
 - Yet property 3 says it never overlaps (injective)
 
 **Resolution:** The curve must be **nowhere differentiable** (infinitely complex)
-
----
-
-### Visual Intuition: Building a Space-Filling Curve
-
-**Iteration 1 (Simple):**
-
-```
-[0,1] ──────────→ ╔═════╗
-                  ║     ║
-                  ╚═════╝
-Line partially covers square
-```
-
-**Iteration 2 (More Detail):**
-
-```
-[0,1] zigzags ────→ ╔═════╗
-                    ║ ╱─╲ ║  More area covered
-                    ║╱   ╲║
-                    ╚═════╝
-```
-
-**Iteration ∞ (Complete):**
-
-```
-[0,1] fractal ───→ ╔═════╗
-                   ║▓▓▓▓▓║  Every point touched!
-                   ║▓▓▓▓▓║
-                   ╚═════╝
-Yet curve never overlaps (injective)
-```
-
----
-
-### Why Classical Continuity Fails for Your Ex10
-
-Your **Ex10** uses a **discrete space-filling curve**, which is different:
-
-```
-Your function is NOT continuous in the classical sense!
-
-Example: Z-Order curve
-map(0xFFFF, 0x0000) = some large index
-map(0x0000, 0xFFFF) = some very different index
-
-These are far apart in the grid, but might not be close in the index!
-```
-
-**This is OKAY** because:
-
-1. ✅ Your Ex10 doesn't require classical continuity
-2. ✅ It IS bijective (perfect one-to-one mapping)
-3. ✅ It IS computationally efficient
-4. ✅ It HAS good locality properties (reasonably close inputs → reasonably close outputs)
-
-**Trade-offs:**
-
-- Classical continuity: Perfect locality preservation, but hard to compute
-- Discrete (your Ex10): Good locality, but not perfect; easy to compute
-
----
-
-### Summary: Continuity in Space-Filling Curves
-
-| Aspect | What It Means |
-|--------|---------------|
-| **Classical Definition** | No jumps; small input changes → small output changes |
-| **Geometric Meaning** | Can draw the curve without lifting pen |
-| **Peano's Discovery** | Continuous bijections onto 2D exist, but nowhere differentiable |
-| **Your Ex10** | Discrete version; good but not perfect locality |
-| **Why It Matters** | Preserves spatial structure for efficient computation |
-
-**The Deep Truth:**
-Space-filling curves reveal that **continuity and bijectivity can coexist** when the curve is allowed to be infinitely complex. It's one of the most beautiful surprises in mathematics! 🌟
