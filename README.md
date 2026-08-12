@@ -16,43 +16,42 @@ mkdir ready_set_boole
 cd ready_set_boole
 ```
 
-Then I manually create the Cargo.toml file:
+Then I create the Cargo.toml file:
 
 ```yaml
 [workspace]
 resolver = "3"
 ```
 
-after creating the files manually I just need to type in the terminal:
+For each new exercise, I generate the library:
 
 ```rust
 cargo new ex00 --lib
 ```
 
-and so on for each new exercise. I will add the main.rs file manually as required by the subject.
+I add the main.rs file manually as required by each exercise.
 
 ## linting / formatter
 
-I will use the rust analyser extension for vscode. Also adding a `.vscode/settings.json` file with the recommended settings for the formatter and linter. They are different tools.
+I use the rust-analyzer extension for VS Code and configure my .vscode/settings.json for formatting and linting.
 
-**Formatters** - Fix code style/spacing:
+Formatters - Fix code style/spacing:
 
-- `rustfmt` - Reformats code to follow Rust style conventions
-- Example: `fn foo(a:u32)->u32{return a;}` → `fn foo(a: u32) -> u32 { return a; }`
+- rustfmt - Reformats code to follow Rust style conventions
+- Example: fn foo(a:u32)->u32{return a;} → fn foo(a: u32) -> u32 { return a; }
 
-**Linters** - Find bugs/style issues:
+Linters - Find bugs/style issues:
 
-- `clippy` - Suggests improvements and catches common mistakes
-- Example: Warns about inefficient code, unused variables, better idioms, etc.
-
-In my settings.json for vscode:
+- clippy - Suggests improvements and catches common mistakes
+- Example: Warns about inefficient code, unused variables, and better idioms.
+In my .vscode/settings.json:
 
 ```json
 "editor.formatOnSave": true,
 "editor.defaultFormatter": "rust-lang.rust-analyzer"
 ```
 
-This uses **rustfmt** (formatter) to auto-format on save.
+This uses `rustfmt` to auto-format on save.
 
 ```json
 "rust-analyzer.checkOnSave.command": "clippy",
@@ -61,21 +60,21 @@ This uses **rustfmt** (formatter) to auto-format on save.
 }
 ```
 
-This uses **clippy** (linter) to check and auto-fix warnings on save.
+This uses `clippy` to check and auto-fix warnings on save.
 
-## boolean algebra precedences:
+## boolean algebra precedences
 
-In Boolean algebra, **AND has higher precedence than OR**.  
+In Boolean algebra, **AND** has higher precedence than **OR**.  
 So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
 
 **Precedence order (highest to lowest):**
 
-1. `!` (NOT) - highest
+1. `!` (NOT)
 2. `&` (AND)
-3. `|` (OR) - lowest
+3. `|` (OR)
 4. `^` (XOR)
 5. `>` (IMPLY)
-6. `=` (EQUIV) - lowest
+6. `=` (EQUIV)
 
 **Examples:**
 
@@ -84,11 +83,11 @@ So `A & B | C` is evaluated as `(A & B) | C`, not `A & (B | C)`.
 - `!A & B` = `(!A) & B`
 - `A & B & C | D` = `((A & B) & C) | D`
 
-This matches most programming languages and standard Boolean algebra notation!
+This matches most programming languages and standard Boolean algebra notation.
 
-## Rust Documentation with `///`
+## Rust Documentation
 
-Rust uses `///` for documentation comments that generate HTML documentation. These go above the item we're documenting:
+I use `///` for HTML documentation comments, which go above the item being documented:
 
 ```rust
 /// Adds two numbers using only bitwise operators.
@@ -122,33 +121,29 @@ This will run all the code examples in my `///` comments to ensure they compile 
 
 ### Generating and Viewing Documentation
 
-To generate and open the HTML documentation in my browser:
+To generate and open the HTML documentation:
 
 ```bash
 cargo doc --open
 ```
 
-Or if we're in a workspace, specify the package:
+Or for a specific package in the workspace:
 
 ```bash
 cargo doc --package ex00 --open
 ```
 
-This will:
+This generates HTML documentation in `target/doc/`, includes all public items, and opens it in the default browser.
 
-1. Generate HTML documentation in `target/doc/`
-2. Automatically open it in my default browser
-3. Include all public items with their documentation
+## Ex00 - Addition
 
-## Ex00
-
-it will have this function signature in ex00:
+The first exercise uses this function signature:
 
 ```rust
 fn adder(a: u32, b: u32) -> u32;
 ```
 
-and I will add the following in the "main" top binary module so it will find the functions:
+To test the modules together, I include them in a main binary module (`ready_set_boole_main/Cargo.toml`):
 
 ```yaml
 [package]
@@ -160,13 +155,9 @@ edition = "2024"
 ex00 = { path = "../ex00" }
 ```
 
-This is in the cargo.toml in the ready_set_boole_main module which is just to play with the code and test all those modules together.
+This implements addition using only bitwise operations. It uses the binary addition algorithm with XOR for the sum and AND for carry propagation.
 
-## ex00 - Addition
-
-Implements addition using only bitwise operations (no `+` operator). Uses the binary addition algorithm with XOR for sum and AND for carry propagation.
-
-**Algorithm:** :
+**Algorithm:**
 
 ```pseudocode
 while b > 0:
@@ -199,39 +190,32 @@ Result: 1000 = 8
 
 See `ex00/src/lib.rs` for detailed documentation.
 
-## ex01 - Multiplication
+## Ex01 - Multiplication
 
-Implements multiplication using only bitwise operations (no `*` operator). Uses the binary long multiplication algorithm: shift and add based on each bit of the multiplier.
+This implements multiplication using only bitwise operations. It uses the binary long multiplication algorithm: shift and add based on each bit of the multiplier.
 
-**Algorithm:** For each bit set in `b`, add `a << bit_position` to the result.
+**Algorithm:**
+For each bit set in `b`, add `a << bit_position` to the result.
 
 ```pseudocode
 result = 0
 while b > 0:
-if b AND 1 == 1: // Check if lowest bit of b is set
-result = result + a // Add current value of a to result
-a = a << 1 // Shift a left (multiply by 2)
-b = b >> 1 // Shift b right (divide by 2)
+    if b AND 1 == 1: // Check if lowest bit of b is set
+        result = result + a // Add current value of a to result
+    a = a << 1 // Shift a left (multiply by 2)
+    b = b >> 1 // Shift b right (divide by 2)
 return result
 ```
 
 **Time Complexity:** O(log b) = O(32) = O(1) constant time for u32
 
-1. O(log b) — The General Case. 
+1. **O(log b) — The General Case:**
+   The algorithm processes each bit of the multiplier `b`. `b` has at most log₂(b) bits.
+   Example: `b` = 1000 has ⌈log₂(1000)⌉ = 10 bits. The loop runs once per bit, leading to O(log₂ b) iterations.
 
-The algorithm processes each bit of the multiplier b:
-b has at most log₂(b) bits.  
-
-Example: b = 1000 has ⌈log₂(1000)⌉ = 10 bits. 
-The loop runs once per bit → O(log₂ b) iterations. 
-2. O(32) — For u32 Specifically.
-
-For u32 type:
-
-Maximum value: 2³² - 1.
-Number of bits: exactly 32 bits.
-So log₂(u32::MAX) = 32.
-The loop runs at most 32 times → O(32).
+2. **O(32) — For u32 Specifically:**
+   For the `u32` type, the maximum value is 2³² - 1, which is exactly 32 bits.
+   Therefore, log₂(u32::MAX) = 32. The loop runs at most 32 times, leading to O(32).
 
 **Example:**
 
@@ -250,9 +234,13 @@ See `ex01/src/lib.rs` for detailed documentation.
 
 ## ex02 - Gray code
 
-Gray code is used to prevent errors in hardware because only one bit changes at a time (e.g., going from 1 to 2 in binary is 01 to 10—two bits changed! In Gray code, it's 01 to 11).
+Gray code prevents hardware errors by ensuring only one bit changes at a time (e.g., transitioning from 1 to 2 in binary goes from 01 to 10, changing two bits, whereas in Gray code it goes from 01 to 11).
 
-The prototype of the function to write is the following: `fn gray_code(n: u32) -> u32;`  
+The prototype of the function is:
+
+```rust
+fn gray_code(n: u32) -> u32;
+```
 
 The formula is incredibly simple using bitwise operators:
 
@@ -1346,6 +1334,7 @@ pub fn map(x: u16, y: u16, n: u16) -> f64 {
 ```
 
 **What it means:**
+
 1. **Input:** A coordinate pair (x, y) on a 65536 × 65536 grid
 2. **Output:** A single real number between 0 and 1
 3. **Purpose:** Map 2D discrete space to 1D continuous interval
